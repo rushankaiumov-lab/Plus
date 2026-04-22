@@ -1,0 +1,3593 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Plus trial</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    @font-face {
+      font-family: 'Tabby Sans Display';
+      src: url('./assets/fonts/TabbySansDisplay-Bold.ttf') format('truetype');
+      font-weight: 700;
+      font-style: normal;
+      font-display: swap;
+    }
+    @font-face {
+      font-family: 'Tabby Sans Text';
+      src: url('./assets/fonts/TabbySansText-Regular.ttf') format('truetype');
+      font-weight: 400;
+      font-style: normal;
+      font-display: swap;
+    }
+    @font-face {
+      font-family: 'Tabby Sans Text';
+      src: url('./assets/fonts/TabbySansText-Medium.ttf') format('truetype');
+      font-weight: 500;
+      font-style: normal;
+      font-display: swap;
+    }
+    @font-face {
+      font-family: 'Tabby Sans Text';
+      src: url('./assets/fonts/TabbySansText-Bold.ttf') format('truetype');
+      font-weight: 700;
+      font-style: normal;
+      font-display: swap;
+    }
+
+    :root {
+      --color-ui-black: #000000;
+      --color-ui-major: #131C26;
+      --color-spec-white: #FFFFFF;
+      --color-spec-line: #D1D9E0;
+      --color-spec-faded: #B4BFCC;
+      --color-spec-label: #7F90A3;
+      --color-graphics-icon: #FF0055;
+      --color-success: #31CC7E;
+      --color-pill-fill: rgba(108, 255, 147, 0.2);
+      --color-pill-border: #6CFF93;
+      --color-page-gray: #F5F4F2;
+      --color-bg-subtle: #F5F4F2;
+      --radius-body-top: 32px;
+      --radius-island: 24px;
+      --list-row-height: 64px;
+      --supercell-lead-size: 40px;
+      --color-bg-muted: #EBE7E4;
+      --font-display: 'Tabby Sans Display', ui-sans-serif, system-ui, sans-serif;
+      --font-text: 'Tabby Sans Text', ui-sans-serif, system-ui, sans-serif;
+      --shadow-soft: 0px 3px 20px 0px rgba(0, 0, 0, 0.07);
+      --radius-lg: 18px;
+      --radius-full: 999px;
+      /* NavBar: высота 64 = 12 + 40 (хит-зона) + 12, без смешения height и padding */
+      --header-nav-height: 64px;
+      --navbar-hit: 32px;
+      --header-title-padding: 24px 24px 48px;
+      --header-headline-sub-gap: 8px;
+      --header-h1-size: 30px;
+      --header-h1-lh: 1.2;
+      --header-sub-size: 16px;
+      --header-sub-lh: 1.125;
+      --device-width: 414px;
+      /* Typography on light */
+      --text-primary: #1a1919;
+      --text-secondary: #75726f;
+      /* Inverted (on #1A1919 fills) */
+      --text-on-inverse-primary: #f5f4f2;
+      --text-on-inverse-secondary: #8f8b88;
+      /* XL primary button (Figma: radius 20, smooth corners ~60% — standard CSS radius) */
+      --btn-xl-radius: 20px;
+      --btn-xl-fill: #1a1919;
+      --btn-xl-height: 64px;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html {
+      height: 100%;
+      background: #000;
+      scrollbar-gutter: stable;
+    }
+    html, body { height: 100%; }
+    body {
+      font-family: var(--font-text);
+      background: #000;
+      display: flex; justify-content: center; align-items: center;
+      -webkit-font-smoothing: antialiased;
+    }
+    /* Предотвращает сдвиг макета при появлении/скрытии полосы прокрутки окна */
+    body.sheet-doc-scroll-lock {
+      overflow: hidden !important;
+      padding-right: var(--doc-scrollbar-gap, 0px);
+    }
+    /* Контент под оверлеем не скроллится и не «гуляет» при смене шитов */
+    .device.device--sheet-open #scroll-view,
+    .device.device--sheet-open #subscription-scroll {
+      overflow: hidden !important;
+      overscroll-behavior: none;
+    }
+
+    .device {
+      width: var(--device-width);
+      height: 844px;
+      max-width: 100%;
+      background: #000;
+      padding: 0;
+      box-shadow: 0 0 0 1px #111, 0 18px 45px rgba(0,0,0,0.9);
+      position: relative; overflow: hidden;
+      display: flex; flex-direction: column;
+    }
+
+    /* Скролл: чёрный как hero; серый body — .main-area со скруглением сверху */
+    .scroll-view {
+      flex: 1;
+      min-height: 0;
+      overflow-x: hidden;
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
+      position: relative;
+      background: #000;
+    }
+
+    .hero {
+      background: #000;
+      color: var(--color-spec-white);
+      padding-top: var(--header-nav-height);
+    }
+
+    .navbar {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 100;
+      box-sizing: border-box;
+      height: var(--header-nav-height);
+      min-height: var(--header-nav-height);
+      max-height: var(--header-nav-height);
+      padding: 0;
+      display: grid;
+      grid-template-columns: 48px 1fr 48px;
+      align-items: center;
+      justify-items: stretch;
+      background: #000;
+      color: var(--color-spec-white);
+      transition: background-color 0.22s ease, color 0.22s ease;
+    }
+    .navbar.navbar--on-light {
+      background: #fff;
+      color: var(--color-ui-major);
+    }
+    .navbar__lead {
+      display: flex;
+      align-items: center;
+      justify-content: flex-start;
+      padding-left: 8px;
+      height: var(--header-nav-height);
+    }
+    .navbar__logo {
+      display: flex;
+      align-items: flex-start;
+      justify-content: center;
+      padding: 0 16px;
+      min-width: 0;
+      height: var(--header-nav-height);
+    }
+    .navbar__trail {
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      padding-right: 8px;
+      height: var(--header-nav-height);
+      width: 100%;
+    }
+
+    .navbar__back {
+      width: var(--navbar-hit);
+      height: var(--navbar-hit);
+      margin: 0;
+      align-self: center;
+      border: none;
+      border-radius: var(--radius-full);
+      background: transparent;
+      color: inherit;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      padding: 0;
+      transition: color 0.22s ease;
+    }
+
+    .navbar__back-icon {
+      display: block;
+      flex-shrink: 0;
+      width: 24px;
+      height: 24px;
+    }
+
+    .navbar__badge {
+      width: 53px;
+      height: 22px;
+      display: block;
+      flex-shrink: 0;
+      transition: filter 0.22s ease, opacity 0.22s ease;
+      /* NavBar 64px: сверху и снизу по 21px (64 - 22)/2 = 21 */
+      margin-top: 21px;
+    }
+
+    .hero__copy {
+      padding: var(--header-title-padding);
+      text-align: center;
+    }
+    .hero__copy h1 {
+      font-family: var(--font-display);
+      font-size: var(--header-h1-size);
+      line-height: var(--header-h1-lh);
+      font-weight: 700;
+      letter-spacing: 0.00333em;
+      color: var(--color-spec-white);
+      margin-bottom: var(--header-headline-sub-gap);
+    }
+    .hero__copy p {
+      font-family: var(--font-text);
+      font-size: var(--header-sub-size);
+      font-weight: 400;
+      line-height: var(--header-sub-lh);
+      color: var(--color-spec-white);
+      max-width: 100%;
+    }
+
+    /* monochrome svg recolor via mask */
+    .mask-icon {
+      width: 20px;
+      height: 20px;
+      display: inline-block;
+      background-color: currentColor;
+      -webkit-mask-repeat: no-repeat;
+      -webkit-mask-position: center;
+      -webkit-mask-size: contain;
+      mask-repeat: no-repeat;
+      mask-position: center;
+      mask-size: contain;
+    }
+    .mask-icon--chevron-right {
+      width: 16px;
+      height: 16px;
+      -webkit-mask-image: url("./assets/original-icons/chevron-right.svg");
+      mask-image: url("./assets/original-icons/chevron-right.svg");
+    }
+    .mask-icon--chevron-down {
+      width: 16px;
+      height: 16px;
+      -webkit-mask-image: url("./assets/original-icons/chevron-down.svg");
+      mask-image: url("./assets/original-icons/chevron-down.svg");
+    }
+    .main-area {
+      background: var(--color-page-gray);
+      border-top-left-radius: 32px;
+      border-top-right-radius: 32px;
+      overflow: hidden;
+      min-height: 100%;
+      position: relative;
+      z-index: 1;
+    }
+
+    .content-stack {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      padding: 16px 16px 24px;
+      background: var(--color-page-gray);
+    }
+
+    .island {
+      background: #fff;
+      border-radius: var(--radius-island);
+      border: none;
+      padding: 20px 16px 16px;
+      box-shadow: none;
+    }
+    /* Benefits: верхний отступ 16px (как в макете/оверлее) */
+    .island--benefits {
+      padding: 16px 16px 8px;
+    }
+    .island--links {
+      padding: 12px 16px;
+    }
+
+    /*
+     * Omni Supercell (list row) — Design System
+     * https://www.figma.com/design/921WDygeIIdnwlrExNKpaB/%F0%9F%A7%BF-Omni-Design-System?node-id=25498-37677
+     * Lead (40) + label + trailing chevron, row height 64, no dividers.
+     */
+    .supercell-list {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+    }
+    .supercell {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      height: var(--list-row-height);
+      min-height: var(--list-row-height);
+      max-height: var(--list-row-height);
+      padding: 0;
+      box-sizing: border-box;
+    }
+    .supercell__lead {
+      width: var(--supercell-lead-size);
+      height: var(--supercell-lead-size);
+      flex-shrink: 0;
+      border-radius: var(--radius-full);
+      overflow: hidden;
+    }
+    .supercell__lead img {
+      width: var(--supercell-lead-size);
+      height: var(--supercell-lead-size);
+      display: block;
+      object-fit: contain;
+    }
+    .supercell__label {
+      flex: 1;
+      min-width: 0;
+      margin: 0;
+      font-family: var(--font-text);
+      font-size: 16px;
+      font-weight: 400;
+      line-height: 1.25;
+      color: var(--color-ui-major);
+      text-align: left;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+    .supercell__chevron {
+      flex-shrink: 0;
+      width: 24px;
+      height: 24px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .supercell__chevron img {
+      width: 20px;
+      height: 20px;
+      display: block;
+    }
+
+    /* Интерактивная строка (ссылка / действие) */
+    button.supercell.supercell--action {
+      width: 100%;
+      border: none;
+      background: none;
+      padding: 0;
+      margin: 0;
+      font: inherit;
+      color: inherit;
+      text-align: left;
+      cursor: pointer;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .supercell-list--links .supercell__label {
+      font-weight: 500;
+    }
+
+    .benefits {
+      display: block;
+    }
+    .benefits__title {
+      font-family: var(--font-text);
+      font-size: 17px;
+      font-weight: 700;
+      line-height: 1.18;
+      color: var(--color-ui-major);
+      margin: 0;
+      text-align: left;
+    }
+    .benefits .supercell-list {
+      margin-top: 8px;
+    }
+
+    .island .timeline {
+      border: none;
+      border-radius: 0;
+      padding: 0;
+      background: transparent;
+      box-shadow: none;
+    }
+
+    .sticky-bottom {
+      flex-shrink: 0;
+      background: var(--color-spec-white);
+      padding: 12px 16px 0;
+      border-top: none;
+      box-shadow: none;
+    }
+
+    .home-indicator {
+      width: 134px;
+      height: 5px;
+      border-radius: 100px;
+      background: var(--color-ui-black);
+      margin: 10px auto 12px;
+    }
+
+    .island .section { margin-bottom: 0; }
+    .section__title {
+      font-size: 17px; font-weight: 700; line-height: 1.18;
+      margin-bottom: 12px; color: var(--color-ui-major);
+    }
+    .section--timeline .section__title {
+      margin-bottom: 8px;
+    }
+    .timeline {
+      border-radius: var(--radius-lg); border: 1px solid var(--color-spec-line);
+      padding: 16px; background: var(--color-spec-white);
+    }
+    .section--timeline .timeline {
+      padding: 12px 16px 16px;
+    }
+    .timeline__item {
+      display: grid; grid-template-columns: 20px 1fr;
+      column-gap: 12px; row-gap: 4px;
+      position: relative; padding-bottom: 18px;
+    }
+    .timeline__item:last-child { padding-bottom: 0; }
+    /* Иконки 20×20 из макета Tabby Plus 2.0 — https://www.figma.com/design/AIvplVInozkf6qtgZJc4LK/Tabby-Plus-2.0?node-id=6176-290617 */
+    .timeline__bullet {
+      width: 20px;
+      height: 20px;
+      border-radius: var(--radius-full);
+      border: none;
+      background: transparent;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      position: relative;
+      z-index: 1;
+    }
+    .timeline__bullet img {
+      width: 20px;
+      height: 20px;
+      display: block;
+    }
+    .timeline__line {
+      position: absolute; top: 4px;
+      left: 9px;
+      width: 2px; bottom: 4px; background: #D6D3D0;
+      z-index: 0;
+      pointer-events: none;
+    }
+    .timeline__item:last-child .timeline__line { display: none; }
+    .timeline__label {
+      font-size: 16px;
+      font-weight: 500; /* Medium */
+      line-height: 20px; /* 16 -> 20 */
+      letter-spacing: -0.16px;
+      color: #1A1919;
+      margin-bottom: 2px;
+    }
+    .timeline__meta {
+      font-size: 14px;
+      font-weight: 500; /* Medium */
+      line-height: 18px; /* 14 -> 18 */
+      letter-spacing: -0.16px;
+      color: #75726F;
+    }
+
+    /*
+     * FAQ accordion — Omni (https://www.figma.com/design/921WDygeIIdnwlrExNKpaB/%F0%9F%A7%BF-Omni-Design-System?node-id=30002-102242)
+     * Контент: Tabby Plus 2.0 https://www.figma.com/design/AIvplVInozkf6qtgZJc4LK/Tabby-Plus-2.0?node-id=6319-400708
+     * Раскрытие: <details> + grid 0fr/1fr (плавная высота без JS)
+     */
+    .section--faq .section__title {
+      margin-bottom: 0;
+    }
+    .faq-accordion {
+      display: flex;
+      flex-direction: column;
+      margin: 8px 0 0;
+    }
+    .faq-accordion__item {
+      border: none;
+    }
+    .faq-accordion__item + .faq-accordion__item {
+      margin-top: 14px;
+    }
+    .faq-accordion__summary {
+      list-style: none;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      min-height: 0;
+      padding: 14px 0;
+      cursor: pointer;
+      font-family: var(--font-text);
+      font-size: 16px;
+      font-weight: 700;
+      line-height: 1.25;
+      color: #1A1919;
+      text-align: left;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .faq-accordion__summary::-webkit-details-marker {
+      display: none;
+    }
+    .faq-accordion__summary::marker {
+      display: none;
+      content: "";
+    }
+    .faq-accordion__question {
+      flex: 1;
+      min-width: 0;
+      font-size: 16px;
+      font-weight: 700;
+      line-height: 1.25;
+      letter-spacing: -0.16px;
+    }
+    .faq-accordion__chevron {
+      flex-shrink: 0;
+      width: 16px;
+      height: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #75726F;
+      transition: transform 0.3s ease;
+      opacity: 1;
+      visibility: visible;
+    }
+    .faq-accordion__chevron::before {
+      content: "";
+      width: 7px;
+      height: 7px;
+      border-right: 2px solid #75726F;
+      border-bottom: 2px solid #75726F;
+      transform: rotate(45deg);
+      margin-top: -2px;
+      display: block;
+    }
+    .faq-accordion__item[open] .faq-accordion__chevron {
+      transform: rotate(180deg);
+    }
+    .faq-accordion__panel {
+      display: grid;
+      grid-template-rows: 0fr;
+      transition: grid-template-rows 0.35s ease;
+    }
+    .faq-accordion__item[open] .faq-accordion__panel {
+      grid-template-rows: 1fr;
+    }
+    .faq-accordion__panel-inner {
+      overflow: hidden;
+      min-height: 0;
+    }
+    .faq-accordion__answer {
+      margin: 0;
+      padding: 0 28px 18px 0;
+      font-size: 14px;
+      font-weight: 400;
+      line-height: 1.43;
+      color: #75726F;
+    }
+    .faq-accordion__answer strong {
+      font-weight: 700;
+      color: var(--color-ui-major);
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .faq-accordion__panel,
+      .faq-accordion__chevron {
+        transition-duration: 0.01ms;
+      }
+      .token-keypad-wrap {
+        transition: none;
+      }
+    }
+
+    .footer { margin-top: 0; }
+    /* XL buttons: radius 20 (Figma smooth ~60% — в вебе стандартный border-radius) */
+    .cta-btn,
+    .sheet-cta,
+    .flow-page__btn {
+      border-radius: var(--btn-xl-radius);
+    }
+    .cta-btn {
+      width: 100%;
+      min-height: var(--btn-xl-height);
+      border: none;
+      background: var(--btn-xl-fill);
+      color: var(--text-on-inverse-primary);
+      padding: 10px 20px 8px;
+      font-size: 17px;
+      font-weight: 700;
+      line-height: 22px;
+      letter-spacing: -0.16px;
+      text-align: center;
+      cursor: pointer;
+      font-family: var(--font-text);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 2px;
+    }
+    .cta-btn span {
+      display: block;
+      font-weight: 500;
+      font-size: 14px;
+      line-height: 18px;
+      letter-spacing: -0.16px;
+      color: var(--text-on-inverse-secondary);
+      margin-top: 0;
+    }
+    .footnote {
+      margin-top: 12px;
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--text-secondary);
+      text-align: center;
+      line-height: 1.33;
+    }
+    .footnote a {
+      color: var(--text-primary);
+      font-weight: 700;
+      text-decoration: none;
+    }
+
+    /* Payment activation: Add payment method + Tokenization + Method added */
+    .payment-method-sheet {
+      background: #fff;
+      border-radius: 32px 32px 0 0;
+      padding: 8px 16px 20px;
+      max-height: 85vh;
+      overflow: auto;
+    }
+    .payment-method-sheet__title {
+      margin: 12px 0 8px;
+      font-family: var(--font-display);
+      font-size: 24px;
+      line-height: 30px;
+      font-weight: 600;
+      letter-spacing: 0.1px;
+      color: var(--text-primary);
+    }
+    .payment-method-sheet__intro {
+      margin: 0 0 20px;
+      font-size: 16px;
+      line-height: 22px;
+      font-weight: 500;
+      letter-spacing: -0.16px;
+      color: var(--text-secondary);
+    }
+    .payment-method-sheet__list {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+    }
+    .payment-method-sheet__row {
+      width: 100%;
+      border: none;
+      background: none;
+      display: grid;
+      grid-template-columns: 44px 1fr 20px;
+      align-items: center;
+      gap: 12px;
+      min-height: 64px;
+      padding: 0 0 0 4px;
+      text-align: left;
+      cursor: pointer;
+      font-family: var(--font-text);
+      color: var(--text-primary);
+      border-radius: 12px;
+    }
+    .payment-method-sheet__row:active {
+      background: rgba(26, 25, 25, 0.04);
+    }
+    .payment-method-sheet__lead {
+      width: 40px;
+      height: 40px;
+      border-radius: 999px;
+      background: var(--color-page-gray);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 22px;
+      font-weight: 500;
+      line-height: 1;
+    }
+    .payment-method-sheet__lead--mark,
+    .payment-method-sheet__lead--asset {
+      background: transparent;
+    }
+    .payment-method-sheet__lead--mark img {
+      display: block;
+    }
+    .payment-method-sheet__lead--asset img {
+      display: block;
+      width: 40px;
+      height: 40px;
+    }
+    .payment-method-sheet__label {
+      font-size: 16px;
+      font-weight: 500;
+      line-height: 20px;
+      letter-spacing: -0.16px;
+    }
+    .payment-method-sheet__chevron {
+      width: 20px;
+      height: 20px;
+      opacity: 0.5;
+    }
+    /* Short “Add new payment method” vs tall Tokenization */
+    .sheet-overlay__panel--add-payment {
+      max-height: min(48vh, 420px);
+      overflow: hidden;
+    }
+    .sheet-overlay__panel--add-payment .payment-method-sheet {
+      max-height: none;
+    }
+    .sheet-overlay__panel--tokenization {
+      min-height: min(78vh, 720px);
+      max-height: calc(100% - 8px);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+    .sheet-overlay__panel--tokenization:has(.payment-token-sheet--native-keyboard) {
+      min-height: auto;
+      max-height: calc(100% - 8px);
+    }
+    /* Кастомная клавиатура скрыта — шит по высоте контента, без «пустого» серого блока */
+    .sheet-overlay__panel--tokenization:has(.token-keypad--collapsed) {
+      min-height: auto;
+    }
+    .sheet-overlay__panel--tokenization:has(.token-keypad--collapsed) #sheet-content {
+      flex: 0 1 auto;
+    }
+    .payment-token-sheet:has(.token-keypad--collapsed) {
+      flex: 0 1 auto;
+    }
+    .sheet-overlay:has(.sheet-overlay__panel--tokenization) .sheet-overlay__viewport {
+      padding-bottom: 0;
+    }
+    .sheet-overlay:has(.sheet-overlay__panel--tokenization) .sheet-overlay__panel--tokenization {
+      max-height: 100%;
+    }
+    .sheet-overlay__panel--tokenization #sheet-content {
+      flex: 1;
+      min-height: 0;
+      display: flex;
+      flex-direction: column;
+    }
+    .sheet-overlay.is-open .sheet-overlay__panel.sheet-overlay__panel--dismiss-payment {
+      transform: translateY(105%) !important;
+      transition: transform 0.32s cubic-bezier(0.2, 0.8, 0.2, 1);
+    }
+    .payment-token-sheet {
+      display: flex;
+      flex-direction: column;
+      flex: 1;
+      min-height: 0;
+      background: #fff;
+      border-radius: 32px 32px 0 0;
+      overflow: hidden;
+    }
+    .payment-token-sheet--native-keyboard {
+      flex: 0 1 auto;
+    }
+    .payment-sheet-nav__btn {
+      width: 48px;
+      height: 48px;
+      border: none;
+      background: none;
+      padding: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      border-radius: 12px;
+    }
+    .payment-sheet-nav__btn:active {
+      background: rgba(26, 25, 25, 0.06);
+    }
+    .payment-sheet-nav__btn img {
+      display: block;
+      width: 48px;
+      height: 48px;
+    }
+    .payment-sheet-nav__spacer {
+      width: 48px;
+      height: 48px;
+    }
+    .payment-tokenization__handle {
+      width: 40px;
+      height: 5px;
+      border-radius: 999px;
+      background: rgba(26, 25, 25, 0.15);
+      margin: 8px auto 4px;
+      flex-shrink: 0;
+    }
+    .payment-tokenization__nav {
+      display: grid;
+      grid-template-columns: 48px 1fr 48px;
+      align-items: center;
+      min-height: 48px;
+      padding: 0 4px;
+      flex-shrink: 0;
+    }
+    .payment-tokenization__nav h2 {
+      margin: 0;
+      font-size: 17px;
+      font-weight: 700;
+      line-height: 22px;
+      text-align: center;
+      color: var(--text-primary);
+    }
+    .payment-tokenization__body {
+      padding: 8px 16px 0;
+      overflow-y: auto;
+      flex: 0 1 auto;
+      min-height: 0;
+      -webkit-overflow-scrolling: touch;
+    }
+    .payment-token-sheet--native-keyboard .payment-tokenization__body {
+      padding-bottom: max(12px, env(safe-area-inset-bottom, 0px));
+    }
+    .token-field {
+      margin-bottom: 0;
+    }
+    .token-field--float {
+      margin-bottom: 0;
+    }
+    #token-field-card.token-field--float {
+      margin-bottom: 8px;
+    }
+    .token-field--error {
+      animation: token-field-shake 0.45s ease;
+    }
+    .token-field--error .token-field__control,
+    .token-field--error.token-field--focused .token-field__control {
+      border-color: #c53030 !important;
+      box-shadow: 0 0 0 1px rgba(197, 48, 48, 0.25);
+    }
+    @keyframes token-field-shake {
+      0%, 100% { transform: translateX(0); }
+      20%, 60% { transform: translateX(-6px); }
+      40%, 80% { transform: translateX(6px); }
+    }
+    .token-field__control {
+      position: relative;
+      border: 1.5px solid #e8e6e3;
+      border-radius: 16px;
+      background: #faf9f8;
+      transition: border-color 0.2s ease, background 0.2s ease;
+    }
+    .token-field--float .token-field__float-label {
+      position: absolute;
+      left: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 16px;
+      line-height: 22px;
+      font-weight: 500;
+      color: var(--text-secondary);
+      pointer-events: none;
+      transition: top 0.2s ease, transform 0.2s ease, font-size 0.2s ease, color 0.2s ease;
+      transform-origin: left center;
+    }
+    .token-field--float .token-field__control:focus-within .token-field__float-label,
+    .token-field--float .token-field__control--has-value .token-field__float-label,
+    .token-field--float input:not(:placeholder-shown) ~ .token-field__float-label {
+      top: 7px;
+      transform: translateY(0);
+      font-size: 11px;
+      line-height: 14px;
+      letter-spacing: 0.02em;
+    }
+    .token-field--focused .token-field__control {
+      border-color: var(--text-primary);
+      background: #fff;
+    }
+    .token-field--float .token-field__control input {
+      width: 100%;
+      border: none;
+      background: transparent;
+      font-family: var(--font-text);
+      font-size: 16px;
+      line-height: 22px;
+      font-weight: 500;
+      color: var(--text-primary);
+      padding: 18px 44px 10px 12px;
+      outline: none;
+      border-radius: 16px;
+    }
+    .token-field--float .token-field__control--cvv input {
+      padding-right: 40px;
+    }
+    .token-field__brand {
+      position: absolute;
+      right: 10px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 36px;
+      height: 24px;
+      display: none;
+      align-items: center;
+      justify-content: flex-end;
+      pointer-events: none;
+    }
+    .token-field__brand.is-visible {
+      display: flex;
+    }
+    .token-field__brand img {
+      width: 36px;
+      height: 24px;
+      object-fit: contain;
+      display: block;
+    }
+    .token-field__cvv-hint {
+      position: absolute;
+      right: 10px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 24px;
+      height: 24px;
+      pointer-events: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .token-field__cvv-hint img {
+      width: 24px;
+      height: 24px;
+      display: block;
+    }
+    .token-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      margin-bottom: 0;
+    }
+    .token-networks {
+      display: flex;
+      gap: 8px;
+      margin: 16px 0 0;
+      align-items: center;
+    }
+    .token-networks img {
+      display: block;
+      width: 36px;
+      height: 24px;
+      flex-shrink: 0;
+      border: none;
+      box-shadow: none;
+    }
+    .payment-tokenization__body #tokenization-submit {
+      margin-top: 24px;
+      margin-bottom: 16px;
+      border-radius: 20px;
+    }
+    .payment-token-sheet--native-keyboard .payment-tokenization__body #tokenization-submit {
+      margin-bottom: 0;
+    }
+    .token-keypad-wrap {
+      flex: 1 1 auto;
+      min-height: 0;
+      max-height: min(400px, 65vh);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      background: #d1d5db;
+      padding-bottom: env(safe-area-inset-bottom, 0px);
+      opacity: 1;
+      transition:
+        max-height 0.38s cubic-bezier(0.32, 0.72, 0.2, 1),
+        opacity 0.26s ease,
+        padding-bottom 0.38s cubic-bezier(0.32, 0.72, 0.2, 1);
+    }
+    .token-keypad-wrap:has(.token-keypad--collapsed) {
+      flex-grow: 0;
+      flex-shrink: 0;
+      flex-basis: auto;
+      max-height: 0;
+      min-height: 0;
+      opacity: 0;
+      padding-bottom: 0 !important;
+      pointer-events: none;
+    }
+    .payment-token-sheet--native-keyboard .token-keypad-wrap {
+      display: none;
+    }
+    .token-keypad {
+      flex-shrink: 0;
+      user-select: none;
+      -webkit-user-select: none;
+      background: #d1d5db;
+      padding: 6px 8px 0;
+    }
+    .payment-token-sheet--native-keyboard #token-keypad {
+      display: none !important;
+    }
+    .token-keypad__grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 6px;
+    }
+    .token-keypad__key {
+      border: none;
+      background: #fff;
+      min-height: 46px;
+      border-radius: 6px;
+      padding: 4px 4px 5px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 0;
+      cursor: pointer;
+      font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', system-ui, sans-serif;
+      color: #000;
+      box-shadow: 0 0.5px 0 rgba(0, 0, 0, 0.04);
+      -webkit-tap-highlight-color: transparent;
+    }
+    .token-keypad__key:active {
+      background: #ebebeb;
+    }
+    .token-keypad__digit {
+      font-size: 24px;
+      font-weight: 400;
+      line-height: 1;
+      font-variant-numeric: tabular-nums;
+    }
+    .token-keypad__letters {
+      margin-top: 2px;
+      font-size: 9px;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      line-height: 1;
+      color: #000;
+      text-transform: uppercase;
+      white-space: nowrap;
+    }
+    .token-keypad__key--no-sub .token-keypad__letters {
+      display: none;
+    }
+    .token-keypad__key--back {
+      padding: 0;
+      color: #000;
+    }
+    .token-keypad__key--back svg {
+      display: block;
+      width: 26px;
+      height: 20px;
+    }
+    .token-keypad__spacer {
+      min-height: 46px;
+      border-radius: 6px;
+      pointer-events: none;
+    }
+    /* 78px from bottom of key grid to sheet bottom: 55px gray to home bar + 23px bar + padding */
+    .token-keypad__foot {
+      flex-shrink: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: stretch;
+      min-height: 78px;
+      max-height: 78px;
+      box-sizing: border-box;
+    }
+    .token-keypad__foot-spacer {
+      flex: 0 0 55px;
+      width: 100%;
+      pointer-events: none;
+    }
+    .token-keypad__foot .token-keypad__home-indicator {
+      flex: 0 0 23px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 23px;
+      max-height: 23px;
+      padding: 0 0 6px;
+      box-sizing: border-box;
+    }
+    .token-keypad__foot .token-keypad__home-indicator::after {
+      content: '';
+      width: 128px;
+      height: 5px;
+      border-radius: 999px;
+      background: #000;
+    }
+    /* Не display:none — иначе нет плавного сжатия; обрезка идёт через .token-keypad-wrap */
+    .token-keypad.token-keypad--collapsed {
+      pointer-events: none;
+      user-select: none;
+    }
+    .method-added-sheet {
+      background: #fff;
+      border-radius: 32px 32px 0 0;
+      padding: 12px 16px 16px;
+      text-align: center;
+    }
+    .method-added-sheet__hero {
+      margin: 48px auto 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 66px;
+    }
+    .method-added-sheet__hero img {
+      width: 78px;
+      height: 66px;
+      object-fit: contain;
+    }
+    .method-added-sheet__title {
+      margin: 0 0 16px;
+      font-family: var(--font-display);
+      font-size: 19px;
+      line-height: 24px;
+      font-weight: 600;
+      color: #1a1919;
+    }
+    .method-added-sheet__body {
+      margin: 0 0 32px;
+      font-size: 17px;
+      line-height: 24px;
+      font-weight: 500;
+      color: #1a1919;
+      text-align: center;
+    }
+    .method-added-sheet .sheet-toolbar__buttons {
+      padding: 0 0 8px;
+    }
+
+    /* Bottom sheet overlay (Figma node 9901:168648) */
+    .sheet-overlay {
+      position: absolute;
+      inset: 0;
+      z-index: 300;
+      display: flex;
+      align-items: flex-end;
+      justify-content: center;
+      padding-top: 54px;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.28s ease;
+    }
+    .sheet-overlay.is-open {
+      opacity: 1;
+      pointer-events: auto;
+      overscroll-behavior: contain;
+    }
+    .sheet-overlay__backdrop {
+      position: absolute;
+      inset: 0;
+      background: rgba(26, 25, 25, 0.75);
+      border: none;
+      margin: 0;
+      padding: 0;
+      cursor: pointer;
+    }
+    .sheet-overlay__viewport {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      align-items: flex-end;
+      padding: 0 8px 8px;
+      pointer-events: none;
+    }
+    .sheet-overlay__panel {
+      position: relative;
+      width: 100%;
+      max-width: 398px;
+      max-height: calc(100% - 8px);
+      overflow: auto;
+      margin-bottom: 0;
+      transform: translateY(105%);
+      transition: transform 0.32s cubic-bezier(0.2, 0.8, 0.2, 1);
+      pointer-events: auto;
+      -webkit-overflow-scrolling: touch;
+    }
+    .sheet-overlay.is-open .sheet-overlay__panel {
+      transform: translateY(0);
+    }
+    .sheet-overlay__handlebar {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      padding: 8px 0;
+      display: flex;
+      justify-content: center;
+      z-index: 3;
+    }
+    .sheet-overlay__handle {
+      width: 40px;
+      height: 5px;
+      border-radius: 999px;
+      background: rgba(26, 25, 25, 0.15);
+    }
+    .sheet-layout {
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      align-items: stretch;
+      padding-top: 0;
+    }
+    .sheet-cover {
+      height: 307px;
+      border-radius: 36px 36px 0 0;
+      overflow: hidden;
+      background: #DDA2FA;
+    }
+    .sheet-cover img {
+      width: 100%;
+      height: 100%;
+      display: block;
+      object-fit: cover;
+    }
+    .sheet-surface {
+      margin-top: -48px;
+      background: #fff;
+      border-radius: 36px;
+      overflow: hidden;
+    }
+    .sheet-header {
+      padding: 20px 16px 16px;
+    }
+    .sheet-header__title {
+      margin: 0;
+      font-family: var(--font-display);
+      font-size: 24px;
+      line-height: 30px;
+      letter-spacing: 0.1px;
+      font-weight: 600;
+      color: #1A1919;
+    }
+    .sheet-body {
+      padding: 0 16px 16px;
+      font-family: var(--font-text);
+      font-size: 16px;
+      line-height: 24px;
+      letter-spacing: -0.16px;
+      font-weight: 500;
+      color: #1A1919;
+    }
+    .sheet-body p {
+      margin: 0;
+    }
+    .sheet-body--lifetime p + p {
+      margin-top: 12px;
+    }
+    .sheet-toolbar {
+      position: relative;
+    }
+    .sheet-toolbar__gradient {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 48px;
+      background: linear-gradient(180deg, rgba(255, 255, 255, 0) 0%, #FFFFFF 100%);
+      pointer-events: none;
+      display: none;
+    }
+    .sheet-toolbar__buttons {
+      padding: 16px 16px 0;
+    }
+    .sheet-toolbar__buttons--sheet-end {
+      padding-bottom: 16px;
+    }
+    .sheet-cta {
+      width: 100%;
+      height: var(--btn-xl-height);
+      border: none;
+      background: var(--btn-xl-fill);
+      color: var(--text-on-inverse-primary);
+      padding: 0 32px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 2px;
+      cursor: pointer;
+      font-family: var(--font-text);
+    }
+    .sheet-cta__label {
+      font-size: 16px;
+      line-height: 20px;
+      letter-spacing: -0.16px;
+      font-weight: 700;
+      color: var(--text-on-inverse-primary);
+    }
+    .sheet-cta__sub {
+      font-size: 14px;
+      line-height: 18px;
+      letter-spacing: -0.16px;
+      font-weight: 500;
+      color: var(--text-on-inverse-secondary);
+    }
+    .sheet-toolbar__extra {
+      padding: 0 16px 16px;
+    }
+    .sheet-legal {
+      margin: 0;
+      padding-top: 16px;
+      text-align: center;
+      font-family: var(--font-text);
+      font-size: 12px;
+      line-height: 16px;
+      letter-spacing: -0.13px;
+      font-weight: 500;
+      color: #75726F;
+    }
+    .sheet-legal strong {
+      color: #1A1919;
+      font-weight: 500;
+    }
+    .sheet-template {
+      display: none;
+    }
+    .action-sheet {
+      background: #ffffff;
+      border-radius: 32px;
+      padding: 8px 0 8px;
+      overflow: hidden;
+    }
+    .action-sheet__handle {
+      width: 40px;
+      height: 5px;
+      border-radius: 999px;
+      background: rgba(26, 25, 25, 0.15);
+      margin: 0 auto 8px;
+    }
+    .action-sheet__list {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+    }
+    .action-sheet__row {
+      width: 100%;
+      border: none;
+      background: none;
+      padding: 12px 16px;
+      display: grid;
+      grid-template-columns: 44px 1fr 20px;
+      align-items: center;
+      gap: 16px;
+      text-align: left;
+      font-family: var(--font-text);
+      cursor: pointer;
+    }
+    .action-sheet__icon-wrap {
+      width: 40px;
+      height: 40px;
+      border-radius: 20px;
+      background: #F5F4F2;
+      display: block;
+      overflow: hidden;
+    }
+    .action-sheet__icon-wrap img {
+      width: 40px;
+      height: 40px;
+      display: block;
+    }
+    .action-sheet__title {
+      margin: 0;
+      font-size: 16px;
+      line-height: 18px;
+      letter-spacing: 0;
+      font-weight: 400;
+      color: #1a1919;
+    }
+    .action-sheet__sub {
+      margin: 2px 0 0;
+      font-size: 15px;
+      line-height: 18px;
+      letter-spacing: -0.16px;
+      font-weight: 500;
+      color: #75726f;
+    }
+    .action-sheet__chevron {
+      width: 20px;
+      height: 20px;
+      display: block;
+      margin-left: auto;
+    }
+    .navbar__settings-btn {
+      width: 40px;
+      height: 40px;
+      border: none;
+      background: transparent;
+      padding: 0;
+      margin: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      color: inherit;
+    }
+    .navbar__settings-btn img {
+      width: 40px;
+      height: 40px;
+      display: block;
+      transition: filter 0.22s ease;
+    }
+    /* trail.svg — белая заливка; на светлом навбаре делаем тёмный силуэт */
+    #subscription-navbar.navbar--on-light .navbar__settings-btn img {
+      filter: brightness(0);
+    }
+
+    .landing-page {
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+    }
+    .device.has-subscription-open .landing-page {
+      display: none;
+    }
+
+    /* Active subscription page (new screen) */
+    .subscription-page {
+      position: absolute;
+      inset: 0;
+      z-index: 180;
+      display: none;
+      flex-direction: column;
+      background: #000;
+    }
+    .subscription-page.is-active {
+      display: flex;
+    }
+    .flow-page {
+      position: absolute;
+      inset: 0;
+      z-index: 185;
+      display: none;
+      flex-direction: column;
+      background: #fff;
+      color: #1a1919;
+    }
+    .flow-page.is-active {
+      display: flex;
+    }
+    .trial-success-page {
+      background: #fff;
+      z-index: 186;
+    }
+    .trial-success-page .flow-page__footer {
+      position: relative;
+      z-index: 2;
+      margin-top: auto;
+      background: linear-gradient(180deg, rgba(255, 255, 255, 0) 0%, #fff 32px);
+      padding-top: 16px;
+    }
+    .trial-success__confetti {
+      position: absolute;
+      inset: 0;
+      overflow: hidden;
+      pointer-events: none;
+      z-index: 0;
+      transition: opacity 0.35s ease;
+    }
+    .trial-success__confetti.trial-success__confetti--done {
+      opacity: 0;
+    }
+    .trial-success__confetti img {
+      position: absolute;
+      left: 50%;
+      top: 0;
+      transform: translateX(-50%);
+      min-width: 100%;
+      min-height: 100%;
+      width: auto;
+      height: auto;
+      object-fit: cover;
+    }
+    .trial-success__confetti-canvas {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 1;
+      transition: opacity 0.25s ease;
+    }
+    .trial-success__confetti-canvas.trial-success__confetti-canvas--done {
+      opacity: 0;
+      visibility: hidden;
+    }
+    .trial-success__content {
+      position: relative;
+      z-index: 2;
+      flex: 1;
+      min-height: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: stretch;
+      justify-content: center;
+      padding: 0 16px;
+    }
+    .trial-success__message {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      padding: 0;
+    }
+    .trial-success__heading-block {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      width: 100%;
+    }
+    .trial-success__illustration {
+      width: 180px;
+      height: 120px;
+      display: block;
+      object-fit: contain;
+      margin-bottom: 24px;
+    }
+    .trial-success__title {
+      margin: 0 0 12px;
+      max-width: 320px;
+      font-family: var(--font-display);
+      font-size: 30px;
+      line-height: 36px;
+      font-weight: 600;
+      letter-spacing: 0.1px;
+      color: #1a1919;
+    }
+    .trial-success__sub {
+      margin: 0;
+      max-width: 320px;
+      font-family: var(--font-text);
+      font-size: 16px;
+      line-height: 18px;
+      font-weight: 500;
+      letter-spacing: -0.16px;
+      color: #1a1919;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 4px;
+    }
+    .trial-success__sub .trial-success__aed {
+      color: #8f8b88;
+      font-weight: 500;
+    }
+    .trial-success__continue {
+      font-weight: 700 !important;
+      color: var(--text-on-inverse-primary) !important;
+    }
+    .flow-page--warning {
+      border-radius: 32px;
+      overflow: hidden;
+    }
+    .flow-warning__content {
+      flex: 1;
+      min-height: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 0 24px;
+      text-align: center;
+    }
+    .flow-warning__hero {
+      width: 366px;
+      max-width: 100%;
+      height: 220px;
+      display: block;
+      border-radius: 24px;
+      margin-top: 4px;
+    }
+    .flow-warning__title-wrap {
+      margin-top: 22px;
+      padding: 0 0 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      width: 100%;
+      max-width: 366px;
+    }
+    .flow-page__title {
+      margin: 0;
+      font-family: var(--font-display);
+      font-size: 32px;
+      line-height: 36px;
+      letter-spacing: 0.1px;
+      font-weight: 600;
+      color: #1a1919;
+    }
+    .flow-page__text {
+      margin: 0;
+      font-family: var(--font-text);
+      font-size: 16px;
+      line-height: 20px;
+      font-weight: 500;
+      letter-spacing: -0.16px;
+      color: #8f8b88;
+    }
+    .flow-warning__list {
+      width: 100%;
+      max-width: 366px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .flow-warning__item {
+      background: #fff;
+      border-radius: 24px;
+      padding: 0 24px;
+      display: flex;
+      align-items: center;
+      min-height: 96px;
+      gap: 16px;
+      text-align: left;
+    }
+    .flow-warning__lead {
+      width: 40px;
+      height: 64px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+    .flow-warning__lead img {
+      width: 40px;
+      height: 40px;
+      display: block;
+    }
+    .flow-warning__item-text {
+      font-size: 16px;
+      line-height: 18px;
+      font-weight: 500;
+      color: #1a1919;
+      letter-spacing: -0.16px;
+    }
+    .flow-page__footer {
+      padding: 16px 16px 0;
+      background: linear-gradient(0deg, #fff 0%, rgba(255, 255, 255, 0) 100%);
+    }
+    .flow-page__btn {
+      width: 100%;
+      min-height: var(--btn-xl-height);
+      border: none;
+      font-family: var(--font-text);
+      font-size: 16px;
+      line-height: 18px;
+      letter-spacing: -0.16px;
+      font-weight: 500;
+      cursor: pointer;
+      margin-bottom: 10px;
+    }
+    .flow-page__btn--primary {
+      background: var(--btn-xl-fill);
+      color: var(--text-on-inverse-primary);
+      font-weight: 700;
+    }
+    .flow-page__btn--secondary {
+      background: #fff;
+      color: #1a1919;
+      font-weight: 500;
+      margin-bottom: 0;
+      border: 1px solid #d6d3d0;
+    }
+    .flow-cancelled__content {
+      flex: 1;
+      min-height: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 127px 16px 114px;
+      gap: 12px;
+    }
+    .flow-cancelled__hero {
+      width: 180px;
+      height: 120px;
+      display: block;
+    }
+    .flow-cancelled__heading {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 24px;
+    }
+    .flow-cancelled__body {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 21px;
+      max-width: 320px;
+    }
+    .subscription-scroll {
+      flex: 1;
+      min-height: 0;
+      overflow-y: auto;
+      overflow-x: hidden;
+      -webkit-overflow-scrolling: touch;
+      background: #000;
+    }
+    .subscription-hero {
+      background: #000;
+      color: #fff;
+      padding: 88px 24px 16px;
+      text-align: center;
+    }
+    .subscription-meter {
+      width: 100%;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0;
+    }
+    .subscription-savings-label {
+      margin: 0 0 12px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 4px;
+      font-size: 16px;
+      line-height: 20px;
+      letter-spacing: -0.16px;
+      font-weight: 500;
+      color: rgba(255, 255, 255, 0.9);
+      background: none;
+      border: none;
+      padding: 0;
+      cursor: pointer;
+      font-family: inherit;
+      text-align: center;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .subscription-savings-label__chevron {
+      display: inline-flex;
+      flex-shrink: 0;
+      width: 16px;
+      height: 16px;
+      align-items: center;
+      justify-content: center;
+      color: rgba(255, 255, 255, 0.9);
+    }
+    .subscription-savings-label__chevron svg {
+      width: 16px;
+      height: 16px;
+      display: block;
+    }
+    .subscription-counter {
+      margin: 0 0 48px;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+    }
+    .subscription-counter__currency {
+      width: 27px;
+      height: 25px;
+      display: block;
+      object-fit: contain;
+    }
+    .subscription-counter__digit {
+      width: 26px;
+      height: 36px;
+      border-radius: 8px;
+      background: #fff;
+      border: 2px solid #3d3b3a;
+      color: #1a1919;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 30px;
+      line-height: 36px;
+      font-weight: 700;
+      letter-spacing: 0.1px;
+      font-family: var(--font-display);
+    }
+    .subscription-counter__dot {
+      width: 8px;
+      height: 36px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      color: #8F8B88;
+      font-size: 30px;
+      line-height: 36px;
+      font-weight: 700;
+      letter-spacing: 0.1px;
+      font-family: var(--font-display);
+    }
+    .subscription-hero-meta {
+      margin: 0;
+      font-size: 16px;
+      line-height: 20px;
+      font-weight: 500;
+      color: #8f8b88;
+      letter-spacing: -0.16px;
+    }
+    .subscription-main {
+      background: var(--color-page-gray);
+      border-top-left-radius: 32px;
+      border-top-right-radius: 32px;
+      min-height: 100%;
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+    .maximise-card {
+      background: #fff;
+      border-radius: 24px;
+      padding: 16px;
+    }
+    .maximise-card__title {
+      margin: 0;
+      font-size: 17px;
+      line-height: 22px;
+      letter-spacing: -0.16px;
+      font-weight: 700;
+      color: #1a1919;
+    }
+    .maximise-list {
+      list-style: none;
+      margin: 12px 0 0;
+      padding: 0;
+    }
+    .maximise-list li + li {
+      margin-top: 0;
+    }
+    .maximise-item {
+      width: 100%;
+      border: none;
+      background: none;
+      cursor: pointer;
+      padding: 0;
+      display: grid;
+      grid-template-columns: 40px 1fr 20px;
+      min-height: 64px;
+      height: 64px;
+      align-items: center;
+      column-gap: 12px;
+      text-align: left;
+      color: #1a1919;
+    }
+    .maximise-item__lead {
+      width: 40px;
+      height: 64px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+    .maximise-item__lead img {
+      width: 40px;
+      height: 64px;
+      display: block;
+      object-fit: cover;
+      object-position: center;
+    }
+    .maximise-item__img--dark {
+      width: 33.12px !important;
+      height: 40px !important;
+      object-fit: contain;
+    }
+    .maximise-item__text {
+      font-size: 16px;
+      line-height: 20px;
+      letter-spacing: -0.16px;
+      font-weight: 500;
+      color: #1a1919;
+    }
+    .maximise-item__chevron img {
+      width: 20px;
+      height: 20px;
+      display: block;
+    }
+    .spotlight-card {
+      background: #fff;
+      border-radius: 24px;
+      padding: 16px;
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 8px 24px;
+      align-items: center;
+    }
+    .spotlight-card__title {
+      margin: 0;
+      font-size: 17px;
+      line-height: 22px;
+      letter-spacing: -0.16px;
+      font-weight: 700;
+      color: #1a1919;
+      grid-column: 1;
+    }
+    .spotlight-card__text {
+      margin: 0;
+      font-size: 14px;
+      line-height: 18px;
+      font-weight: 500;
+      color: #75726f;
+      letter-spacing: -0.16px;
+      grid-column: 1;
+    }
+    .spotlight-card__icon {
+      grid-column: 2;
+      grid-row: 1 / span 2;
+      align-self: start;
+      justify-self: end;
+      width: 41px;
+      height: 40px;
+      display: block;
+      object-fit: contain;
+      margin-top: -2px;
+    }
+    .spotlight-card__cta {
+      grid-column: 1 / -1;
+      border: none;
+      background: #f1efed;
+      border-radius: 12px;
+      min-height: 44px;
+      font-size: 16px;
+      line-height: 20px;
+      letter-spacing: -0.16px;
+      font-weight: 500;
+      font-family: var(--font-text);
+      color: #1a1919;
+      cursor: pointer;
+      margin-top: 24px;
+    }
+    /* Полоса под скроллом: тот же фон, что у subscription-main (не чёрный фон страницы) */
+    .subscription-home-area {
+      flex-shrink: 0;
+      width: 100%;
+      background: var(--color-page-gray);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 10px 0 12px;
+      box-sizing: border-box;
+    }
+    .subscription-home-indicator {
+      width: 134px;
+      max-width: min(134px, 90%);
+      height: 5px;
+      border-radius: 100px;
+      background: rgba(26, 25, 25, 0.18);
+      margin: 0;
+      flex-shrink: 0;
+      box-sizing: border-box;
+    }
+  </style>
+</head>
+<body>
+  <div class="device">
+    <div class="landing-page" id="landing-page">
+    <nav class="navbar" id="navbar" aria-label="Primary">
+      <div class="navbar__lead">
+        <button type="button" class="navbar__back" aria-label="Back">
+          <svg class="navbar__back-icon" width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">
+            <path d="M12 6.34326L7.34277 11.0005H21V13.0005H7.34277L12 17.6567L10.5859 19.0718L3.51465 12.0005L10.5859 4.9292L12 6.34326Z" fill="currentColor"/>
+          </svg>
+        </button>
+      </div>
+      <div class="navbar__logo">
+        <img class="navbar__badge" src="./assets/original-icons/plus-badge.svg" alt="PLUS" width="53" height="22" />
+      </div>
+      <div class="navbar__trail" aria-hidden="true"></div>
+    </nav>
+    <div class="scroll-view" id="scroll-view">
+      <div class="hero">
+        <div class="hero__copy">
+          <h1>Try Plus for free for<br />1 month — on us!</h1>
+          <p>Earn cashback and get extra payment flexibility</p>
+        </div>
+      </div>
+      <div class="main-area">
+      <div class="content-stack">
+      <div class="island island--benefits" id="sheet-card">
+        <section class="benefits" aria-labelledby="benefits-heading">
+          <h2 id="benefits-heading" class="benefits__title">Benefits</h2>
+          <ul class="supercell-list" role="list">
+            <li>
+              <button type="button" class="supercell supercell--action" data-sheet-target="free-split-4">
+                <span class="supercell__lead" aria-hidden="true">
+                  <img src="./assets/omni/icon-free-split-in-4.svg" alt="" width="40" height="40" loading="lazy" />
+                </span>
+                <span class="supercell__label">Free Split in 4 for all Tabby Card purchases</span>
+                <span class="supercell__chevron" aria-hidden="true">
+                  <img src="./assets/omni/chevron-right.svg" alt="" width="20" height="20" />
+                </span>
+              </button>
+            </li>
+            <li>
+              <button type="button" class="supercell supercell--action" data-sheet-target="free-split-6">
+                <span class="supercell__lead" aria-hidden="true">
+                  <img src="./assets/omni/split-in-6-for-free.svg" alt="" width="40" height="40" loading="lazy" />
+                </span>
+                <span class="supercell__label">Split in 6 for free</span>
+                <span class="supercell__chevron" aria-hidden="true">
+                  <img src="./assets/omni/chevron-right.svg" alt="" width="20" height="20" />
+                </span>
+              </button>
+            </li>
+            <li>
+              <button type="button" class="supercell supercell--action" data-sheet-target="cashback-5">
+                <span class="supercell__lead" aria-hidden="true">
+                  <img src="./assets/omni/up-to-5pct-cashback.svg" alt="" width="40" height="40" loading="lazy" />
+                </span>
+                <span class="supercell__label">Up to 5% cashback on card purchases</span>
+                <span class="supercell__chevron" aria-hidden="true">
+                  <img src="./assets/omni/chevron-right.svg" alt="" width="20" height="20" />
+                </span>
+              </button>
+            </li>
+            <li>
+              <button type="button" class="supercell supercell--action" data-sheet-target="cashback-3">
+                <span class="supercell__lead" aria-hidden="true">
+                  <img src="./assets/omni/up-to-5pct-cashback.svg" alt="" width="40" height="40" loading="lazy" />
+                </span>
+                <span class="supercell__label">3% international cashback</span>
+                <span class="supercell__chevron" aria-hidden="true">
+                  <img src="./assets/omni/chevron-right.svg" alt="" width="20" height="20" />
+                </span>
+              </button>
+            </li>
+            <li>
+              <button type="button" class="supercell supercell--action" data-sheet-target="priority-support">
+                <span class="supercell__lead" aria-hidden="true">
+                  <img src="./assets/omni/priority-support.svg" alt="" width="40" height="40" loading="lazy" />
+                </span>
+                <span class="supercell__label">Priority support</span>
+                <span class="supercell__chevron" aria-hidden="true">
+                  <img src="./assets/omni/chevron-right.svg" alt="" width="20" height="20" />
+                </span>
+              </button>
+            </li>
+          </ul>
+        </section>
+      </div>
+      <div class="island">
+      <section class="section section--timeline">
+        <div class="section__title">How your free trial works</div>
+        <div class="timeline">
+          <div class="timeline__item">
+            <div class="timeline__bullet" aria-hidden="true">
+              <img src="./assets/omni/trial-plan-start.svg" alt="" width="20" height="20" loading="lazy" />
+            </div>
+            <div class="timeline__line"></div>
+            <div>
+              <div class="timeline__label">Today</div>
+              <div class="timeline__meta">Start your free trial to unlock Plus benefits</div>
+            </div>
+          </div>
+          <div class="timeline__item">
+            <div class="timeline__bullet" aria-hidden="true">
+              <img src="./assets/omni/trial-reminder.svg" alt="" width="20" height="20" loading="lazy" />
+            </div>
+            <div class="timeline__line"></div>
+            <div>
+              <div class="timeline__label">We'll send you a reminder on 25 Feb</div>
+              <div class="timeline__meta">We'll remind you 3 days before your trial ends</div>
+            </div>
+          </div>
+          <div class="timeline__item">
+            <div class="timeline__bullet" aria-hidden="true">
+              <img src="./assets/omni/trial-today.svg" alt="" width="20" height="20" loading="lazy" />
+            </div>
+            <div>
+              <div class="timeline__label">Your Plus plan will start on 28 Feb</div>
+              <div class="timeline__meta">The fee is AED 59/mo. You can cancel this for free anytime before 28 Feb</div>
+            </div>
+          </div>
+        </div>
+      </section>
+      </div>
+      <div class="island">
+      <section class="section section--faq" aria-labelledby="faqs-heading">
+        <h2 id="faqs-heading" class="section__title">FAQs</h2>
+        <div class="faq-accordion" role="region" aria-label="Frequently asked questions">
+          <details class="faq-accordion__item" name="faq">
+            <summary class="faq-accordion__summary">
+              <span class="faq-accordion__question">How do I cancel my trial?</span>
+              <span class="faq-accordion__chevron" aria-hidden="true"></span>
+            </summary>
+            <div class="faq-accordion__panel">
+              <div class="faq-accordion__panel-inner">
+                <p class="faq-accordion__answer">Cancel anytime in the app. When you unsubscribe, all Tabby Plus benefits will be removed, and any auto-split payments for purchases at non-partner stores will need to be settled before your cancellation is complete.</p>
+              </div>
+            </div>
+          </details>
+          <details class="faq-accordion__item" name="faq">
+            <summary class="faq-accordion__summary">
+              <span class="faq-accordion__question">What benefits do I keep if I unsubscribe?</span>
+              <span class="faq-accordion__chevron" aria-hidden="true"></span>
+            </summary>
+            <div class="faq-accordion__panel">
+              <div class="faq-accordion__panel-inner">
+                <p class="faq-accordion__answer">You keep any cashback already earned, but no new Tabby Plus perks will apply — no auto-split or new cashback after cancellation.</p>
+              </div>
+            </div>
+          </details>
+          <details class="faq-accordion__item" name="faq">
+            <summary class="faq-accordion__summary">
+              <span class="faq-accordion__question">What happens after cancellation?</span>
+              <span class="faq-accordion__chevron" aria-hidden="true"></span>
+            </summary>
+            <div class="faq-accordion__panel">
+              <div class="faq-accordion__panel-inner">
+                <p class="faq-accordion__answer">Your Tabby Plus benefits stop immediately, and you will no longer be billed.</p>
+              </div>
+            </div>
+          </details>
+        </div>
+      </section>
+      </div>
+      <div class="island island--links">
+        <ul class="supercell-list supercell-list--links" role="list">
+          <li>
+            <button type="button" class="supercell supercell--action">
+              <span class="supercell__lead" aria-hidden="true">
+                <img src="./assets/omni/get-help.svg" alt="" width="40" height="40" loading="lazy" />
+              </span>
+              <span class="supercell__label">Get help</span>
+              <span class="supercell__chevron" aria-hidden="true">
+                <img src="./assets/omni/chevron-right.svg" alt="" width="20" height="20" />
+              </span>
+            </button>
+          </li>
+          <li>
+            <button type="button" class="supercell supercell--action">
+              <span class="supercell__lead" aria-hidden="true">
+                <img src="./assets/omni/terms-conditions.svg" alt="" width="40" height="40" loading="lazy" />
+              </span>
+              <span class="supercell__label">Terms &amp; conditions</span>
+              <span class="supercell__chevron" aria-hidden="true">
+                <img src="./assets/omni/chevron-right.svg" alt="" width="20" height="20" />
+              </span>
+            </button>
+          </li>
+        </ul>
+      </div>
+      </div>
+      </div>
+    </div>
+    <div class="sticky-bottom">
+      <div class="footer">
+        <button type="button" class="cta-btn">
+          Start free trial
+          <span>then AED 59/mo</span>
+        </button>
+        <div class="footnote">By continuing, you accept the <a href="#">Plus T&Cs</a></div>
+      </div>
+      <div class="home-indicator" aria-hidden="true"></div>
+    </div>
+    </div>
+
+    <div class="flow-page trial-success-page" id="trial-success-page" aria-hidden="true">
+      <div class="trial-success__confetti" aria-hidden="true">
+        <img src="./assets/omni/trial-success-confetti.gif" alt="" />
+      </div>
+      <canvas class="trial-success__confetti-canvas" id="trial-success-confetti-canvas" aria-hidden="true"></canvas>
+      <div class="trial-success__content">
+        <div class="trial-success__message">
+          <div class="trial-success__heading-block">
+            <img class="trial-success__illustration" src="./assets/omni/plus-activation-illustration.png" alt="" width="180" height="120" loading="lazy" />
+            <h1 class="trial-success__title">Your Tabby Plus trial is now active!</h1>
+            <p class="trial-success__sub">
+              <span>1-month free trial, then</span>
+              <span class="trial-success__aed">AED</span>
+              <span>59/mo</span>
+            </p>
+          </div>
+        </div>
+      </div>
+      <div class="flow-page__footer trial-success__footer">
+        <button type="button" class="flow-page__btn flow-page__btn--primary trial-success__continue" data-flow-target="subscription">Continue</button>
+        <div class="home-indicator" aria-hidden="true"></div>
+      </div>
+    </div>
+
+    <div class="subscription-page" id="subscription-page" aria-hidden="true">
+      <nav class="navbar" id="subscription-navbar" aria-label="Primary">
+        <div class="navbar__lead">
+          <button type="button" class="navbar__back" id="subscription-back" aria-label="Back">
+            <svg class="navbar__back-icon" width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">
+              <path d="M12 6.34326L7.34277 11.0005H21V13.0005H7.34277L12 17.6567L10.5859 19.0718L3.51465 12.0005L10.5859 4.9292L12 6.34326Z" fill="currentColor"/>
+            </svg>
+          </button>
+        </div>
+        <div class="navbar__logo">
+          <img class="navbar__badge" src="./assets/original-icons/plus-badge.svg" alt="PLUS" width="53" height="22" />
+        </div>
+        <div class="navbar__trail">
+          <button type="button" class="navbar__settings-btn" aria-label="Settings" data-sheet-target="subscription-actions">
+            <img src="./assets/omni/trail.svg" alt="" width="40" height="40" />
+          </button>
+        </div>
+      </nav>
+      <div class="subscription-scroll" id="subscription-scroll">
+        <div class="subscription-hero">
+          <div class="subscription-meter">
+            <button type="button" class="subscription-savings-label" data-sheet-target="lifetime-savings" aria-haspopup="dialog" aria-label="Your lifetime savings, more details">
+              <span>Your lifetime savings</span>
+              <span class="subscription-savings-label__chevron" aria-hidden="true">
+                <svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">
+                  <path d="M7.44043 13.5356L10.9766 10.0005L7.44043 6.46435L8.61914 5.28564L13.333 9.99951L8.61914 14.7144L7.44043 13.5356Z" fill="currentColor"/>
+                </svg>
+              </span>
+            </button>
+            <div class="subscription-counter" aria-label="Lifetime savings amount">
+              <img class="subscription-counter__currency" src="./assets/omni/subscription-dirham.svg" alt="" aria-hidden="true" />
+              <span class="subscription-counter__digit">0</span>
+              <span class="subscription-counter__digit">0</span>
+              <span class="subscription-counter__digit">0</span>
+              <span class="subscription-counter__digit">0</span>
+              <span class="subscription-counter__dot">.</span>
+              <span class="subscription-counter__digit">0</span>
+              <span class="subscription-counter__digit">0</span>
+            </div>
+            <p class="subscription-hero-meta" id="subscription-hero-meta">Active Subscription · Eligible all</p>
+          </div>
+        </div>
+        <div class="subscription-main" id="subscription-main">
+          <section class="maximise-card" aria-labelledby="maximise-title">
+            <h2 id="maximise-title" class="maximise-card__title">How to maximise your Plus benefits</h2>
+            <ul class="maximise-list" role="list">
+              <li>
+                <button type="button" class="maximise-item">
+                  <span class="maximise-item__lead" aria-hidden="true">
+                    <img class="maximise-item__img--dark" src="./assets/omni/maximise-dark.svg" alt="" loading="lazy" />
+                  </span>
+                  <span class="maximise-item__text">Get your free Tabby Card to split in 4 anywhere and earn 5% cashback</span>
+                  <span class="maximise-item__chevron" aria-hidden="true">
+                    <img src="./assets/omni/chevron-right.svg" alt="" width="20" height="20" />
+                  </span>
+                </button>
+              </li>
+              <li>
+                <button type="button" class="maximise-item">
+                  <span class="maximise-item__lead" aria-hidden="true">
+                    <img src="./assets/omni/maximise-green.svg" alt="" loading="lazy" />
+                  </span>
+                  <span class="maximise-item__text">Open your Cash account to get 3% cashback in UAE or abroad</span>
+                  <span class="maximise-item__chevron" aria-hidden="true">
+                    <img src="./assets/omni/chevron-right.svg" alt="" width="20" height="20" />
+                  </span>
+                </button>
+              </li>
+            </ul>
+          </section>
+
+          <section class="spotlight-card" aria-labelledby="spotlight-title">
+            <h2 id="spotlight-title" class="spotlight-card__title">Free split in 6</h2>
+            <p class="spotlight-card__text">Pay less monthly by spreading 1 purchase over 6 months — without the fee</p>
+            <img class="spotlight-card__icon" src="./assets/omni/split-in-7.svg" alt="" loading="lazy" />
+            <button type="button" class="spotlight-card__cta">Select purchase</button>
+          </section>
+
+          <div class="island island--benefits">
+            <section class="benefits" aria-labelledby="benefits-active-heading">
+              <h2 id="benefits-active-heading" class="benefits__title">Benefits</h2>
+              <ul class="supercell-list" role="list">
+                <li>
+                  <button type="button" class="supercell supercell--action" data-sheet-target="free-split-4">
+                    <span class="supercell__lead" aria-hidden="true">
+                      <img src="./assets/omni/icon-free-split-in-4.svg" alt="" width="40" height="40" loading="lazy" />
+                    </span>
+                    <span class="supercell__label">Free Split in 4 for all Tabby Card purchases</span>
+                    <span class="supercell__chevron" aria-hidden="true">
+                      <img src="./assets/omni/chevron-right.svg" alt="" width="20" height="20" />
+                    </span>
+                  </button>
+                </li>
+                <li>
+                  <button type="button" class="supercell supercell--action" data-sheet-target="free-split-6">
+                    <span class="supercell__lead" aria-hidden="true">
+                      <img src="./assets/omni/split-in-6-for-free.svg" alt="" width="40" height="40" loading="lazy" />
+                    </span>
+                    <span class="supercell__label">Split in 6 for free</span>
+                    <span class="supercell__chevron" aria-hidden="true">
+                      <img src="./assets/omni/chevron-right.svg" alt="" width="20" height="20" />
+                    </span>
+                  </button>
+                </li>
+                <li>
+                  <button type="button" class="supercell supercell--action" data-sheet-target="cashback-5">
+                    <span class="supercell__lead" aria-hidden="true">
+                      <img src="./assets/omni/up-to-5pct-cashback.svg" alt="" width="40" height="40" loading="lazy" />
+                    </span>
+                    <span class="supercell__label">Up to 5% cashback on card purchases</span>
+                    <span class="supercell__chevron" aria-hidden="true">
+                      <img src="./assets/omni/chevron-right.svg" alt="" width="20" height="20" />
+                    </span>
+                  </button>
+                </li>
+                <li>
+                  <button type="button" class="supercell supercell--action" data-sheet-target="cashback-3">
+                    <span class="supercell__lead" aria-hidden="true">
+                      <img src="./assets/omni/up-to-5pct-cashback.svg" alt="" width="40" height="40" loading="lazy" />
+                    </span>
+                    <span class="supercell__label">3% international cashback</span>
+                    <span class="supercell__chevron" aria-hidden="true">
+                      <img src="./assets/omni/chevron-right.svg" alt="" width="20" height="20" />
+                    </span>
+                  </button>
+                </li>
+                <li>
+                  <button type="button" class="supercell supercell--action" data-sheet-target="priority-support">
+                    <span class="supercell__lead" aria-hidden="true">
+                      <img src="./assets/omni/priority-support.svg" alt="" width="40" height="40" loading="lazy" />
+                    </span>
+                    <span class="supercell__label">Priority support</span>
+                    <span class="supercell__chevron" aria-hidden="true">
+                      <img src="./assets/omni/chevron-right.svg" alt="" width="20" height="20" />
+                    </span>
+                  </button>
+                </li>
+              </ul>
+            </section>
+          </div>
+
+          <div class="island">
+            <section class="section section--faq" aria-labelledby="faqs-active-heading">
+            <h2 id="faqs-active-heading" class="section__title">FAQs</h2>
+            <div class="faq-accordion" role="region" aria-label="Frequently asked questions">
+              <details class="faq-accordion__item" name="faq-active">
+                <summary class="faq-accordion__summary">
+                  <span class="faq-accordion__question">How do I cancel my trial?</span>
+                  <span class="faq-accordion__chevron" aria-hidden="true"></span>
+                </summary>
+                <div class="faq-accordion__panel">
+                  <div class="faq-accordion__panel-inner">
+                    <p class="faq-accordion__answer">Cancel anytime in the app. You won’t be charged if you cancel before trial ends.</p>
+                  </div>
+                </div>
+              </details>
+              <details class="faq-accordion__item" name="faq-active">
+                <summary class="faq-accordion__summary">
+                  <span class="faq-accordion__question">What benefits do I keep if I unsubscribe?</span>
+                  <span class="faq-accordion__chevron" aria-hidden="true"></span>
+                </summary>
+                <div class="faq-accordion__panel">
+                  <div class="faq-accordion__panel-inner">
+                    <p class="faq-accordion__answer">You keep cashback already earned, but no new Plus perks are applied after cancellation.</p>
+                  </div>
+                </div>
+              </details>
+              <details class="faq-accordion__item" name="faq-active">
+                <summary class="faq-accordion__summary">
+                  <span class="faq-accordion__question">What happens after cancellation?</span>
+                  <span class="faq-accordion__chevron" aria-hidden="true"></span>
+                </summary>
+                <div class="faq-accordion__panel">
+                  <div class="faq-accordion__panel-inner">
+                    <p class="faq-accordion__answer">Your Plus benefits stop and no further monthly fee is charged.</p>
+                  </div>
+                </div>
+              </details>
+            </div>
+            </section>
+          </div>
+
+          <div class="island island--links">
+            <ul class="supercell-list supercell-list--links" role="list">
+              <li>
+                <button type="button" class="supercell supercell--action">
+                  <span class="supercell__lead" aria-hidden="true">
+                    <img src="./assets/omni/get-help.svg" alt="" width="40" height="40" loading="lazy" />
+                  </span>
+                  <span class="supercell__label">Get help</span>
+                  <span class="supercell__chevron" aria-hidden="true">
+                    <img src="./assets/omni/chevron-right.svg" alt="" width="20" height="20" />
+                  </span>
+                </button>
+              </li>
+              <li>
+                <button type="button" class="supercell supercell--action">
+                  <span class="supercell__lead" aria-hidden="true">
+                    <img src="./assets/omni/terms-conditions.svg" alt="" width="40" height="40" loading="lazy" />
+                  </span>
+                  <span class="supercell__label">Terms &amp; conditions</span>
+                  <span class="supercell__chevron" aria-hidden="true">
+                    <img src="./assets/omni/chevron-right.svg" alt="" width="20" height="20" />
+                  </span>
+                </button>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+      <div class="subscription-home-area">
+        <div class="subscription-home-indicator" aria-hidden="true"></div>
+      </div>
+    </div>
+
+    <div class="sheet-overlay" id="sheet-overlay" aria-hidden="true">
+      <button type="button" class="sheet-overlay__backdrop" id="sheet-backdrop" aria-label="Close"></button>
+      <div class="sheet-overlay__viewport">
+        <section class="sheet-overlay__panel" role="dialog" aria-modal="true" aria-labelledby="sheet-title">
+          <div class="sheet-overlay__handlebar" aria-hidden="true">
+            <div class="sheet-overlay__handle"></div>
+          </div>
+          <div id="sheet-content"></div>
+        </section>
+      </div>
+    </div>
+
+    <template class="sheet-template" data-sheet-id="free-split-4">
+      <div class="sheet-layout">
+        <div class="sheet-cover" aria-hidden="true">
+          <img src="./assets/omni/sheet-free-split4-cover.svg" alt="" />
+        </div>
+        <div class="sheet-surface">
+          <div class="sheet-header">
+            <h3 class="sheet-header__title" id="sheet-title">Free Split in 4 for all Tabby Card purchases</h3>
+          </div>
+          <div class="sheet-body">
+            <p>Get more flexibility with your payments. Split any Tabby Card purchase from any store in 4 for free.</p>
+          </div>
+          <div class="sheet-toolbar">
+            <div class="sheet-toolbar__gradient" aria-hidden="true"></div>
+            <div class="sheet-toolbar__buttons">
+              <button type="button" class="sheet-cta" data-subscription-cta>
+                <span class="sheet-cta__label">Start free trial</span>
+                <span class="sheet-cta__sub">then AED 59/mo</span>
+              </button>
+            </div>
+            <div class="sheet-toolbar__extra">
+              <p class="sheet-legal">By continuing, you accept the <strong>Plus T&amp;Cs</strong></p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </template>
+    <template class="sheet-template" data-sheet-id="free-split-6">
+      <div class="sheet-layout">
+        <div class="sheet-cover" aria-hidden="true">
+          <img src="./assets/omni/sheet-free-split6-cover.svg" alt="" />
+        </div>
+        <div class="sheet-surface">
+          <div class="sheet-header">
+            <h3 class="sheet-header__title" id="sheet-title">Split in 6 for free</h3>
+          </div>
+          <div class="sheet-body">
+            <p>Spread payments in 6 installments with no extra fees during your Plus trial period.</p>
+          </div>
+          <div class="sheet-toolbar">
+            <div class="sheet-toolbar__gradient" aria-hidden="true"></div>
+            <div class="sheet-toolbar__buttons">
+              <button type="button" class="sheet-cta" data-subscription-cta>
+                <span class="sheet-cta__label">Start free trial</span>
+                <span class="sheet-cta__sub">then AED 59/mo</span>
+              </button>
+            </div>
+            <div class="sheet-toolbar__extra">
+              <p class="sheet-legal">By continuing, you accept the <strong>Plus T&amp;Cs</strong></p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </template>
+    <template class="sheet-template" data-sheet-id="cashback-5">
+      <div class="sheet-layout">
+        <div class="sheet-cover" aria-hidden="true">
+          <img src="./assets/omni/sheet-cashback5-cover.svg" alt="" />
+        </div>
+        <div class="sheet-surface">
+          <div class="sheet-header">
+            <h3 class="sheet-header__title" id="sheet-title">Up to 5% cashback on card purchases</h3>
+          </div>
+          <div class="sheet-body">
+            <p>Earn up to 5% cashback on eligible Tabby Card purchases and get more value from everyday spending.</p>
+          </div>
+          <div class="sheet-toolbar">
+            <div class="sheet-toolbar__gradient" aria-hidden="true"></div>
+            <div class="sheet-toolbar__buttons">
+              <button type="button" class="sheet-cta" data-subscription-cta>
+                <span class="sheet-cta__label">Start free trial</span>
+                <span class="sheet-cta__sub">then AED 59/mo</span>
+              </button>
+            </div>
+            <div class="sheet-toolbar__extra">
+              <p class="sheet-legal">By continuing, you accept the <strong>Plus T&amp;Cs</strong></p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </template>
+    <template class="sheet-template" data-sheet-id="cashback-3">
+      <div class="sheet-layout">
+        <div class="sheet-cover" aria-hidden="true">
+          <img src="./assets/omni/sheet-cashback3-international-cover.png" alt="" />
+        </div>
+        <div class="sheet-surface">
+          <div class="sheet-header">
+            <h3 class="sheet-header__title" id="sheet-title">3% international cashback</h3>
+          </div>
+          <div class="sheet-body">
+            <p>Get 3% cashback when using your Tabby Card for international purchases, wherever you shop.</p>
+          </div>
+          <div class="sheet-toolbar">
+            <div class="sheet-toolbar__gradient" aria-hidden="true"></div>
+            <div class="sheet-toolbar__buttons">
+              <button type="button" class="sheet-cta" data-subscription-cta>
+                <span class="sheet-cta__label">Start free trial</span>
+                <span class="sheet-cta__sub">then AED 59/mo</span>
+              </button>
+            </div>
+            <div class="sheet-toolbar__extra">
+              <p class="sheet-legal">By continuing, you accept the <strong>Plus T&amp;Cs</strong></p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </template>
+    <template class="sheet-template" data-sheet-id="priority-support">
+      <div class="sheet-layout">
+        <div class="sheet-cover" aria-hidden="true">
+          <img src="./assets/omni/sheet-priority-support-cover.svg" alt="" />
+        </div>
+        <div class="sheet-surface">
+          <div class="sheet-header">
+            <h3 class="sheet-header__title" id="sheet-title">Priority support</h3>
+          </div>
+          <div class="sheet-body">
+            <p>Get faster help from our team with priority support as part of your Plus benefits.</p>
+          </div>
+          <div class="sheet-toolbar">
+            <div class="sheet-toolbar__gradient" aria-hidden="true"></div>
+            <div class="sheet-toolbar__buttons">
+              <button type="button" class="sheet-cta" data-subscription-cta>
+                <span class="sheet-cta__label">Start free trial</span>
+                <span class="sheet-cta__sub">then AED 59/mo</span>
+              </button>
+            </div>
+            <div class="sheet-toolbar__extra">
+              <p class="sheet-legal">By continuing, you accept the <strong>Plus T&amp;Cs</strong></p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </template>
+    <template class="sheet-template" data-sheet-id="lifetime-savings">
+      <div class="sheet-layout">
+        <div class="sheet-cover" aria-hidden="true">
+          <img src="./assets/omni/sheet-lifetime-savings-cover.png" alt="" />
+        </div>
+        <div class="sheet-surface">
+          <div class="sheet-header">
+            <h3 class="sheet-header__title" id="sheet-title">Your lifetime savings</h3>
+          </div>
+          <div class="sheet-body sheet-body--lifetime">
+            <p>We’ve added your cashback earnings and your Split in 4 and Split in 6 savings together.</p>
+            <p>So far, you’ve earned AED 135 cashback and saved AED 900 on splitting fees. Keep up the great work!</p>
+          </div>
+          <div class="sheet-toolbar">
+            <div class="sheet-toolbar__gradient" aria-hidden="true"></div>
+            <div class="sheet-toolbar__buttons sheet-toolbar__buttons--sheet-end">
+              <button type="button" class="sheet-cta sheet-cta--single" data-sheet-close>
+                <span class="sheet-cta__label">View Cashback</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </template>
+    <template class="sheet-template" data-sheet-id="add-payment-method">
+      <div class="payment-method-sheet">
+        <h2 class="payment-method-sheet__title" id="sheet-title">Add new payment method</h2>
+        <p class="payment-method-sheet__intro">To verify your payment method, we’ll charge and refund you AED 1.00</p>
+        <ul class="payment-method-sheet__list" role="list">
+          <li>
+            <button type="button" class="payment-method-sheet__row" data-payment-apple-pay>
+              <span class="payment-method-sheet__lead payment-method-sheet__lead--mark" aria-hidden="true">
+                <img src="./assets/omni/apple-pay-mark.svg" alt="" width="36" height="24" loading="lazy" />
+              </span>
+              <span class="payment-method-sheet__label">Add card using Apple Pay</span>
+              <img class="payment-method-sheet__chevron" src="./assets/omni/chevron-right.svg" alt="" width="20" height="20" />
+            </button>
+          </li>
+          <li>
+            <button type="button" class="payment-method-sheet__row" data-open-tokenization>
+              <span class="payment-method-sheet__lead payment-method-sheet__lead--asset" aria-hidden="true">
+                <img src="./assets/omni/icon-spot-plus.svg" alt="" width="40" height="40" loading="lazy" />
+              </span>
+              <span class="payment-method-sheet__label">Add new card</span>
+              <img class="payment-method-sheet__chevron" src="./assets/omni/chevron-right.svg" alt="" width="20" height="20" />
+            </button>
+          </li>
+        </ul>
+      </div>
+    </template>
+    <template class="sheet-template" data-sheet-id="payment-tokenization">
+      <div class="payment-token-sheet">
+        <div class="payment-tokenization__handle" aria-hidden="true"></div>
+        <header class="payment-tokenization__nav">
+          <button type="button" class="payment-sheet-nav__btn" id="tokenization-back" aria-label="Back">
+            <img src="./assets/omni/sheet-nav-back.svg" alt="" width="48" height="48" loading="lazy" />
+          </button>
+          <h2 id="sheet-title">Add new card</h2>
+          <span class="payment-sheet-nav__spacer" aria-hidden="true"></span>
+        </header>
+        <div class="payment-tokenization__body">
+          <div class="token-field token-field--float" id="token-field-card" data-token-field="card">
+            <div class="token-field__control">
+              <input type="tel" id="card-number" name="cc-number" inputmode="numeric" autocomplete="cc-number" maxlength="19" placeholder=" " />
+              <label class="token-field__float-label" for="card-number">Card number</label>
+              <div class="token-field__brand" id="card-brand-slot" aria-hidden="true">
+                <img id="card-brand-img" src="" alt="" />
+              </div>
+            </div>
+          </div>
+          <div class="token-row">
+            <div class="token-field token-field--float" id="token-field-expiry" data-token-field="expiry">
+              <div class="token-field__control">
+                <input type="tel" id="card-expiry" inputmode="numeric" maxlength="5" placeholder=" " autocomplete="cc-exp" />
+                <label class="token-field__float-label" for="card-expiry">Expiry date</label>
+              </div>
+            </div>
+            <div class="token-field token-field--float" id="token-field-cvv" data-token-field="cvv">
+              <div class="token-field__control token-field__control--cvv">
+                <input type="password" id="card-cvv" inputmode="numeric" maxlength="3" placeholder=" " autocomplete="cc-csc" />
+                <label class="token-field__float-label" for="card-cvv">CVV</label>
+                <span class="token-field__cvv-hint" aria-hidden="true">
+                  <img src="./assets/omni/card-cvv-hint.svg" alt="" width="24" height="24" loading="lazy" />
+                </span>
+              </div>
+            </div>
+          </div>
+          <div class="token-networks" aria-hidden="true">
+            <img src="./assets/omni/Visa.svg" alt="" width="36" height="24" loading="lazy" />
+            <img src="./assets/omni/MasterCard.svg" alt="" width="36" height="24" loading="lazy" />
+          </div>
+          <button type="button" class="sheet-cta sheet-cta--single" id="tokenization-submit">
+            <span class="sheet-cta__label">Add new card</span>
+          </button>
+        </div>
+        <div class="token-keypad-wrap">
+          <div class="token-keypad" id="token-keypad" aria-label="Numeric keypad">
+          <div class="token-keypad__grid" role="group">
+            <button type="button" class="token-keypad__key token-keypad__key--no-sub" data-digit="1"><span class="token-keypad__digit">1</span></button>
+            <button type="button" class="token-keypad__key" data-digit="2"><span class="token-keypad__digit">2</span><span class="token-keypad__letters">ABC</span></button>
+            <button type="button" class="token-keypad__key" data-digit="3"><span class="token-keypad__digit">3</span><span class="token-keypad__letters">DEF</span></button>
+            <button type="button" class="token-keypad__key" data-digit="4"><span class="token-keypad__digit">4</span><span class="token-keypad__letters">GHI</span></button>
+            <button type="button" class="token-keypad__key" data-digit="5"><span class="token-keypad__digit">5</span><span class="token-keypad__letters">JKL</span></button>
+            <button type="button" class="token-keypad__key" data-digit="6"><span class="token-keypad__digit">6</span><span class="token-keypad__letters">MNO</span></button>
+            <button type="button" class="token-keypad__key" data-digit="7"><span class="token-keypad__digit">7</span><span class="token-keypad__letters">PQRS</span></button>
+            <button type="button" class="token-keypad__key" data-digit="8"><span class="token-keypad__digit">8</span><span class="token-keypad__letters">TUV</span></button>
+            <button type="button" class="token-keypad__key" data-digit="9"><span class="token-keypad__digit">9</span><span class="token-keypad__letters">WXYZ</span></button>
+            <div class="token-keypad__spacer" aria-hidden="true"></div>
+            <button type="button" class="token-keypad__key token-keypad__key--no-sub" data-digit="0"><span class="token-keypad__digit">0</span></button>
+            <button type="button" class="token-keypad__key token-keypad__key--back" data-keypad-action="back" aria-label="Delete">
+              <svg width="28" height="21" viewBox="0 0 28 21" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">
+                <path d="M9.2 3.25H22.75C23.44 3.25 24 3.81 24 4.5v12c0 .69-.56 1.25-1.25 1.25H9.2a1.25 1.25 0 01-1-.5l-4.35-5.5a1.25 1.25 0 010-1.5l4.35-5.5a1.25 1.25 0 011-.5z" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round"/>
+                <path d="M17.2 7.35l-4.4 4.4M12.8 7.35l4.4 4.4" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/>
+              </svg>
+            </button>
+          </div>
+          <div class="token-keypad__foot" aria-hidden="true">
+            <div class="token-keypad__foot-spacer"></div>
+            <div class="token-keypad__home-indicator"></div>
+          </div>
+          </div>
+        </div>
+      </div>
+    </template>
+    <template class="sheet-template" data-sheet-id="method-added">
+      <div class="method-added-sheet">
+        <div class="method-added-sheet__hero" id="method-added-hero">
+          <img data-brand-hero-visa src="./assets/omni/method-added-visa.svg" alt="" style="display: none;" />
+          <img data-brand-hero-mc src="./assets/omni/method-added-master.svg" alt="" style="display: none;" />
+        </div>
+        <h3 class="method-added-sheet__title" id="sheet-title" data-method-added-title>Debit •••• 0000 added</h3>
+        <p class="method-added-sheet__body">This card will be used for all future (Tabby Card) payments. You can change the preferred payment method for other Tabby products from your Profile.</p>
+        <div class="sheet-toolbar">
+          <div class="sheet-toolbar__buttons sheet-toolbar__buttons--sheet-end">
+            <button type="button" class="sheet-cta sheet-cta--single" data-payment-complete>
+              <span class="sheet-cta__label">Got it</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </template>
+    <template class="sheet-template" data-sheet-id="subscription-actions">
+      <div class="action-sheet">
+        <div class="action-sheet__handle" aria-hidden="true"></div>
+        <ul class="action-sheet__list" role="list">
+          <li>
+            <button type="button" class="action-sheet__row">
+              <span class="action-sheet__icon-wrap" aria-hidden="true">
+                <img src="./assets/omni/icon-card.svg" alt="" width="40" height="40" />
+              </span>
+              <span>
+                <p class="action-sheet__title">Change payment method</p>
+                <p class="action-sheet__sub">Next payment AED 59 on Mar 20</p>
+              </span>
+              <img class="action-sheet__chevron" src="./assets/omni/chevron-right.svg" alt="" />
+            </button>
+          </li>
+          <li>
+            <button type="button" class="action-sheet__row" data-flow-target="cancel-warning">
+              <span class="action-sheet__icon-wrap" aria-hidden="true">
+                <img src="./assets/omni/icon-cancel.svg" alt="" width="40" height="40" />
+              </span>
+              <span>
+                <p class="action-sheet__title">Cancel subscription</p>
+              </span>
+              <img class="action-sheet__chevron" src="./assets/omni/chevron-right.svg" alt="" />
+            </button>
+          </li>
+        </ul>
+      </div>
+    </template>
+
+    <div class="flow-page flow-page--warning" id="cancel-warning-page" aria-hidden="true">
+      <nav class="navbar" aria-label="Primary">
+        <div class="navbar__lead" aria-hidden="true"></div>
+        <div class="navbar__logo"></div>
+        <div class="navbar__trail">
+          <button type="button" class="navbar__back" data-flow-back="subscription" aria-label="Close">
+            <svg class="navbar__back-icon" width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">
+              <path d="M6 6L18 18M18 6L6 18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+            </svg>
+          </button>
+        </div>
+      </nav>
+      <div class="flow-warning__content">
+        <img class="flow-warning__hero" src="./assets/omni/cancel-warning-hero.svg" alt="" />
+        <div class="flow-warning__title-wrap">
+          <h2 class="flow-page__title">Cancelling Plus means a larger payment now</h2>
+          <p class="flow-page__text">You will no longer be able to split any purchase in 4 and 6 for free</p>
+        </div>
+        <div class="flow-warning__list">
+          <div class="flow-warning__item">
+            <span class="flow-warning__lead" aria-hidden="true">
+              <img src="./assets/omni/cancel-warning-lead1.svg" alt="" />
+            </span>
+            <p class="flow-warning__item-text">You’ll need to pay your outstanding Tabby Card Split in 4 purchases — AED 839.00.</p>
+          </div>
+          <div class="flow-warning__item">
+            <span class="flow-warning__lead" aria-hidden="true">
+              <img src="./assets/omni/cancel-warning-lead2.svg" alt="" />
+            </span>
+            <p class="flow-warning__item-text">You will lose your free Split in 6 at [Merchant] and fees will apply. Your monthly instalment amount will increase from AED 100 to AED 120.00.</p>
+          </div>
+        </div>
+      </div>
+      <div class="flow-page__footer">
+        <button type="button" class="flow-page__btn flow-page__btn--primary" data-flow-target="subscription">Continue with Plus</button>
+        <button type="button" class="flow-page__btn flow-page__btn--secondary" data-flow-target="cancelled">Continue to cancellation</button>
+        <div class="home-indicator" aria-hidden="true"></div>
+      </div>
+    </div>
+
+    <div class="flow-page" id="cancelled-page" aria-hidden="true">
+      <nav class="navbar" aria-label="Primary" aria-hidden="true">
+        <div class="navbar__lead"></div>
+        <div class="navbar__logo"></div>
+        <div class="navbar__trail"></div>
+      </nav>
+      <div class="flow-cancelled__content">
+        <div class="flow-cancelled__heading">
+          <img class="flow-cancelled__hero" src="./assets/omni/plus-cancelled-hero.svg" alt="" />
+          <h2 class="flow-page__title">Plus plan cancelled</h2>
+        </div>
+        <div class="flow-cancelled__body">
+          <p class="flow-page__text">Remember: you can still shop anywhere for free and pay over time.</p>
+        </div>
+      </div>
+      <div class="flow-page__footer">
+        <button type="button" class="flow-page__btn flow-page__btn--primary" data-flow-target="landing">Done</button>
+        <div class="home-indicator" aria-hidden="true"></div>
+      </div>
+    </div>
+  </div>
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
+  <script>
+    (function () {
+      var scrollView = document.getElementById('scroll-view');
+      var sheetCard = document.getElementById('sheet-card');
+      var navbar = document.getElementById('navbar');
+      var device = document.querySelector('.device');
+      var overlay = document.getElementById('sheet-overlay');
+      var backdrop = document.getElementById('sheet-backdrop');
+      var sheetContent = document.getElementById('sheet-content');
+      var trialSuccessPage = document.getElementById('trial-success-page');
+      var subscriptionPage = document.getElementById('subscription-page');
+      var cancelWarningPage = document.getElementById('cancel-warning-page');
+      var cancelledPage = document.getElementById('cancelled-page');
+      var backButton = document.getElementById('subscription-back');
+      var subscriptionScrollEl = document.getElementById('subscription-scroll');
+      var subscriptionNavbar = document.getElementById('subscription-navbar');
+      var subscriptionMainEl = document.getElementById('subscription-main');
+      if (!scrollView || !sheetCard || !navbar || !device || !overlay || !backdrop || !sheetContent || !trialSuccessPage || !subscriptionPage || !cancelWarningPage || !cancelledPage || !backButton) return;
+
+      function applyDocumentScrollLock() {
+        var gap = window.innerWidth - document.documentElement.clientWidth;
+        document.documentElement.style.setProperty('--doc-scrollbar-gap', gap > 0 ? gap + 'px' : '0px');
+        document.body.classList.add('sheet-doc-scroll-lock');
+      }
+
+      function removeDocumentScrollLock() {
+        document.body.classList.remove('sheet-doc-scroll-lock');
+        document.documentElement.style.removeProperty('--doc-scrollbar-gap');
+      }
+
+      var SCREEN_KEY = 'plus-screen';
+      var TRIAL_UNTIL_KEY = 'plus-trial-free-until';
+      var HAS_PAYMENT_KEY = 'plus-has-payment-method';
+
+      function updateSubscriptionHeroMeta() {
+        var el = document.getElementById('subscription-hero-meta');
+        if (!el) return;
+        el.textContent = 'Active Subscription · Eligible all';
+      }
+
+      function applyActiveSubscriptionBenefitSheet() {
+        var root = document.getElementById('sheet-content');
+        if (!root || !subscriptionPage.classList.contains('is-active')) return;
+        var meta = document.getElementById('subscription-hero-meta');
+        if (!meta || meta.textContent.indexOf('Active Subscription') === -1) return;
+        var cta = root.querySelector('.sheet-toolbar .sheet-cta[data-subscription-cta]');
+        if (!cta) return;
+        cta.removeAttribute('data-subscription-cta');
+        cta.setAttribute('data-sheet-close', '');
+        cta.classList.add('sheet-cta--single');
+        var label = cta.querySelector('.sheet-cta__label');
+        if (label) label.textContent = 'Got it';
+        var sub = cta.querySelector('.sheet-cta__sub');
+        if (sub) sub.remove();
+        var extra = root.querySelector('.sheet-toolbar__extra');
+        if (extra) extra.setAttribute('hidden', '');
+        var buttonsRow = cta.closest('.sheet-toolbar__buttons');
+        if (buttonsRow) buttonsRow.classList.add('sheet-toolbar__buttons--sheet-end');
+      }
+
+      var navH = 64;
+      try {
+        var raw = getComputedStyle(document.documentElement).getPropertyValue('--header-nav-height').trim();
+        var parsed = parseFloat(raw);
+        if (!isNaN(parsed)) navH = parsed;
+      } catch (e) {}
+
+      function updateNavOnScroll() {
+        var sv = scrollView.getBoundingClientRect();
+        var cardTop = sheetCard.getBoundingClientRect().top;
+        var navbarBottom = sv.top + navH;
+        navbar.classList.toggle('navbar--on-light', cardTop <= navbarBottom);
+      }
+
+      function updateSubscriptionNavOnScroll() {
+        if (!subscriptionScrollEl || !subscriptionNavbar) return;
+        if (!subscriptionPage.classList.contains('is-active')) {
+          subscriptionNavbar.classList.remove('navbar--on-light');
+          return;
+        }
+        if (!subscriptionMainEl) return;
+        var sv = subscriptionScrollEl.getBoundingClientRect();
+        var mainTop = subscriptionMainEl.getBoundingClientRect().top;
+        var navbarBottom = sv.top + navH;
+        subscriptionNavbar.classList.toggle('navbar--on-light', mainTop <= navbarBottom);
+      }
+
+      scrollView.addEventListener('scroll', updateNavOnScroll, { passive: true });
+      window.addEventListener('resize', updateNavOnScroll, { passive: true });
+      if (typeof ResizeObserver !== 'undefined') {
+        new ResizeObserver(updateNavOnScroll).observe(scrollView);
+      }
+      updateNavOnScroll();
+
+      if (subscriptionScrollEl) {
+        subscriptionScrollEl.addEventListener('scroll', updateSubscriptionNavOnScroll, { passive: true });
+        window.addEventListener('resize', updateSubscriptionNavOnScroll, { passive: true });
+        if (typeof ResizeObserver !== 'undefined') {
+          new ResizeObserver(updateSubscriptionNavOnScroll).observe(subscriptionScrollEl);
+        }
+      }
+
+      var activeTrigger = null;
+      var trialConfettiEndTimer = null;
+
+      function resetTrialConfettiUi() {
+        if (trialConfettiEndTimer) {
+          clearTimeout(trialConfettiEndTimer);
+          trialConfettiEndTimer = null;
+        }
+        var gifWrap = trialSuccessPage.querySelector('.trial-success__confetti');
+        if (gifWrap) gifWrap.classList.remove('trial-success__confetti--done');
+        var c = document.getElementById('trial-success-confetti-canvas');
+        if (c) {
+          c.classList.remove('trial-success__confetti-canvas--done');
+          c.style.visibility = '';
+          var ctx = c.getContext('2d');
+          if (ctx && c.width > 0 && c.height > 0) ctx.clearRect(0, 0, c.width, c.height);
+        }
+      }
+
+      function scheduleTrialConfettiStop() {
+        trialConfettiEndTimer = setTimeout(function () {
+          trialConfettiEndTimer = null;
+          if (!trialSuccessPage.classList.contains('is-active')) return;
+          var gifWrap = trialSuccessPage.querySelector('.trial-success__confetti');
+          if (gifWrap) gifWrap.classList.add('trial-success__confetti--done');
+          var c = document.getElementById('trial-success-confetti-canvas');
+          if (c) c.classList.add('trial-success__confetti-canvas--done');
+        }, 2000);
+      }
+
+      function closeSheet() {
+        overlay.classList.remove('is-open');
+        overlay.setAttribute('aria-hidden', 'true');
+        removeDocumentScrollLock();
+        if (device) device.classList.remove('device--sheet-open');
+        var panel = document.querySelector('.sheet-overlay__panel');
+        if (panel) {
+          panel.classList.remove(
+            'sheet-overlay__panel--add-payment',
+            'sheet-overlay__panel--tokenization',
+            'sheet-overlay__panel--dismiss-payment'
+          );
+        }
+        if (activeTrigger && typeof activeTrigger.focus === 'function') activeTrigger.focus();
+      }
+
+      function fireTrialConfetti() {
+        if (typeof confetti !== 'function') return;
+        var page = trialSuccessPage;
+        var canvas = document.getElementById('trial-success-confetti-canvas');
+        if (!page || !canvas || !page.classList.contains('is-active')) return;
+        var r = page.getBoundingClientRect();
+        var w = Math.max(1, Math.round(r.width));
+        var h = Math.max(1, Math.round(r.height));
+        canvas.width = w;
+        canvas.height = h;
+        canvas.classList.remove('trial-success__confetti-canvas--done');
+        canvas.style.visibility = '';
+        var myConfetti = confetti.create(canvas, { resize: false, useWorker: false });
+        /* ~2000ms at 60fps */
+        var tickDuration = Math.round((2000 / 1000) * 60);
+        myConfetti({
+          particleCount: 130,
+          spread: 70,
+          startVelocity: 32,
+          gravity: 1.05,
+          decay: 0.92,
+          origin: { x: 0.5, y: 0.32 },
+          ticks: tickDuration,
+          colors: ['#26C6DA', '#42A5F5', '#FFCA28', '#F48FB1', '#AB47BC', '#7E57C2'],
+        });
+      }
+
+      function setScreen(screen) {
+        closeSheet();
+        if (subscriptionNavbar) subscriptionNavbar.classList.remove('navbar--on-light');
+        resetTrialConfettiUi();
+        trialSuccessPage.classList.remove('is-active');
+        subscriptionPage.classList.remove('is-active');
+        cancelWarningPage.classList.remove('is-active');
+        cancelledPage.classList.remove('is-active');
+        trialSuccessPage.setAttribute('aria-hidden', 'true');
+        subscriptionPage.setAttribute('aria-hidden', 'true');
+        cancelWarningPage.setAttribute('aria-hidden', 'true');
+        cancelledPage.setAttribute('aria-hidden', 'true');
+        device.classList.remove('has-subscription-open');
+
+        if (screen === 'trial-success') {
+          trialSuccessPage.classList.add('is-active');
+          trialSuccessPage.setAttribute('aria-hidden', 'false');
+          device.classList.add('has-subscription-open');
+          navbar.classList.remove('navbar--on-light');
+          requestAnimationFrame(function () {
+            requestAnimationFrame(function () {
+              fireTrialConfetti();
+              scheduleTrialConfettiStop();
+            });
+          });
+        } else if (screen === 'subscription') {
+          subscriptionPage.classList.add('is-active');
+          subscriptionPage.setAttribute('aria-hidden', 'false');
+          device.classList.add('has-subscription-open');
+          navbar.classList.remove('navbar--on-light');
+          updateSubscriptionHeroMeta();
+          requestAnimationFrame(function () {
+            updateSubscriptionNavOnScroll();
+          });
+        } else if (screen === 'cancel-warning') {
+          cancelWarningPage.classList.add('is-active');
+          cancelWarningPage.setAttribute('aria-hidden', 'false');
+          device.classList.add('has-subscription-open');
+          navbar.classList.remove('navbar--on-light');
+        } else if (screen === 'cancelled') {
+          cancelledPage.classList.add('is-active');
+          cancelledPage.setAttribute('aria-hidden', 'false');
+          device.classList.add('has-subscription-open');
+          navbar.classList.remove('navbar--on-light');
+          /* Demo: после отмены следующая активация снова ведёт в сценарий добавления карты (без шита на этом экране). */
+          try {
+            localStorage.removeItem(HAS_PAYMENT_KEY);
+          } catch (err) {}
+        } else {
+          updateNavOnScroll();
+          try {
+            localStorage.removeItem(TRIAL_UNTIL_KEY);
+          } catch (e) {}
+        }
+
+        try {
+          if (screen !== 'trial-success') {
+            localStorage.setItem(SCREEN_KEY, screen);
+          }
+        } catch (e) {}
+      }
+
+      function getCardDigitsRaw() {
+        var el = document.getElementById('card-number');
+        return el ? el.value.replace(/\D/g, '') : '';
+      }
+
+      function detectCardBrand(digits) {
+        if (!digits || digits.length < 1) return null;
+        if (digits[0] === '4') return 'visa';
+        var f2 = parseInt(digits.slice(0, 2), 10);
+        if (f2 >= 51 && f2 <= 55) return 'mastercard';
+        if (digits.length >= 6) {
+          var six = parseInt(digits.slice(0, 6), 10);
+          if (six >= 222100 && six <= 272099) return 'mastercard';
+        }
+        return null;
+      }
+
+      function updateCardBrandIcon() {
+        var digits = getCardDigitsRaw();
+        var brand = detectCardBrand(digits);
+        var slot = document.getElementById('card-brand-slot');
+        var img = document.getElementById('card-brand-img');
+        if (!slot || !img) return;
+        if (brand === 'visa') {
+          img.src = './assets/omni/visa-mark.svg';
+          img.alt = 'Visa';
+          slot.classList.add('is-visible');
+        } else if (brand === 'mastercard') {
+          img.src = './assets/omni/mastercard-mark.svg';
+          img.alt = 'Mastercard';
+          slot.classList.add('is-visible');
+        } else {
+          img.removeAttribute('src');
+          slot.classList.remove('is-visible');
+        }
+      }
+
+      function formatCardNumberInput(value) {
+        var d = value.replace(/\D/g, '').slice(0, 16);
+        var parts = d.match(/.{1,4}/g);
+        return parts ? parts.join(' ') : '';
+      }
+
+      function formatExpiryInput(value) {
+        var d = value.replace(/\D/g, '').slice(0, 4);
+        if (d.length <= 2) return d;
+        return d.slice(0, 2) + '/' + d.slice(2);
+      }
+
+      function isExpiryValid(s) {
+        var m = /^(\d{2})\/(\d{2})$/.exec(s);
+        if (!m) return false;
+        var month = parseInt(m[1], 10);
+        if (month < 1 || month > 12) return false;
+        var yy = parseInt(m[2], 10);
+        var now = new Date();
+        var cY = now.getFullYear() % 100;
+        var cM = now.getMonth() + 1;
+        if (yy < cY) return false;
+        if (yy === cY && month < cM) return false;
+        if (yy > cY + 25) return false;
+        return true;
+      }
+
+      var tokenActiveField = 'card';
+      var sheetDismissLock = false;
+
+      /** Touch phones / tablets: system numeric keyboard. Fine pointer (typical desktop): custom iOS-style keypad. */
+      function useNativeTokenKeyboard() {
+        try {
+          if (window.matchMedia('(pointer: coarse)').matches) return true;
+        } catch (e) {}
+        return false;
+      }
+
+      function setTokenActiveField(which) {
+        tokenActiveField = which;
+        document.querySelectorAll('.token-field').forEach(function (el) {
+          el.classList.remove('token-field--focused');
+        });
+        var map = { card: 'token-field-card', expiry: 'token-field-expiry', cvv: 'token-field-cvv' };
+        var wrap = document.getElementById(map[which]);
+        if (wrap) wrap.classList.add('token-field--focused');
+      }
+
+      function tokenKeypadAppend(digit) {
+        if (tokenActiveField === 'card') {
+          var el = document.getElementById('card-number');
+          var next = formatCardNumberInput(el.value + digit);
+          el.value = next;
+          el.dispatchEvent(new Event('input', { bubbles: true }));
+          updateCardBrandIcon();
+          return;
+        }
+        if (tokenActiveField === 'expiry') {
+          var ex = document.getElementById('card-expiry');
+          var raw = (ex.value.replace(/\D/g, '') + digit).slice(0, 4);
+          ex.value = formatExpiryInput(raw);
+          ex.dispatchEvent(new Event('input', { bubbles: true }));
+          return;
+        }
+        if (tokenActiveField === 'cvv') {
+          var cv = document.getElementById('card-cvv');
+          cv.value = (cv.value + digit).replace(/\D/g, '').slice(0, 3);
+          cv.dispatchEvent(new Event('input', { bubbles: true }));
+        }
+      }
+
+      function tokenKeypadBackspace() {
+        if (tokenActiveField === 'card') {
+          var el = document.getElementById('card-number');
+          var d = el.value.replace(/\D/g, '');
+          el.value = formatCardNumberInput(d.slice(0, -1));
+          el.dispatchEvent(new Event('input', { bubbles: true }));
+          updateCardBrandIcon();
+          return;
+        }
+        if (tokenActiveField === 'expiry') {
+          var ex = document.getElementById('card-expiry');
+          var raw = ex.value.replace(/\D/g, '').slice(0, -1);
+          ex.value = formatExpiryInput(raw);
+          ex.dispatchEvent(new Event('input', { bubbles: true }));
+          return;
+        }
+        if (tokenActiveField === 'cvv') {
+          var cv = document.getElementById('card-cvv');
+          cv.value = cv.value.slice(0, -1);
+          cv.dispatchEvent(new Event('input', { bubbles: true }));
+        }
+      }
+
+      function clearTokenFieldErrors() {
+        document.querySelectorAll('.token-field--error').forEach(function (el) {
+          el.classList.remove('token-field--error');
+        });
+      }
+
+      function validateTokenization() {
+        clearTokenFieldErrors();
+        var ok = true;
+        var digits = getCardDigitsRaw();
+        if (digits.length !== 16) {
+          document.getElementById('token-field-card').classList.add('token-field--error');
+          ok = false;
+        }
+        var exVal = document.getElementById('card-expiry').value.trim();
+        if (!isExpiryValid(exVal)) {
+          document.getElementById('token-field-expiry').classList.add('token-field--error');
+          ok = false;
+        }
+        var cvv = document.getElementById('card-cvv').value.replace(/\D/g, '');
+        if (cvv.length !== 3) {
+          document.getElementById('token-field-cvv').classList.add('token-field--error');
+          ok = false;
+        }
+        return ok;
+      }
+
+      function showTokenKeypad() {
+        if (document.querySelector('.payment-token-sheet--native-keyboard')) return;
+        var kp = document.getElementById('token-keypad');
+        if (kp) kp.classList.remove('token-keypad--collapsed');
+      }
+
+      function hideTokenKeypad() {
+        if (document.querySelector('.payment-token-sheet--native-keyboard')) return;
+        var kp = document.getElementById('token-keypad');
+        if (kp) kp.classList.add('token-keypad--collapsed');
+      }
+
+      /** После заполнения поля — фокус на следующее (16 цифр карты → срок → CVV). Клавиатура скрывается только при потере фокуса со всех полей. */
+      function tryAdvanceTokenizationField(field) {
+        var cn = document.getElementById('card-number');
+        var ce = document.getElementById('card-expiry');
+        var cv = document.getElementById('card-cvv');
+        if (!cn || !ce || !cv) return;
+        if (field === 'card') {
+          if (getCardDigitsRaw().length >= 16) {
+            try {
+              ce.focus({ preventScroll: true });
+            } catch (err) {
+              ce.focus();
+            }
+            try {
+              ce.setSelectionRange(ce.value.length, ce.value.length);
+            } catch (err) {}
+            tokenActiveField = 'expiry';
+            setTokenActiveField('expiry');
+            showTokenKeypad();
+          }
+          return;
+        }
+        if (field === 'expiry') {
+          if (ce.value.replace(/\D/g, '').length >= 4) {
+            try {
+              cv.focus({ preventScroll: true });
+            } catch (err) {
+              cv.focus();
+            }
+            try {
+              cv.setSelectionRange(cv.value.length, cv.value.length);
+            } catch (err) {}
+            tokenActiveField = 'cvv';
+            setTokenActiveField('cvv');
+            showTokenKeypad();
+          }
+          return;
+        }
+      }
+
+      function syncTokenFloatControl(input) {
+        var wrap = input.closest('.token-field__control');
+        if (!wrap) return;
+        var raw = input.value ? String(input.value).replace(/\s/g, '') : '';
+        wrap.classList.toggle('token-field__control--has-value', raw.length > 0);
+      }
+
+      function dismissPanelThen(callback) {
+        if (sheetDismissLock) return;
+        var panel = sheetContent && sheetContent.closest('.sheet-overlay__panel');
+        if (!panel || !overlay.classList.contains('is-open')) {
+          if (typeof callback === 'function') callback();
+          return;
+        }
+        sheetDismissLock = true;
+        var finished = false;
+        var fallbackTimer = null;
+        function finish() {
+          if (finished) return;
+          finished = true;
+          sheetDismissLock = false;
+          panel.removeEventListener('transitionend', onEnd);
+          if (fallbackTimer) clearTimeout(fallbackTimer);
+          if (typeof callback === 'function') callback();
+        }
+        function onEnd(e) {
+          if (e.target !== panel || e.propertyName !== 'transform') return;
+          finish();
+        }
+        fallbackTimer = setTimeout(finish, 400);
+        panel.addEventListener('transitionend', onEnd);
+        panel.classList.add('sheet-overlay__panel--dismiss-payment');
+      }
+
+      function initPaymentTokenizationForm() {
+        var pts = document.querySelector('.payment-token-sheet');
+        if (pts) {
+          pts.classList.toggle('payment-token-sheet--native-keyboard', useNativeTokenKeyboard());
+        }
+        clearTokenFieldErrors();
+        var cn = document.getElementById('card-number');
+        var ce = document.getElementById('card-expiry');
+        var cv = document.getElementById('card-cvv');
+        if (cn) cn.value = '';
+        if (ce) ce.value = '';
+        if (cv) cv.value = '';
+        if (cn) syncTokenFloatControl(cn);
+        if (ce) syncTokenFloatControl(ce);
+        if (cv) syncTokenFloatControl(cv);
+        updateCardBrandIcon();
+        tokenActiveField = 'card';
+        setTokenActiveField('card');
+        showTokenKeypad();
+        requestAnimationFrame(function () {
+          requestAnimationFrame(function () {
+            if (cn) {
+              try {
+                cn.focus({ preventScroll: true });
+              } catch (err) {
+                cn.focus();
+              }
+              try {
+                var len = cn.value.length;
+                cn.setSelectionRange(len, len);
+              } catch (err) {}
+            }
+          });
+        });
+      }
+
+      function goToTokenizationStep() {
+        var keepTrigger = activeTrigger;
+        dismissPanelThen(function () {
+          openSheet('payment-tokenization', keepTrigger);
+          initPaymentTokenizationForm();
+        });
+      }
+
+      function goToPaymentMethodStep() {
+        if (!document.getElementById('token-keypad')) return;
+        var keepTrigger = activeTrigger;
+        dismissPanelThen(function () {
+          openSheet('add-payment-method', keepTrigger);
+        });
+      }
+
+      function hidePaymentTokenization() {
+        var panel = document.querySelector('.sheet-overlay__panel');
+        if (panel) {
+          panel.classList.remove(
+            'sheet-overlay__panel--add-payment',
+            'sheet-overlay__panel--tokenization',
+            'sheet-overlay__panel--dismiss-payment'
+          );
+        }
+        if (!overlay.classList.contains('is-open')) {
+          removeDocumentScrollLock();
+          if (device) device.classList.remove('device--sheet-open');
+        }
+      }
+
+      function openMethodAddedSheet(last4, brand) {
+        openSheet('method-added');
+        var root = document.getElementById('sheet-content');
+        if (!root) return;
+        var title = root.querySelector('[data-method-added-title]');
+        if (title) title.textContent = 'Debit •••• ' + last4 + ' added';
+        var v = root.querySelector('[data-brand-hero-visa]');
+        var m = root.querySelector('[data-brand-hero-mc]');
+        var b = brand === 'mastercard' ? 'mastercard' : 'visa';
+        if (b === 'mastercard') {
+          if (v) v.style.display = 'none';
+          if (m) m.style.display = 'block';
+        } else {
+          if (v) v.style.display = 'block';
+          if (m) m.style.display = 'none';
+        }
+      }
+
+      document.addEventListener('input', function (e) {
+        var t = e.target;
+        if (t.id === 'card-number') {
+          t.value = formatCardNumberInput(t.value);
+          updateCardBrandIcon();
+          syncTokenFloatControl(t);
+          var tfc = document.getElementById('token-field-card');
+          if (tfc) tfc.classList.remove('token-field--error');
+          tryAdvanceTokenizationField('card');
+        } else if (t.id === 'card-expiry') {
+          t.value = formatExpiryInput(t.value.replace(/\D/g, ''));
+          syncTokenFloatControl(t);
+          var tfe = document.getElementById('token-field-expiry');
+          if (tfe) tfe.classList.remove('token-field--error');
+          tryAdvanceTokenizationField('expiry');
+        } else if (t.id === 'card-cvv') {
+          t.value = t.value.replace(/\D/g, '').slice(0, 3);
+          syncTokenFloatControl(t);
+          var tfv = document.getElementById('token-field-cvv');
+          if (tfv) tfv.classList.remove('token-field--error');
+        }
+      });
+
+      document.addEventListener('focusin', function (e) {
+        var t = e.target;
+        if (t.id === 'card-number' || t.id === 'card-expiry' || t.id === 'card-cvv') {
+          showTokenKeypad();
+          if (t.id === 'card-number') {
+            tokenActiveField = 'card';
+            setTokenActiveField('card');
+          } else if (t.id === 'card-expiry') {
+            tokenActiveField = 'expiry';
+            setTokenActiveField('expiry');
+          } else {
+            tokenActiveField = 'cvv';
+            setTokenActiveField('cvv');
+          }
+        }
+      });
+
+      document.addEventListener(
+        'focusout',
+        function (e) {
+          var t = e.target;
+          if (t.id !== 'card-number' && t.id !== 'card-expiry' && t.id !== 'card-cvv') return;
+          var rt = e.relatedTarget;
+          if (rt && rt.closest && rt.closest('#tokenization-submit, #tokenization-back')) return;
+          setTimeout(function () {
+            var ae = document.activeElement;
+            if (ae && (ae.id === 'card-number' || ae.id === 'card-expiry' || ae.id === 'card-cvv')) return;
+            hideTokenKeypad();
+          }, 0);
+        },
+        true
+      );
+
+      document.addEventListener(
+        'mousedown',
+        function (e) {
+          if (document.querySelector('.payment-token-sheet--native-keyboard')) return;
+          if (e.target.closest('#token-keypad .token-keypad__key')) e.preventDefault();
+          else if (e.target.closest('#tokenization-submit, #tokenization-back')) e.preventDefault();
+        },
+        true
+      );
+
+      document.addEventListener('click', function (e) {
+        var key = e.target.closest('#token-keypad .token-keypad__key');
+        if (!key) return;
+        var act = key.getAttribute('data-keypad-action');
+        if (act === 'back') {
+          tokenKeypadBackspace();
+          return;
+        }
+        var dig = key.getAttribute('data-digit');
+        if (dig !== null) tokenKeypadAppend(dig);
+      });
+
+      document.addEventListener('click', function (e) {
+        var back = e.target.closest('#tokenization-back');
+        if (!back) return;
+        e.preventDefault();
+        goToPaymentMethodStep();
+      });
+
+      document.addEventListener('click', function (e) {
+        var sub = e.target.closest('#tokenization-submit');
+        if (!sub) return;
+        e.preventDefault();
+        if (!validateTokenization()) return;
+        var digits = getCardDigitsRaw();
+        var last4 = digits.slice(-4);
+        var brand = detectCardBrand(digits) || 'visa';
+        openMethodAddedSheet(last4, brand);
+      });
+
+      document.addEventListener('click', function (e) {
+        var openTok = e.target.closest('[data-open-tokenization]');
+        if (!openTok) return;
+        e.preventDefault();
+        e.stopPropagation();
+        goToTokenizationStep();
+      });
+
+      document.addEventListener('click', function (e) {
+        var ap = e.target.closest('[data-payment-apple-pay]');
+        if (!ap) return;
+        e.preventDefault();
+      });
+
+      document.addEventListener('click', function (e) {
+        var done = e.target.closest('[data-payment-complete]');
+        if (!done) return;
+        e.preventDefault();
+        try {
+          localStorage.setItem(HAS_PAYMENT_KEY, '1');
+        } catch (err) {}
+        closeSheet();
+        setScreen('trial-success');
+      });
+
+      function openSubscriptionPage() {
+        closeSheet();
+        hidePaymentTokenization();
+        try {
+          if (localStorage.getItem(HAS_PAYMENT_KEY) === '1') {
+            setScreen('trial-success');
+            return;
+          }
+        } catch (err) {}
+        openSheet('add-payment-method');
+      }
+
+      function openSheet(sheetId, triggerEl) {
+        var template = document.querySelector('.sheet-template[data-sheet-id="' + sheetId + '"]');
+        if (!template) return;
+        var wasOpen = overlay.classList.contains('is-open');
+        var panel = sheetContent.closest('.sheet-overlay__panel');
+        if (panel) {
+          panel.classList.remove(
+            'sheet-overlay__panel--add-payment',
+            'sheet-overlay__panel--tokenization',
+            'sheet-overlay__panel--dismiss-payment'
+          );
+          if (sheetId === 'add-payment-method') panel.classList.add('sheet-overlay__panel--add-payment');
+          else if (sheetId === 'payment-tokenization') panel.classList.add('sheet-overlay__panel--tokenization');
+        }
+        sheetContent.innerHTML = template.innerHTML;
+        activeTrigger = triggerEl || null;
+        overlay.classList.add('is-open');
+        overlay.setAttribute('aria-hidden', 'false');
+        if (!wasOpen) {
+          applyDocumentScrollLock();
+          if (device) device.classList.add('device--sheet-open');
+        }
+        applyActiveSubscriptionBenefitSheet();
+      }
+
+      document.addEventListener('click', function (e) {
+        var trigger = e.target.closest('[data-sheet-target]');
+        if (!trigger) return;
+        var targetId = trigger.getAttribute('data-sheet-target');
+        if (!targetId) return;
+        openSheet(targetId, trigger);
+      });
+
+      document.addEventListener('click', function (e) {
+        var sheetClose = e.target.closest('[data-sheet-close]');
+        if (sheetClose) {
+          e.preventDefault();
+          closeSheet();
+          return;
+        }
+        var ctaTrigger = e.target.closest('.cta-btn, .sheet-cta[data-subscription-cta]');
+        if (!ctaTrigger) return;
+        e.preventDefault();
+        openSubscriptionPage();
+      });
+
+      backButton.addEventListener('click', function (e) {
+        if (!subscriptionPage.classList.contains('is-active')) return;
+        e.preventDefault();
+        setScreen('subscription');
+      });
+
+      document.addEventListener('click', function (e) {
+        var flowTarget = e.target.closest('[data-flow-target]');
+        if (!flowTarget) return;
+        e.preventDefault();
+        var targetScreen = flowTarget.getAttribute('data-flow-target');
+        if (!targetScreen) return;
+        if (targetScreen === 'landing') {
+          setScreen('landing');
+          return;
+        }
+        if (targetScreen === 'trial-success' || targetScreen === 'subscription' || targetScreen === 'cancel-warning' || targetScreen === 'cancelled') {
+          setScreen(targetScreen);
+        }
+      });
+
+      document.addEventListener('click', function (e) {
+        var flowBack = e.target.closest('[data-flow-back]');
+        if (!flowBack) return;
+        e.preventDefault();
+        var backScreen = flowBack.getAttribute('data-flow-back');
+        if (backScreen === 'subscription') setScreen('subscription');
+      });
+
+      backdrop.addEventListener('click', closeSheet);
+      document.addEventListener('keydown', function (e) {
+        if (e.key !== 'Escape' || !overlay.classList.contains('is-open')) return;
+        if (document.querySelector('.sheet-overlay__panel--tokenization')) {
+          e.preventDefault();
+          goToPaymentMethodStep();
+          return;
+        }
+        closeSheet();
+      });
+
+      try {
+        var persisted = localStorage.getItem(SCREEN_KEY);
+        if (persisted === 'subscription' || persisted === 'cancel-warning' || persisted === 'cancelled') {
+          setScreen(persisted);
+        } else {
+          setScreen('landing');
+        }
+      } catch (e) {
+        setScreen('landing');
+      }
+    })();
+  </script>
+</body>
+</html>
