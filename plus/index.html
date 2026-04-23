@@ -1619,22 +1619,31 @@
       border-radius: 32px;
       overflow: hidden;
     }
+    .cancel-warning-page {
+      background: var(--color-page-gray);
+      color: var(--text-primary);
+    }
+    .cancel-warning-navbar {
+      position: relative;
+      background: var(--ds-surface-inverse);
+      color: var(--text-on-inverse-primary);
+    }
     .flow-warning__content {
       flex: 1;
       min-height: 0;
       display: flex;
       flex-direction: column;
       align-items: center;
-      padding: 0 24px;
+      padding: 0 16px;
       text-align: center;
     }
     .flow-warning__hero {
-      width: 366px;
+      width: 382px;
       max-width: 100%;
       height: 220px;
       display: block;
       border-radius: 24px;
-      margin-top: 4px;
+      margin-top: 0;
     }
     .flow-warning__title-wrap {
       margin-top: 22px;
@@ -1643,7 +1652,7 @@
       flex-direction: column;
       gap: 10px;
       width: 100%;
-      max-width: 366px;
+      max-width: 382px;
     }
     .flow-page__title {
       margin: 0;
@@ -1665,33 +1674,49 @@
     }
     .flow-warning__list {
       width: 100%;
-      max-width: 366px;
+      max-width: 382px;
       display: flex;
       flex-direction: column;
-      gap: 8px;
+      gap: 16px;
     }
-    .flow-warning__item {
-      background: var(--ds-bg-general-l1);
-      border-radius: 24px;
-      padding: 0 24px;
+    .flow-warning__item.supercell {
+      background: transparent;
+      border-radius: 0;
+      padding: 0;
       display: flex;
       align-items: center;
-      min-height: 96px;
+      min-height: 84px;
       gap: 16px;
       text-align: left;
+      height: auto;
+      max-height: none;
     }
-    .flow-warning__lead {
+    .flow-warning__item .supercell__lead {
       width: 40px;
-      height: 64px;
+      height: 40px;
       display: flex;
       align-items: center;
       justify-content: center;
       flex-shrink: 0;
+      border-radius: 999px;
+      overflow: hidden;
     }
-    .flow-warning__lead img {
+    .flow-warning__item .supercell__lead img {
       width: 40px;
       height: 40px;
       display: block;
+      object-fit: contain;
+    }
+    .flow-warning__item .supercell__label {
+      font-size: var(--ds-type-body-md-size);
+      line-height: var(--ds-type-body-md-line);
+      font-weight: 500;
+      letter-spacing: -0.16px;
+      color: var(--text-primary);
+      display: block;
+      -webkit-line-clamp: unset;
+      line-clamp: unset;
+      -webkit-box-orient: initial;
     }
     .flow-warning__item-text {
       font-size: var(--ds-type-body-md-size);
@@ -1703,6 +1728,10 @@
     .flow-page__footer {
       padding: 16px 16px 0;
       background: linear-gradient(0deg, #fff 0%, rgba(255, 255, 255, 0) 100%);
+    }
+    .cancel-warning-footer {
+      background: var(--color-page-gray);
+      padding: 16px 16px 0;
     }
     .flow-page__btn {
       width: 100%;
@@ -2777,8 +2806,8 @@
       </div>
     </template>
 
-    <div class="flow-page flow-page--warning" id="cancel-warning-page" aria-hidden="true">
-      <nav class="navbar" aria-label="Primary">
+    <div class="flow-page flow-page--warning cancel-warning-page" id="cancel-warning-page" aria-hidden="true">
+      <nav class="navbar cancel-warning-navbar" aria-label="Primary">
         <div class="navbar__lead" aria-hidden="true"></div>
         <div class="navbar__logo"></div>
         <div class="navbar__trail">
@@ -2795,22 +2824,26 @@
           <h2 class="flow-page__title">Cancelling Plus means a larger payment now</h2>
           <p class="flow-page__text">You will no longer be able to split any purchase in 4 and 6 for free</p>
         </div>
-        <div class="flow-warning__list">
-          <div class="flow-warning__item">
-            <span class="flow-warning__lead" aria-hidden="true">
+        <ul class="flow-warning__list supercell-list supercell-list--ds" role="list">
+          <li>
+            <div class="flow-warning__item supercell">
+            <span class="supercell__lead" aria-hidden="true">
               <img src="./assets/omni/cancel-warning-lead1.svg" alt="" />
             </span>
-            <p class="flow-warning__item-text">You’ll need to pay your outstanding Tabby Card Split in 4 purchases — AED 839.00.</p>
-          </div>
-          <div class="flow-warning__item">
-            <span class="flow-warning__lead" aria-hidden="true">
+            <p class="supercell__label">You’ll need to pay your outstanding Tabby Card Split in 4 purchases — AED 839.00.</p>
+            </div>
+          </li>
+          <li>
+            <div class="flow-warning__item supercell">
+            <span class="supercell__lead" aria-hidden="true">
               <img src="./assets/omni/cancel-warning-lead2.svg" alt="" />
             </span>
-            <p class="flow-warning__item-text">You will lose your free Split in 6 at [Merchant] and fees will apply. Your monthly instalment amount will increase from AED 100 to AED 120.00.</p>
-          </div>
-        </div>
+            <p class="supercell__label">You will lose your free Split in 6 at [Merchant] and fees will apply. Your monthly instalment amount will increase from AED 100 to AED 120.00.</p>
+            </div>
+          </li>
+        </ul>
       </div>
-      <div class="flow-page__footer">
+      <div class="flow-page__footer cancel-warning-footer toolbar-mobile">
         <button type="button" class="flow-page__btn flow-page__btn--primary" data-flow-target="subscription">Continue with Plus</button>
         <button type="button" class="flow-page__btn flow-page__btn--secondary" data-flow-target="cancelled">Continue to cancellation</button>
         <div class="home-indicator" aria-hidden="true"></div>
