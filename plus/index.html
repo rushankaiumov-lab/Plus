@@ -37,9 +37,18 @@
     :root {
       /* DS alias tokens (pilot scope: method-added) */
       --ds-bg-general-l1: #ffffff;
+      --ds-bg-general-l0: #f5f4f2;
+      --ds-bg-control-primary: #1a1919;
       --ds-front-primary: #1a1919;
+      --ds-front-secondary: #75726f;
+      --ds-front-primary-invert: #f5f4f2;
+      --ds-front-secondary-invert: #8f8b88;
       --ds-font-display: 'Tabby Sans Display', ui-sans-serif, system-ui, sans-serif;
       --ds-font-text: 'Tabby Sans Text', ui-sans-serif, system-ui, sans-serif;
+      --ds-type-h1-size: 30px;
+      --ds-type-h1-line: 1.2;
+      --ds-type-body1-size: 16px;
+      --ds-type-body1-line: 1.125;
       --ds-type-h3-size: 19px;
       --ds-type-h3-line: 24px;
       --ds-type-body2-size: 17px;
@@ -55,15 +64,15 @@
       --color-success: #31CC7E;
       --color-pill-fill: rgba(108, 255, 147, 0.2);
       --color-pill-border: #6CFF93;
-      --color-page-gray: #F5F4F2;
-      --color-bg-subtle: #F5F4F2;
+      --color-page-gray: var(--ds-bg-general-l0);
+      --color-bg-subtle: var(--ds-bg-general-l0);
       --radius-body-top: 32px;
       --radius-island: 24px;
       --list-row-height: 64px;
       --supercell-lead-size: 40px;
       --color-bg-muted: #EBE7E4;
-      --font-display: 'Tabby Sans Display', ui-sans-serif, system-ui, sans-serif;
-      --font-text: 'Tabby Sans Text', ui-sans-serif, system-ui, sans-serif;
+      --font-display: var(--ds-font-display);
+      --font-text: var(--ds-font-text);
       --shadow-soft: 0px 3px 20px 0px rgba(0, 0, 0, 0.07);
       --radius-lg: 18px;
       --radius-full: 999px;
@@ -72,20 +81,20 @@
       --navbar-hit: 32px;
       --header-title-padding: 24px 24px 48px;
       --header-headline-sub-gap: 8px;
-      --header-h1-size: 30px;
-      --header-h1-lh: 1.2;
-      --header-sub-size: 16px;
-      --header-sub-lh: 1.125;
+      --header-h1-size: var(--ds-type-h1-size);
+      --header-h1-lh: var(--ds-type-h1-line);
+      --header-sub-size: var(--ds-type-body1-size);
+      --header-sub-lh: var(--ds-type-body1-line);
       --device-width: 414px;
       /* Typography on light */
-      --text-primary: #1a1919;
-      --text-secondary: #75726f;
+      --text-primary: var(--ds-front-primary);
+      --text-secondary: var(--ds-front-secondary);
       /* Inverted (on #1A1919 fills) */
-      --text-on-inverse-primary: #f5f4f2;
-      --text-on-inverse-secondary: #8f8b88;
+      --text-on-inverse-primary: var(--ds-front-primary-invert);
+      --text-on-inverse-secondary: var(--ds-front-secondary-invert);
       /* XL primary button (Figma: radius 20, smooth corners ~60% — standard CSS radius) */
       --btn-xl-radius: 20px;
-      --btn-xl-fill: #1a1919;
+      --btn-xl-fill: var(--ds-bg-control-primary);
       --btn-xl-height: 64px;
     }
 
@@ -233,7 +242,7 @@
       line-height: var(--header-h1-lh);
       font-weight: 700;
       letter-spacing: 0.00333em;
-      color: var(--color-spec-white);
+      color: var(--text-on-inverse-primary);
       margin-bottom: var(--header-headline-sub-gap);
     }
     .hero__copy p {
@@ -241,7 +250,7 @@
       font-size: var(--header-sub-size);
       font-weight: 400;
       line-height: var(--header-sub-lh);
-      color: var(--color-spec-white);
+      color: var(--text-on-inverse-secondary);
       max-width: 100%;
     }
 
@@ -289,7 +298,7 @@
     }
 
     .island {
-      background: #fff;
+      background: var(--ds-bg-general-l1);
       border-radius: var(--radius-island);
       border: none;
       padding: 20px 16px 16px;
@@ -344,10 +353,11 @@
       font-size: 16px;
       font-weight: 400;
       line-height: 1.25;
-      color: var(--color-ui-major);
+      color: var(--text-primary);
       text-align: left;
       display: -webkit-box;
       -webkit-line-clamp: 2;
+      line-clamp: 2;
       -webkit-box-orient: vertical;
       overflow: hidden;
     }
@@ -390,7 +400,7 @@
       font-size: 17px;
       font-weight: 700;
       line-height: 1.18;
-      color: var(--color-ui-major);
+      color: var(--text-primary);
       margin: 0;
       text-align: left;
     }
@@ -408,7 +418,7 @@
 
     .sticky-bottom {
       flex-shrink: 0;
-      background: var(--color-spec-white);
+      background: var(--ds-bg-general-l1);
       padding: 12px 16px 0;
       border-top: none;
       box-shadow: none;
@@ -418,14 +428,14 @@
       width: 134px;
       height: 5px;
       border-radius: 100px;
-      background: var(--color-ui-black);
+      background: var(--text-primary);
       margin: 10px auto 12px;
     }
 
     .island .section { margin-bottom: 0; }
     .section__title {
       font-size: 17px; font-weight: 700; line-height: 1.18;
-      margin-bottom: 12px; color: var(--color-ui-major);
+      margin-bottom: 12px; color: var(--text-primary);
     }
     .section--timeline .section__title {
       margin-bottom: 8px;
