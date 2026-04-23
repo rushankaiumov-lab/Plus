@@ -35,6 +35,16 @@
     }
 
     :root {
+      /* DS alias tokens (pilot scope: method-added) */
+      --ds-bg-general-l1: #ffffff;
+      --ds-front-primary: #1a1919;
+      --ds-font-display: 'Tabby Sans Display', ui-sans-serif, system-ui, sans-serif;
+      --ds-font-text: 'Tabby Sans Text', ui-sans-serif, system-ui, sans-serif;
+      --ds-type-h3-size: 19px;
+      --ds-type-h3-line: 24px;
+      --ds-type-body2-size: 17px;
+      --ds-type-body2-line: 24px;
+
       --color-ui-black: #000000;
       --color-ui-major: #131C26;
       --color-spec-white: #FFFFFF;
@@ -1110,7 +1120,7 @@
       user-select: none;
     }
     .method-added-sheet {
-      background: #fff;
+      background: var(--ds-bg-general-l1);
       border-radius: 32px 32px 0 0;
       padding: 12px 16px 16px;
       text-align: center;
@@ -1129,18 +1139,19 @@
     }
     .method-added-sheet__title {
       margin: 0 0 16px;
-      font-family: var(--font-display);
-      font-size: 19px;
-      line-height: 24px;
+      font-family: var(--ds-font-display);
+      font-size: var(--ds-type-h3-size);
+      line-height: var(--ds-type-h3-line);
       font-weight: 600;
-      color: #1a1919;
+      color: var(--ds-front-primary);
     }
     .method-added-sheet__body {
       margin: 0 0 32px;
-      font-size: 17px;
-      line-height: 24px;
+      font-family: var(--ds-font-text);
+      font-size: var(--ds-type-body2-size);
+      line-height: var(--ds-type-body2-line);
       font-weight: 500;
-      color: #1a1919;
+      color: var(--ds-front-primary);
       text-align: center;
     }
     .method-added-sheet .sheet-toolbar__buttons {

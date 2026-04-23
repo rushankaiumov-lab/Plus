@@ -1,169 +1,150 @@
-# 🧿 Omni Design System — Извлечённые токены
+# Omni Design System Tokens (updated from `ds-context.zip`)
 
-> Источник: https://www.figma.com/design/921WDygeIIdnwlrExNKpaB/Omni-Design-System  
-> Получено через Figma MCP
-
----
-
-## Цвета (Colors)
-
-### Основные / UI
-| Токен | HEX | Описание |
-|-------|-----|----------|
-| `.Device · Global/Black` | `#000000` | Чёрный |
-| `Spec · Background/White` | `#FFFFFF` | Белый фон |
-| `UI · Front/Major` | `#131C26` | Основной текст |
-| `fill_FH6AYQ` (тёмный текст) | `#1D2329` | Тёмный текст |
-| `fill_FJSVS0` | `#3E4A59` | Серый текст |
-| `fill_FWOOUU` | `rgba(184, 195, 209, 0.2)` | Полупрозрачный |
-
-### Spec (спек-цвета)
-| Токен | HEX |
-|-------|-----|
-| `Spec · Front/Line` | `#D1D9E0` |
-| `Spec · Front/Faded` | `#B4BFCC` |
-| `Spec · Front/Label B` | `#7F90A3` |
-
-### Акценты / иконки
-| Токен | HEX |
-|-------|-----|
-| `.Graphics/Icon` (brand) | `#FF0055` |
-| `fill_CT778V` (ошибка/уведомление) | `#E81E40` |
-| `fill_QXYECR` | `#7F8B99` |
-| — | `#E5174B` |
-| — | `#FF0040` |
-
-### Дополнительные
-| HEX | Примечание |
-|-----|------------|
-| `#D8E0EB` | Светло-серый |
-| `#DFE5EB` | Фон |
-| `#E9EFF5` | Фон |
-| `#F2F5F7` | Фон светлый |
-| `#F5F8FA` | Фон |
-| `#B8C3D1` | Границы/декорации |
-| `#31CC7E` | Успех/положительный |
-| `#179958` | Зелёный |
-| `#00A645` | Зелёный |
-| `#2E7CF6` | Синий (ссылки) |
-| `#5D21DE` / `#5D22E5` | Фиолетовый |
-| `#546170` | Серый |
-| `#3C4550` | Тёмно-серый |
-| `#182430` | Тёмный |
-| `#8698AD` | Серый текст |
-| `#CECECE` | Светло-серый |
-| `#292929` | Тёмный |
-| `#11151A` | Почти чёрный |
-
-### Тени
-| Токен | CSS |
-|-------|-----|
-| `Soft · Wide` | `0px 3px 20px 0px rgba(0, 0, 0, 0.07)` |
-| `Shadow/Soft · Bottom Light` | `0px 8px 16px 0px rgba(24, 36, 48, 0.08)` |
+> Обновлено по пакету `ds-context` (Product Tokens + Typography + Layout + Registry docs).  
+> Базовые источники:
+> - `design-system/colours.md`
+> - `design-system/typography.md`
+> - `design-system/layout.md`
+> - `design-system/component-registry.md`
 
 ---
 
-## Типографика (Typography)
+## Важно про безопасность текущих макетов
 
-### Шрифты
-- **Inter** — основной латинский
-- **Radial** — заголовки
-- **SF Pro Text** — iOS/мобильные
-- **IBM Plex Sans Arabic R** — арабский
+Обновление этого `.md` файла **не ломает** текущие экраны в `plus/index.html`, потому что:
 
-### Стили (примеры)
-| Стиль | font-family | font-weight | font-size | line-height |
-|-------|-------------|-------------|-----------|-------------|
-| Card/2 · Section Title | Radial | 150 | 32px | 1.0625em |
-| Card/2 · Section Subtitle | Inter | 500 | 13px | 1.23em |
-| Card/3 · Element Title | Inter | 700 | 16px | 1.25em |
-| Card/3 · Element Subtitle | Inter | 500 | 13px | 1.23em |
-| Latin/Caption/Caption | Inter | 500 | 12px | 1.33em |
-| Latin/Caption/Bold | Inter | 700 | 12px | 1.33em |
-| Arabic/Caption | IBM Plex Sans Arabic R | 500/700 | 12px | 1.83em |
-| Default/Body/Bold | SF Pro Text | 600 | 17px | 1.29em |
+- файл используется как документация и не подключается рантаймом;
+- кастомные CSS-переменные в `index.html` остаются без изменений;
+- переключение токенов начнет влиять на UI только когда мы вручную начнем заменять значения в стилях.
 
 ---
 
-## Компоненты (выборка)
+## 1) Цветовая архитектура (3-tier)
 
-### Кнопки
-- `Controls / Buttons / IconButton · 48`
-- `size=xs/sm/md/xl, variant=primary/secondary/ghost, tone=neutral`
-- `FloatingButton`, `FloatingAction`
+Система строится из 3 уровней:
 
-### Иконки
-- `Icons / 24 x 24` — Navigation, Finance, Shopping, Miscellaneous, Feedback, Social, Controls
-- `Icons / 16 x 16` — аналогичные категории
+1. **Colour Primitives** — сырые палитры
+2. **Product Tokens** — семантические токены (основной слой для UI)
+3. **Brand Colours** — брендовые стили для графики/иллюстраций
 
-### Навигация
-- `TabBarB2C · Latin/Arabic`
-- `TabBarB2B · Latin/Arabic`
-- `Building Blocks / Modules / App / Headers` (ContentTrail, Counter, NotificationDot)
+Ключевой принцип: в UI использовать **семантические токены**, а не raw HEX.
 
-### Типографика
-- `Typography / Heading 2`
-- `Typography / Accordion`
-- `Typography / Train`
-- `.Building Blocks / Typography / Heading`, `Subhead`, `AccordionSection`
+### Режимы темы (Product Tokens)
 
-### Карточки / секции
-- `Title / 1 · Card Title`
-- `Title / 2 · Section Title`
-- `Title / 3 · Element Title`
-- `.Section · Latin`
+- `Light`
+- `Dark`
+- `Light New brand`
+- `Dark New brand`
 
-### Специфичные
-- `PriceWidget`, `ProductSnippet`, `BadgeGroupSnippet`
-- `FAQ · Latin`, `LegalsCheckbox`
-- `FloatingButton`, `FloatingAction`
-- `MerchantSpotL/S/XS` (плейсхолдеры мерчантов)
+### Ключевые токены (resolved values)
 
----
-
-## CSS-переменные (пример)
-
-```css
-:root {
-  /* Spec */
-  --color-spec-line: #D1D9E0;
-  --color-spec-faded: #B4BFCC;
-  --color-spec-label: #7F90A3;
-  --color-spec-white: #FFFFFF;
-  
-  /* UI */
-  --color-ui-major: #131C26;
-  --color-ui-black: #000000;
-  
-  /* Brand / Graphics */
-  --color-graphics-icon: #FF0055;
-  
-  /* Semantic */
-  --color-success: #31CC7E;
-  --color-error: #E81E40;
-  --color-link: #2E7CF6;
-  
-  /* Backgrounds */
-  --color-bg-white: #FFFFFF;
-  --color-bg-subtle: #F2F5F7;
-  --color-bg-muted: #E9EFF5;
-  
-  /* Shadows */
-  --shadow-soft: 0px 3px 20px 0px rgba(0, 0, 0, 0.07);
-  --shadow-bottom: 0px 8px 16px 0px rgba(24, 36, 48, 0.08);
-  
-  /* Typography */
-  --font-primary: 'Inter', system-ui, sans-serif;
-  --font-heading: 'Radial', serif;
-  --font-arabic: 'IBM Plex Sans Arabic', sans-serif;
-  
-  --text-section-title: 32px;
-  --text-element-title: 16px;
-  --text-body: 13px;
-  --text-caption: 12px;
-}
-```
+| Token | Light | Dark | Light New brand | Dark New brand |
+|---|---|---|---|---|
+| `Background/General L0` | `#f2f4f7` | `#000000` | `#f4f3f2` | `#000000` |
+| `Background/General L1` | `#ffffff` | `#1c2228` | `#ffffff` | `#191919` |
+| `Background/Control Primary` | `#1c2228` | `#ffffff` | `#191919` | `#ffffff` |
+| `Background/Accent Strong` | `#5c21dd` | `#a979f2` | `#66abfe` | `#397dce` |
+| `Front/Primary` | `#1c2228` | `#f2f4f7` | `#191919` | `#f4f3f2` |
+| `Front/Secondary` | `#7e8b99` | `#b8c3d1` | `#75726f` | `#8e8b87` |
+| `Front/Link` | `#5c21dd` | `#ccb1f9` | `#397dce` | `#8cc4f7` |
+| `Front/Positive` | `#169957` | `#76eda6` | `#419353` | `#90d19e` |
+| `Front/Negative` | `#e81e3f` | `#ffa9a8` | `#d34c3b` | `#fc9b8d` |
+| `Line/Primary L1` | `#b8c3d1` | `#3d4959` | `#bab6b2` | `#3d3b39` |
+| `Line/Primary L2` | `#d7e0ea` | `#546070` | `#d6d2cf` | `#595653` |
 
 ---
 
-*Данные извлечены автоматически. Рекомендуется свериться с Figma для актуальности.*
+## 2) Level system (L0-L3)
+
+Для вложенности используется отдельная коллекция уровней:
+
+- **L0**: фон страницы
+- **L1**: первый уровень контента (карты, блоки)
+- **L2**: sheets/modals
+- **L3**: вложенные элементы внутри elevated-блоков
+
+Это нужно, чтобы сохранять контраст при вложении и избежать "серый на сером".
+
+---
+
+## 3) Typography (актуальная модель)
+
+Типографика живет в коллекции `🕹️ Device` с 4 режимами:
+
+- Mobile
+- Desktop
+- Mobile New brand
+- Desktop New brand
+
+### Шрифтовой стек
+
+| Role | Current brand | New brand |
+|---|---|---|
+| Latin Display | Radial Saudi | Tabby Sans Display |
+| Latin Text | Inter | Tabby Sans Text |
+| Arabic Display | IBM Plex Sans Arabic R | Tabby Sans Display |
+| Arabic Text | IBM Plex Sans Arabic R | Tabby Sans Text |
+
+### Ключевые отличия New brand
+
+- Заголовки становятся более компактными: `H1 35 -> 30`, `H2 30 -> 24`, `H3 22 -> 19`
+- Body по умолчанию: `Medium -> Regular`
+- Letter spacing: от отрицательных значений к около-нулевым/положительным
+
+---
+
+## 4) Layout rules (для экранов 414x896)
+
+- Фрейм: `414 x 896`
+- Фон страницы: `Background/General/Level 0`
+- Цвета: только через semantic tokens
+- Текст: только через DS text styles (не руками font-size/weight)
+- Структура: `NavBar -> Content -> Toolbar XXL` или `TabBar`
+
+Default modes (если нет спец-условий):
+
+- `Device`: `Mobile New brand`
+- `Theme`: `Light new brand`
+- `Language`: `Latin`
+
+---
+
+## 5) Влияние на текущий `plus/index.html` и кастомные решения
+
+Сейчас в прототипе уже есть "полу-совместимость" с New brand:
+
+- используются `Tabby Sans Display` и `Tabby Sans Text`
+- базовые нейтрали типа `#1A1919`, `#F5F4F2`, `#75726F` совпадают с New brand направлением
+
+Но есть и кастомные значения, которые отличаются от strict DS.
+
+### Быстрый маппинг ваших переменных к DS семантике
+
+| Текущее в `index.html` | Пример значения | DS-направление |
+|---|---|---|
+| `--text-primary` | `#1a1919` | `Front/Primary` (Light New brand) |
+| `--text-secondary` | `#75726f` | `Front/Secondary` (Light New brand) |
+| `--btn-xl-fill` | `#1a1919` | `Background/Control Primary` |
+| `--color-page-gray` | `#F5F4F2` | `Background/General L0` |
+| `--color-bg-muted` | `#EBE7E4` | близко к `Background/General L2` / neutral-100 |
+| `--color-pill-border` | `#6CFF93` | спец brand/positive, требует отдельного решения |
+
+---
+
+## 6) Как внедрять без поломок
+
+1. **Не трогать компоненты сразу** — сначала завести слой алиасов:
+   - `--ds-front-primary`, `--ds-bg-control-primary`, etc.
+2. Перевести 1-2 секции (например, `method-added`, кнопки) и проверить визуально.
+3. Затем проходить по экранам поэтапно (activation -> cancellation), фиксируя diff.
+4. Оставить кастомные "исключения" (если нужны для UX/прототипа), но явно пометить их как override.
+
+---
+
+## 7) Что дальше
+
+Если нужно, следующим шагом можно сделать файл-слой:
+
+- `plus/assets/debug/ds-alias-tokens.css`
+
+и подключить его в `index.html`, чтобы у нас был controlled migration к DS без резких поломок.
