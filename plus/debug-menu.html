@@ -26,6 +26,39 @@
       max-width: 1200px;
       margin: 0 auto;
       padding: 24px 20px 40px;
+      position: relative;
+    }
+    .lang-switcher {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      background: var(--surface);
+      padding: 6px 8px;
+    }
+    .lang-icon {
+      width: 18px;
+      height: 18px;
+      opacity: 0.75;
+    }
+    .lang-switcher button {
+      border: 0;
+      background: transparent;
+      color: var(--muted);
+      border-radius: 8px;
+      font-size: 12px;
+      line-height: 16px;
+      font-weight: 700;
+      padding: 4px 7px;
+      cursor: pointer;
+    }
+    .lang-switcher button.is-active {
+      background: var(--text);
+      color: #fff;
     }
     h1 {
       margin: 0 0 12px;
@@ -202,35 +235,43 @@
 </head>
 <body>
   <main class="wrap">
-    <h1>Plus Debug Menu — Scenario Map</h1>
-    <p class="hint">
-      Этот экран — наглядная карта 3 сценариев. Сейчас это визуальная схема и бэклог экранов.
-      Далее сюда добавим логику состояний, вариативности A/B/C и генерацию URL пресетов.
+    <div class="lang-switcher" aria-label="Language switcher">
+      <svg class="lang-icon" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+        <path d="M4 6H14M9 6V4M7 10C7 13 8.8 15.7 11.5 17M17.2 10.5H21L19.2 6.5L17.2 10.5ZM17.2 10.5L15.5 14.5M19.2 6.5L21 10.5M16 20L18.2 15H21.8L24 20" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+      <button type="button" data-lang="en" class="is-active">EN</button>
+      <button type="button" data-lang="ru">RU</button>
+    </div>
+
+    <h1 data-i18n="title">Plus Debug Menu — Scenario Map</h1>
+    <p class="hint" data-i18n="hint">
+      This screen is a visual map of 3 scenarios. Right now it is a flow scheme and screens backlog.
+      Next, we will add scenario state logic, A/B/C variants, and URL preset generation.
     </p>
 
     <div class="toolbar" id="flow-switcher">
-      <button type="button" data-flow="activation" class="is-active">a) activation</button>
-      <button type="button" data-flow="activation-cards-benefits">b) activation of cards and benefits</button>
-      <button type="button" data-flow="cancellation">c) cancellation</button>
+      <button type="button" data-flow="activation" class="is-active" data-i18n="flowActivation">a) activation</button>
+      <button type="button" data-flow="activation-cards-benefits" data-i18n="flowCardsBenefits">b) activation of cards and benefits</button>
+      <button type="button" data-flow="cancellation" data-i18n="flowCancellation">c) cancellation</button>
     </div>
 
     <div class="legend">
-      <span class="ok">implemented = уже есть экран в `index.html`</span>
-      <span class="todo">planned = запланирован, добавим позже</span>
+      <span class="ok" data-i18n="legendImplemented">implemented = screen already exists in `index.html`</span>
+      <span class="todo" data-i18n="legendPlanned">planned = scheduled, will be added later</span>
     </div>
 
     <section class="scenario-panel" aria-label="Scenario controls">
-      <h2 style="margin:0;font-size:16px;line-height:20px;">Scenario launcher</h2>
+      <h2 style="margin:0;font-size:16px;line-height:20px;" data-i18n="launcherTitle">Scenario launcher</h2>
       <p class="scenario-desc" id="scenario-description">
-        Выберите сценарий и вариант, затем откройте ссылку для респондента.
+        Select scenario and variant, then open/share the link.
       </p>
       <div class="scenario-grid">
         <div>
-          <label for="scenario-select">Scenario</label>
+          <label for="scenario-select" data-i18n="labelScenario">Scenario</label>
           <select id="scenario-select"></select>
         </div>
         <div>
-          <label for="variant-select">Variant</label>
+          <label for="variant-select" data-i18n="labelVariant">Variant</label>
           <select id="variant-select">
             <option value="A">A</option>
             <option value="B">B</option>
@@ -238,13 +279,13 @@
           </select>
         </div>
         <div style="grid-column:1 / -1;">
-          <label for="scenario-link">Shareable link</label>
+          <label for="scenario-link" data-i18n="labelLink">Shareable link</label>
           <input id="scenario-link" type="text" readonly />
         </div>
       </div>
       <div class="scenario-actions">
-        <a id="open-scenario" class="is-primary" href="./index.html" target="_blank" rel="noopener noreferrer">Open scenario</a>
-        <button type="button" id="copy-scenario-link">Copy link</button>
+        <a id="open-scenario" class="is-primary" href="./index.html" target="_blank" rel="noopener noreferrer" data-i18n="openScenario">Open scenario</a>
+        <button type="button" id="copy-scenario-link" data-i18n="copyLink">Copy link</button>
       </div>
     </section>
 
@@ -375,7 +416,7 @@
     </section>
 
     <p class="footer">
-      URL этого экрана: <a href="./debug-menu.html">`/plus/debug-menu.html`</a>
+      <span data-i18n="footerUrl">URL of this screen:</span> <a href="./debug-menu.html">`/plus/debug-menu.html`</a>
     </p>
   </main>
 
@@ -390,6 +431,66 @@
       var openScenario = document.getElementById('open-scenario');
       var copyBtn = document.getElementById('copy-scenario-link');
       var scenarioDescription = document.getElementById('scenario-description');
+      var langButtons = document.querySelectorAll('[data-lang]');
+      var currentLang = 'en';
+      var I18N = {
+        en: {
+          title: 'Plus Debug Menu — Scenario Map',
+          hint:
+            'This screen is a visual map of 3 scenarios. Right now it is a flow scheme and screens backlog. Next, we will add scenario state logic, A/B/C variants, and URL preset generation.',
+          flowActivation: 'a) activation',
+          flowCardsBenefits: 'b) activation of cards and benefits',
+          flowCancellation: 'c) cancellation',
+          legendImplemented: 'implemented = screen already exists in `index.html`',
+          legendPlanned: 'planned = scheduled, will be added later',
+          launcherTitle: 'Scenario launcher',
+          labelScenario: 'Scenario',
+          labelVariant: 'Variant',
+          labelLink: 'Shareable link',
+          openScenario: 'Open scenario',
+          copyLink: 'Copy link',
+          footerUrl: 'URL of this screen:',
+          descFallback: 'Select scenario and variant, then open/share the link.',
+          copyDone: 'Copied'
+        },
+        ru: {
+          title: 'Plus Debug Menu — Карта сценариев',
+          hint:
+            'Этот экран — наглядная карта 3 сценариев. Сейчас это схема флоу и бэклог экранов. Далее добавим логику состояний сценариев, варианты A/B/C и генерацию URL-пресетов.',
+          flowActivation: 'a) активация',
+          flowCardsBenefits: 'b) активация карт и бенефитов',
+          flowCancellation: 'c) отмена',
+          legendImplemented: 'implemented = экран уже есть в `index.html`',
+          legendPlanned: 'planned = запланирован, добавим позже',
+          launcherTitle: 'Запуск сценария',
+          labelScenario: 'Сценарий',
+          labelVariant: 'Вариант',
+          labelLink: 'Ссылка для респондента',
+          openScenario: 'Открыть сценарий',
+          copyLink: 'Скопировать ссылку',
+          footerUrl: 'URL этого экрана:',
+          descFallback: 'Выберите сценарий и вариант, затем откройте/поделитесь ссылкой.',
+          copyDone: 'Скопировано'
+        }
+      };
+
+      function t(key) {
+        var dict = I18N[currentLang] || I18N.en;
+        return dict[key] || I18N.en[key] || key;
+      }
+
+      function applyLanguage(lang) {
+        currentLang = lang === 'ru' ? 'ru' : 'en';
+        langButtons.forEach(function (btn) {
+          btn.classList.toggle('is-active', btn.getAttribute('data-lang') === currentLang);
+        });
+        document.querySelectorAll('[data-i18n]').forEach(function (el) {
+          var key = el.getAttribute('data-i18n');
+          if (!key) return;
+          el.textContent = t(key);
+        });
+        updateScenarioLink();
+      }
 
       function activate(flowId) {
         buttons.forEach(function (btn) {
@@ -417,7 +518,9 @@
         if (window.PLUS_DEBUG_API && window.PLUS_DEBUG_API.getScenarioById) {
           var scenario = window.PLUS_DEBUG_API.getScenarioById(scenarioId);
           if (scenario) {
-            scenarioDescription.textContent = scenario.description || '';
+            var ru = scenario.descriptionRu || '';
+            var en = scenario.descriptionEn || scenario.description || '';
+            scenarioDescription.textContent = currentLang === 'ru' ? (ru || en || t('descFallback')) : (en || ru || t('descFallback'));
             if (scenario.flow) activate(scenario.flow);
           }
         }
@@ -448,10 +551,24 @@
       if (copyBtn) {
         copyBtn.addEventListener('click', function () {
           if (!linkInput || !linkInput.value) return;
-          navigator.clipboard.writeText(linkInput.value).catch(function () {});
+          navigator.clipboard.writeText(linkInput.value).then(function () {
+            var old = copyBtn.textContent;
+            copyBtn.textContent = t('copyDone');
+            setTimeout(function () {
+              copyBtn.textContent = t('copyLink');
+            }, 1000);
+          }).catch(function () {});
         });
       }
+      langButtons.forEach(function (btn) {
+        btn.addEventListener('click', function () {
+          var lang = btn.getAttribute('data-lang');
+          if (!lang) return;
+          applyLanguage(lang);
+        });
+      });
       initScenarioControls();
+      applyLanguage('en');
     })();
   </script>
 </body>

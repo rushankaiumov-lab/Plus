@@ -4,7 +4,9 @@
       id: 'activation',
       flow: 'activation',
       title: 'Activation baseline',
-      description: 'Пользователь начинает активацию Plus и добавляет карту для оплаты.',
+      description: 'User starts Plus activation and adds a payment card.',
+      descriptionEn: 'User starts Plus activation and adds a payment card.',
+      descriptionRu: 'Пользователь начинает активацию Plus и добавляет карту для оплаты.',
       entry: { screen: 'landing', openSheet: 'add-payment-method' },
       state: { hasPaymentMethod: false },
       variants: {
@@ -17,7 +19,9 @@
       id: 'activation-cards-benefits',
       flow: 'activation-cards-benefits',
       title: 'Cards and benefits',
-      description: 'Активная подписка с переходом к состояниям карт и бенефитов.',
+      description: 'Active subscription flow with card and benefits states.',
+      descriptionEn: 'Active subscription flow with card and benefits states.',
+      descriptionRu: 'Активная подписка с переходом к состояниям карт и бенефитов.',
       entry: { screen: 'subscription' },
       state: { hasPaymentMethod: true },
       variants: {
@@ -30,7 +34,9 @@
       id: 'cancellation',
       flow: 'cancellation',
       title: 'Cancellation baseline',
-      description: 'Пользователь проходит предупреждение и завершение отмены подписки.',
+      description: 'User goes through warning and subscription cancellation completion.',
+      descriptionEn: 'User goes through warning and subscription cancellation completion.',
+      descriptionRu: 'Пользователь проходит предупреждение и завершение отмены подписки.',
       entry: { screen: 'cancel-warning' },
       state: { hasPaymentMethod: true },
       variants: {
