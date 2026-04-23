@@ -1,0 +1,458 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Plus Debug Menu</title>
+  <style>
+    :root {
+      --bg: #f5f4f2;
+      --surface: #ffffff;
+      --text: #1a1919;
+      --muted: #6d6d6d;
+      --line: #d9d9d9;
+      --ok: #2e9f5d;
+      --todo: #b07a00;
+      --chip: #f0efed;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: var(--bg);
+      color: var(--text);
+    }
+    .wrap {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 24px 20px 40px;
+    }
+    h1 {
+      margin: 0 0 12px;
+      font-size: 28px;
+      line-height: 34px;
+      font-weight: 700;
+    }
+    .hint {
+      margin: 0 0 24px;
+      font-size: 14px;
+      line-height: 20px;
+      color: var(--muted);
+    }
+    .toolbar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+    .toolbar button {
+      border: 1px solid var(--line);
+      background: var(--surface);
+      color: var(--text);
+      border-radius: 12px;
+      padding: 10px 14px;
+      font-size: 14px;
+      line-height: 18px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+    .toolbar button.is-active {
+      border-color: var(--text);
+      background: var(--text);
+      color: #fff;
+    }
+    .legend {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 20px;
+    }
+    .legend span {
+      border-radius: 999px;
+      background: var(--chip);
+      padding: 6px 10px;
+      font-size: 12px;
+      line-height: 16px;
+      font-weight: 600;
+    }
+    .legend .ok { color: var(--ok); }
+    .legend .todo { color: var(--todo); }
+    .flow {
+      display: none;
+      gap: 12px;
+      overflow-x: auto;
+      padding-bottom: 8px;
+    }
+    .flow.is-active { display: flex; }
+    .col {
+      min-width: 250px;
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 12px;
+    }
+    .col h2 {
+      margin: 0 0 10px;
+      font-size: 14px;
+      line-height: 18px;
+      font-weight: 700;
+    }
+    .node {
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 10px;
+      margin-bottom: 8px;
+      background: #fff;
+    }
+    .node:last-child { margin-bottom: 0; }
+    .node-title {
+      margin: 0 0 5px;
+      font-size: 14px;
+      line-height: 18px;
+      font-weight: 600;
+    }
+    .node-meta {
+      margin: 0;
+      font-size: 12px;
+      line-height: 16px;
+      color: var(--muted);
+    }
+    .chip {
+      display: inline-block;
+      margin-top: 8px;
+      border-radius: 999px;
+      padding: 4px 8px;
+      font-size: 11px;
+      line-height: 14px;
+      font-weight: 700;
+      background: var(--chip);
+      color: var(--text);
+    }
+    .chip.ok { color: var(--ok); }
+    .chip.todo { color: var(--todo); }
+    .footer {
+      margin-top: 20px;
+      font-size: 13px;
+      line-height: 18px;
+      color: var(--muted);
+    }
+    .scenario-panel {
+      margin-top: 20px;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      background: var(--surface);
+      padding: 14px;
+    }
+    .scenario-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-top: 10px;
+    }
+    .scenario-grid label {
+      display: block;
+      font-size: 12px;
+      line-height: 16px;
+      color: var(--muted);
+      margin-bottom: 6px;
+    }
+    .scenario-grid select,
+    .scenario-grid input {
+      width: 100%;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      padding: 10px 12px;
+      font-size: 14px;
+      line-height: 18px;
+      color: var(--text);
+      background: #fff;
+    }
+    .scenario-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 10px;
+    }
+    .scenario-actions a,
+    .scenario-actions button {
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      background: #fff;
+      color: var(--text);
+      font-size: 13px;
+      line-height: 16px;
+      font-weight: 600;
+      padding: 9px 12px;
+      text-decoration: none;
+      cursor: pointer;
+    }
+    .scenario-actions a.is-primary {
+      border-color: var(--text);
+      background: var(--text);
+      color: #fff;
+    }
+    .scenario-desc {
+      margin: 8px 0 0;
+      font-size: 13px;
+      line-height: 18px;
+      color: var(--muted);
+    }
+    a { color: inherit; }
+  </style>
+</head>
+<body>
+  <main class="wrap">
+    <h1>Plus Debug Menu — Scenario Map</h1>
+    <p class="hint">
+      Этот экран — наглядная карта 3 сценариев. Сейчас это визуальная схема и бэклог экранов.
+      Далее сюда добавим логику состояний, вариативности A/B/C и генерацию URL пресетов.
+    </p>
+
+    <div class="toolbar" id="flow-switcher">
+      <button type="button" data-flow="activation" class="is-active">a) activation</button>
+      <button type="button" data-flow="activation-cards-benefits">b) activation of cards and benefits</button>
+      <button type="button" data-flow="cancellation">c) cancellation</button>
+    </div>
+
+    <div class="legend">
+      <span class="ok">implemented = уже есть экран в `index.html`</span>
+      <span class="todo">planned = запланирован, добавим позже</span>
+    </div>
+
+    <section class="scenario-panel" aria-label="Scenario controls">
+      <h2 style="margin:0;font-size:16px;line-height:20px;">Scenario launcher</h2>
+      <p class="scenario-desc" id="scenario-description">
+        Выберите сценарий и вариант, затем откройте ссылку для респондента.
+      </p>
+      <div class="scenario-grid">
+        <div>
+          <label for="scenario-select">Scenario</label>
+          <select id="scenario-select"></select>
+        </div>
+        <div>
+          <label for="variant-select">Variant</label>
+          <select id="variant-select">
+            <option value="A">A</option>
+            <option value="B">B</option>
+            <option value="C">C</option>
+          </select>
+        </div>
+        <div style="grid-column:1 / -1;">
+          <label for="scenario-link">Shareable link</label>
+          <input id="scenario-link" type="text" readonly />
+        </div>
+      </div>
+      <div class="scenario-actions">
+        <a id="open-scenario" class="is-primary" href="./index.html" target="_blank" rel="noopener noreferrer">Open scenario</a>
+        <button type="button" id="copy-scenario-link">Copy link</button>
+      </div>
+    </section>
+
+    <section class="flow is-active" data-flow="activation">
+      <article class="col">
+        <h2>Entry</h2>
+        <div class="node">
+          <p class="node-title">Subscription screen</p>
+          <p class="node-meta">Выбор пути: Continue with Plus / Continue to cancellation</p>
+          <span class="chip ok">implemented</span>
+        </div>
+      </article>
+      <article class="col">
+        <h2>Payment Setup</h2>
+        <div class="node">
+          <p class="node-title">Add payment method sheet</p>
+          <p class="node-meta">Способы оплаты и переход к токенизации</p>
+          <span class="chip ok">implemented</span>
+        </div>
+        <div class="node">
+          <p class="node-title">Payment tokenization sheet</p>
+          <p class="node-meta">Ввод карты, expiry, CVV, submit</p>
+          <span class="chip ok">implemented</span>
+        </div>
+      </article>
+      <article class="col">
+        <h2>Outcome</h2>
+        <div class="node">
+          <p class="node-title">Method added sheet</p>
+          <p class="node-meta">Подтверждение добавленной карты</p>
+          <span class="chip ok">implemented</span>
+        </div>
+        <div class="node">
+          <p class="node-title">Trial success screen</p>
+          <p class="node-meta">После успешной активации</p>
+          <span class="chip ok">implemented</span>
+        </div>
+        <div class="node">
+          <p class="node-title">Charge unsuccessful variant</p>
+          <p class="node-meta">Карта заблокирована / недостаточно средств</p>
+          <span class="chip todo">planned</span>
+        </div>
+      </article>
+    </section>
+
+    <section class="flow" data-flow="activation-cards-benefits">
+      <article class="col">
+        <h2>Cards State</h2>
+        <div class="node">
+          <p class="node-title">No cards</p>
+          <p class="node-meta">Новый пользователь, без карт и покупок</p>
+          <span class="chip todo">planned</span>
+        </div>
+        <div class="node">
+          <p class="node-title">Only Tabby Card / Only Cash / Both</p>
+          <p class="node-meta">Матрица наличия выпущенных карт</p>
+          <span class="chip todo">planned</span>
+        </div>
+      </article>
+      <article class="col">
+        <h2>Benefits Usage</h2>
+        <div class="node">
+          <p class="node-title">Split in 4 usage</p>
+          <p class="node-meta">OL / CL / both / none</p>
+          <span class="chip todo">planned</span>
+        </div>
+        <div class="node">
+          <p class="node-title">Split in 6 usage</p>
+          <p class="node-meta">Использует / не использует</p>
+          <span class="chip todo">planned</span>
+        </div>
+        <div class="node">
+          <p class="node-title">Cashback usage</p>
+          <p class="node-meta">Категории выбраны или нет, 5%/1%</p>
+          <span class="chip todo">planned</span>
+        </div>
+      </article>
+      <article class="col">
+        <h2>Savings and Suspension</h2>
+        <div class="node">
+          <p class="node-title">Lifetime savings block</p>
+          <p class="node-meta">нули / только cashback / только fees / оба</p>
+          <span class="chip todo">planned</span>
+        </div>
+        <div class="node">
+          <p class="node-title">Suspended mode</p>
+          <p class="node-meta">benefits locked из-за задолженности</p>
+          <span class="chip todo">planned</span>
+        </div>
+      </article>
+    </section>
+
+    <section class="flow" data-flow="cancellation">
+      <article class="col">
+        <h2>Cancellation Entry</h2>
+        <div class="node">
+          <p class="node-title">Cancel warning screen</p>
+          <p class="node-meta">Первый экран перед подтверждением отмены</p>
+          <span class="chip ok">implemented</span>
+        </div>
+      </article>
+      <article class="col">
+        <h2>Offer & Context</h2>
+        <div class="node">
+          <p class="node-title">Buyback offer AED 25 / AED 1</p>
+          <p class="node-meta">Наличие оффера: yes/no + цена</p>
+          <span class="chip todo">planned</span>
+        </div>
+        <div class="node">
+          <p class="node-title">Usage-aware messaging</p>
+          <p class="node-meta">есть/нет Tabby Card, Cash card, Split in 6, BNPL</p>
+          <span class="chip todo">planned</span>
+        </div>
+      </article>
+      <article class="col">
+        <h2>Final State</h2>
+        <div class="node">
+          <p class="node-title">Cancelled screen</p>
+          <p class="node-meta">Завершение отмены</p>
+          <span class="chip ok">implemented</span>
+        </div>
+        <div class="node">
+          <p class="node-title">Trial re-eligibility</p>
+          <p class="node-meta">Trial снова доступен / недоступен</p>
+          <span class="chip todo">planned</span>
+        </div>
+      </article>
+    </section>
+
+    <p class="footer">
+      URL этого экрана: <a href="./debug-menu.html">`/plus/debug-menu.html`</a>
+    </p>
+  </main>
+
+  <script src="./assets/debug/scenarios.js"></script>
+  <script>
+    (function () {
+      var buttons = document.querySelectorAll('#flow-switcher [data-flow]');
+      var flows = document.querySelectorAll('.flow[data-flow]');
+      var scenarioSelect = document.getElementById('scenario-select');
+      var variantSelect = document.getElementById('variant-select');
+      var linkInput = document.getElementById('scenario-link');
+      var openScenario = document.getElementById('open-scenario');
+      var copyBtn = document.getElementById('copy-scenario-link');
+      var scenarioDescription = document.getElementById('scenario-description');
+
+      function activate(flowId) {
+        buttons.forEach(function (btn) {
+          btn.classList.toggle('is-active', btn.getAttribute('data-flow') === flowId);
+        });
+        flows.forEach(function (section) {
+          section.classList.toggle('is-active', section.getAttribute('data-flow') === flowId);
+        });
+      }
+
+      function buildScenarioLink(scenarioId, variantId) {
+        var url = new URL('./index.html', window.location.href);
+        url.searchParams.set('scenario', scenarioId);
+        url.searchParams.set('variant', variantId);
+        return url.toString();
+      }
+
+      function updateScenarioLink() {
+        if (!scenarioSelect || !variantSelect || !linkInput || !openScenario) return;
+        var scenarioId = scenarioSelect.value;
+        var variant = variantSelect.value || 'A';
+        var link = buildScenarioLink(scenarioId, variant);
+        linkInput.value = link;
+        openScenario.href = link;
+        if (window.PLUS_DEBUG_API && window.PLUS_DEBUG_API.getScenarioById) {
+          var scenario = window.PLUS_DEBUG_API.getScenarioById(scenarioId);
+          if (scenario) {
+            scenarioDescription.textContent = scenario.description || '';
+            if (scenario.flow) activate(scenario.flow);
+          }
+        }
+      }
+
+      function initScenarioControls() {
+        if (!scenarioSelect || !window.PLUS_DEBUG_SCENARIOS || !window.PLUS_DEBUG_SCENARIOS.length) return;
+        window.PLUS_DEBUG_SCENARIOS.forEach(function (scenario) {
+          var option = document.createElement('option');
+          option.value = scenario.id;
+          option.textContent = scenario.title + ' (' + scenario.id + ')';
+          scenarioSelect.appendChild(option);
+        });
+        scenarioSelect.value = window.PLUS_DEBUG_SCENARIOS[0].id;
+        updateScenarioLink();
+      }
+
+      buttons.forEach(function (btn) {
+        btn.addEventListener('click', function () {
+          var id = btn.getAttribute('data-flow');
+          if (!id) return;
+          activate(id);
+        });
+      });
+
+      if (scenarioSelect) scenarioSelect.addEventListener('change', updateScenarioLink);
+      if (variantSelect) variantSelect.addEventListener('change', updateScenarioLink);
+      if (copyBtn) {
+        copyBtn.addEventListener('click', function () {
+          if (!linkInput || !linkInput.value) return;
+          navigator.clipboard.writeText(linkInput.value).catch(function () {});
+        });
+      }
+      initScenarioControls();
+    })();
+  </script>
+</body>
+</html>

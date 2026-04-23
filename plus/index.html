@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<\\!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
@@ -2792,6 +2792,7 @@
     </div>
   </div>
   <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
+  <script src="./assets/debug/scenarios.js"></script>
   <script>
     (function () {
       var scrollView = document.getElementById('scroll-view');
@@ -3516,6 +3517,48 @@
         applyActiveSubscriptionBenefitSheet();
       }
 
+      function resolveDebugScenarioFromUrl() {
+        if (!window.PLUS_DEBUG_API || typeof window.PLUS_DEBUG_API.getScenarioById !== 'function') return null;
+        var params = new URLSearchParams(window.location.search || '');
+        var scenarioId = params.get('scenario');
+        if (!scenarioId) return null;
+        var scenario = window.PLUS_DEBUG_API.getScenarioById(scenarioId);
+        if (!scenario) return null;
+        var variant = window.PLUS_DEBUG_API.resolveVariant(scenario, params.get('variant'));
+        return { scenario: scenario, variant: variant };
+      }
+
+      function applyDebugScenario(runtime) {
+        if (!runtime || !runtime.scenario) return;
+        var scenario = runtime.scenario;
+        var variant = runtime.variant;
+        var entry = scenario.entry || {};
+        var state = scenario.state || {};
+
+        document.documentElement.setAttribute('data-plus-scenario', scenario.id);
+        if (variant && variant.id) {
+          document.documentElement.setAttribute('data-plus-scenario-variant', variant.id);
+        }
+
+        try {
+          if (state.hasPaymentMethod === true) localStorage.setItem(HAS_PAYMENT_KEY, '1');
+          else if (state.hasPaymentMethod === false) localStorage.removeItem(HAS_PAYMENT_KEY);
+        } catch (err) {}
+
+        setScreen(entry.screen || 'landing');
+
+        if (entry.openSheet === 'payment-tokenization') {
+          requestAnimationFrame(function () {
+            openSheet('payment-tokenization');
+            initPaymentTokenizationForm();
+          });
+        } else if (entry.openSheet) {
+          requestAnimationFrame(function () {
+            openSheet(entry.openSheet);
+          });
+        }
+      }
+
       document.addEventListener('click', function (e) {
         var trigger = e.target.closest('[data-sheet-target]');
         if (!trigger) return;
@@ -3577,15 +3620,20 @@
         closeSheet();
       });
 
-      try {
-        var persisted = localStorage.getItem(SCREEN_KEY);
-        if (persisted === 'subscription' || persisted === 'cancel-warning' || persisted === 'cancelled') {
-          setScreen(persisted);
-        } else {
+      var runtimeScenario = resolveDebugScenarioFromUrl();
+      if (runtimeScenario) {
+        applyDebugScenario(runtimeScenario);
+      } else {
+        try {
+          var persisted = localStorage.getItem(SCREEN_KEY);
+          if (persisted === 'subscription' || persisted === 'cancel-warning' || persisted === 'cancelled') {
+            setScreen(persisted);
+          } else {
+            setScreen('landing');
+          }
+        } catch (e) {
           setScreen('landing');
         }
-      } catch (e) {
-        setScreen('landing');
       }
     })();
   </script>
