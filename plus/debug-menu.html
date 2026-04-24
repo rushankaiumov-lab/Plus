@@ -249,6 +249,23 @@
       width: 16px;
       height: 16px;
     }
+    .scenario-presets {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 6px;
+    }
+    .scenario-presets button {
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: #fff;
+      color: var(--text);
+      font-size: 12px;
+      line-height: 16px;
+      font-weight: 600;
+      padding: 6px 10px;
+      cursor: pointer;
+    }
     a { color: inherit; }
   </style>
 </head>
@@ -319,6 +336,12 @@
           <input type="checkbox" id="cond-has-active-split6" checked />
           <span data-i18n="condHasActiveSplit6">Has active Split in 6</span>
         </label>
+        <div class="scenario-presets">
+          <button type="button" data-cw-preset="baseline" data-i18n="presetBaseline">Baseline</button>
+          <button type="button" data-cw-preset="ol-debt" data-i18n="presetOlDebt">OL debt</button>
+          <button type="button" data-cw-preset="no-split6" data-i18n="presetNoSplit6">No Split in 6</button>
+          <button type="button" data-cw-preset="no-card" data-i18n="presetNoCard">No Tabby Card</button>
+        </div>
       </div>
     </section>
 
@@ -469,6 +492,7 @@
       var condHasTabbyCard = document.getElementById('cond-has-tabby-card');
       var condHasOlPurchases = document.getElementById('cond-has-ol-purchases');
       var condHasActiveSplit6 = document.getElementById('cond-has-active-split6');
+      var presetButtons = document.querySelectorAll('[data-cw-preset]');
       var currentLang = 'en';
       var I18N = {
         en: {
@@ -489,6 +513,10 @@
           condHasTabbyCard: 'Has Tabby Card',
           condHasOlPurchases: 'Has OL purchases (Split in 4 outstanding)',
           condHasActiveSplit6: 'Has active Split in 6',
+          presetBaseline: 'Baseline',
+          presetOlDebt: 'OL debt',
+          presetNoSplit6: 'No Split in 6',
+          presetNoCard: 'No Tabby Card',
           footerUrl: 'URL of this screen:',
           descFallback: 'Select scenario and variant, then open/share the link.',
           copyDone: 'Copied'
@@ -511,6 +539,10 @@
           condHasTabbyCard: 'Есть Tabby Card',
           condHasOlPurchases: 'Есть OL покупки (долг в Split in 4)',
           condHasActiveSplit6: 'Есть активный Split in 6',
+          presetBaseline: 'Базовый',
+          presetOlDebt: 'OL долг',
+          presetNoSplit6: 'Без Split in 6',
+          presetNoCard: 'Нет Tabby Card',
           footerUrl: 'URL этого экрана:',
           descFallback: 'Выберите сценарий и вариант, затем откройте/поделитесь ссылкой.',
           copyDone: 'Скопировано'
@@ -587,6 +619,28 @@
         updateScenarioLink();
       }
 
+      function applyCancellationPreset(preset) {
+        if (!condHasTabbyCard || !condHasOlPurchases || !condHasActiveSplit6) return;
+        if (preset === 'baseline') {
+          condHasTabbyCard.checked = true;
+          condHasOlPurchases.checked = false;
+          condHasActiveSplit6.checked = true;
+        } else if (preset === 'ol-debt') {
+          condHasTabbyCard.checked = true;
+          condHasOlPurchases.checked = true;
+          condHasActiveSplit6.checked = true;
+        } else if (preset === 'no-split6') {
+          condHasTabbyCard.checked = true;
+          condHasOlPurchases.checked = false;
+          condHasActiveSplit6.checked = false;
+        } else if (preset === 'no-card') {
+          condHasTabbyCard.checked = false;
+          condHasOlPurchases.checked = false;
+          condHasActiveSplit6.checked = true;
+        }
+        updateScenarioLink();
+      }
+
       buttons.forEach(function (btn) {
         btn.addEventListener('click', function () {
           var id = btn.getAttribute('data-flow');
@@ -600,6 +654,13 @@
       if (condHasTabbyCard) condHasTabbyCard.addEventListener('change', updateScenarioLink);
       if (condHasOlPurchases) condHasOlPurchases.addEventListener('change', updateScenarioLink);
       if (condHasActiveSplit6) condHasActiveSplit6.addEventListener('change', updateScenarioLink);
+      presetButtons.forEach(function (btn) {
+        btn.addEventListener('click', function () {
+          var preset = btn.getAttribute('data-cw-preset');
+          if (!preset) return;
+          applyCancellationPreset(preset);
+        });
+      });
       if (copyBtn) {
         copyBtn.addEventListener('click', function () {
           if (!linkInput || !linkInput.value) return;
