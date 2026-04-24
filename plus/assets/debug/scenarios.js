@@ -38,7 +38,12 @@
       descriptionEn: 'User goes through warning and subscription cancellation completion.',
       descriptionRu: 'Пользователь проходит предупреждение и завершение отмены подписки.',
       entry: { screen: 'cancel-warning' },
-      state: { hasPaymentMethod: true },
+      state: {
+        hasPaymentMethod: true,
+        hasTabbyCard: true,
+        hasOlPurchases: false,
+        hasActiveSplit6: true
+      },
       variants: {
         A: { id: 'A', title: 'Control framing' },
         B: { id: 'B', title: 'Soft framing' },

@@ -37,7 +37,7 @@
     :root {
       /* DS alias tokens (pilot scope: method-added) */
       --ds-bg-general-l1: #ffffff;
-      --ds-bg-general-l0: #f5f4f2;
+      --ds-bg-general-l0: #ffffff;
       --ds-bg-control-primary: #1a1919;
       --ds-front-primary: #1a1919;
       --ds-front-secondary: #75726f;
@@ -1624,7 +1624,11 @@
       color: var(--text-primary);
     }
     .cancel-warning-navbar {
-      position: relative;
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 220;
       background: var(--ds-bg-general-l1);
       color: var(--text-primary);
       box-shadow: none;
@@ -1647,11 +1651,13 @@
       display: flex;
       flex-direction: column;
       align-items: stretch;
-      padding: 0 16px;
+      padding: 0 24px;
       text-align: left;
+      margin-top: 0;
+      padding-top: var(--header-nav-height);
     }
     .flow-warning__hero {
-      width: 382px;
+      width: 366px;
       max-width: 100%;
       height: 220px;
       display: block;
@@ -1660,12 +1666,12 @@
     }
     .flow-warning__title-wrap {
       margin-top: 22px;
-      padding: 0 0 24px;
+      padding: 0;
       display: flex;
       flex-direction: column;
       gap: 10px;
       width: 100%;
-      max-width: 382px;
+      max-width: 366px;
       align-self: center;
     }
     .flow-page__title {
@@ -1687,11 +1693,12 @@
       color: var(--text-secondary);
     }
     .flow-warning__list {
+      margin-top: 32px;
       width: 100%;
-      max-width: 382px;
+      max-width: 366px;
       display: flex;
       flex-direction: column;
-      gap: 16px;
+      gap: 0;
       align-self: center;
     }
     .flow-warning__item.supercell {
@@ -1699,16 +1706,16 @@
       border-radius: 0;
       padding: 0;
       display: flex;
-      align-items: center;
-      min-height: 84px;
+      align-items: flex-start;
+      min-height: 88px;
       gap: 16px;
       text-align: left;
       height: auto;
       max-height: none;
     }
     .flow-warning__item .supercell__lead {
-      width: 56px;
-      height: 56px;
+      width: 40px;
+      height: 40px;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -1717,8 +1724,8 @@
       overflow: hidden;
     }
     .flow-warning__item .supercell__lead img {
-      width: 56px;
-      height: 56px;
+      width: 40px;
+      height: 40px;
       display: block;
       object-fit: contain;
     }
@@ -1729,6 +1736,7 @@
       letter-spacing: -0.16px;
       color: var(--text-primary);
       display: block;
+      margin-top: 0;
       -webkit-line-clamp: unset;
       line-clamp: unset;
       -webkit-box-orient: initial;
@@ -1752,6 +1760,9 @@
     .flow-warning__item .flow-warning__money-new {
       color: #d34c3b;
     }
+    .flow-warning__item[hidden] {
+      display: none !important;
+    }
     .flow-warning__item-text {
       font-size: var(--ds-type-body-md-size);
       line-height: var(--ds-type-body-md-tight-line);
@@ -1765,7 +1776,7 @@
     }
     .cancel-warning-footer {
       background: var(--color-page-gray);
-      padding: 16px 16px 0;
+      padding: 16px 24px 0;
     }
     .cancel-warning-footer .flow-page__btn--secondary {
       background: #e5e2df;
@@ -2861,22 +2872,21 @@
       <div class="flow-warning__content">
         <img class="flow-warning__hero" src="./assets/omni/cancel-warning-hero.svg" alt="" />
         <div class="flow-warning__title-wrap">
-          <h2 class="flow-page__title">How cancelling Plus affects your payments</h2>
-          <p class="flow-page__text">You will no longer be able to split any purchase in 4 and 6 for free</p>
+          <h2 class="flow-page__title">How cancelling Plus  affects your payments</h2>
         </div>
         <ul class="flow-warning__list supercell-list supercell-list--ds" role="list">
           <li>
-            <div class="flow-warning__item supercell">
+            <div class="flow-warning__item supercell" id="cancel-warning-split4-item">
             <span class="supercell__lead" aria-hidden="true">
-              <img src="./assets/omni/cancel-warning-lead1.svg" alt="" />
+              <img src="./assets/omni/icon-si4.svg" alt="" />
             </span>
-            <p class="supercell__label">Any future Split in 4 purchases made with your Tabby Card outside partner stores will include a service fee.</p>
+            <p class="supercell__label" id="cancel-warning-split4-text">Any future Split in 4 purchases made with your Tabby Card outside partner stores will include a service fee.</p>
             </div>
           </li>
           <li>
-            <div class="flow-warning__item supercell">
+            <div class="flow-warning__item supercell" id="cancel-warning-split6-item">
             <span class="supercell__lead" aria-hidden="true">
-              <img src="./assets/omni/cancel-warning-lead2.svg" alt="" />
+              <img src="./assets/omni/icon-si6.svg" alt="" />
             </span>
             <p class="supercell__label">You will lose your free Split in 6 at Noon and fees will apply. Your monthly instalment amount will increase from <span class="flow-warning__money-old">AED 100</span> to <span class="flow-warning__money-new">AED 120.00</span>.<br /><span class="flow-warning__meta-link">View details&nbsp;&rsaquo;</span></p>
             </div>
@@ -3645,7 +3655,11 @@
         var scenario = window.PLUS_DEBUG_API.getScenarioById(scenarioId);
         if (!scenario) return null;
         var variant = window.PLUS_DEBUG_API.resolveVariant(scenario, params.get('variant'));
-        return { scenario: scenario, variant: variant };
+        var stateOverrides = {};
+        if (params.has('cw_has_tabby_card')) stateOverrides.hasTabbyCard = params.get('cw_has_tabby_card') === '1';
+        if (params.has('cw_has_ol_purchases')) stateOverrides.hasOlPurchases = params.get('cw_has_ol_purchases') === '1';
+        if (params.has('cw_has_active_split6')) stateOverrides.hasActiveSplit6 = params.get('cw_has_active_split6') === '1';
+        return { scenario: scenario, variant: variant, stateOverrides: stateOverrides };
       }
 
       function applyDebugScenario(runtime) {
@@ -3653,7 +3667,7 @@
         var scenario = runtime.scenario;
         var variant = runtime.variant;
         var entry = scenario.entry || {};
-        var state = scenario.state || {};
+        var state = Object.assign({}, scenario.state || {}, runtime.stateOverrides || {});
 
         document.documentElement.setAttribute('data-plus-scenario', scenario.id);
         if (variant && variant.id) {
@@ -3665,6 +3679,7 @@
           else if (state.hasPaymentMethod === false) localStorage.removeItem(HAS_PAYMENT_KEY);
         } catch (err) {}
 
+        applyCancelWarningState(state);
         setScreen(entry.screen || 'landing');
 
         if (entry.openSheet === 'payment-tokenization') {
@@ -3677,6 +3692,30 @@
             openSheet(entry.openSheet);
           });
         }
+      }
+
+      function applyCancelWarningState(state) {
+        var split4Text = document.getElementById('cancel-warning-split4-text');
+        var split4Item = document.getElementById('cancel-warning-split4-item');
+        var split6Item = document.getElementById('cancel-warning-split6-item');
+        if (!split4Text || !split4Item || !split6Item) return;
+
+        var hasTabbyCard = state && state.hasTabbyCard !== undefined ? !!state.hasTabbyCard : true;
+        var hasOlPurchases = state && state.hasOlPurchases !== undefined ? !!state.hasOlPurchases : false;
+        var hasActiveSplit6 = state && state.hasActiveSplit6 !== undefined ? !!state.hasActiveSplit6 : true;
+
+        if (!hasTabbyCard) {
+          split4Item.parentElement.hidden = true;
+        } else {
+          split4Item.parentElement.hidden = false;
+          if (hasOlPurchases) {
+            split4Text.textContent = 'You’ll need to pay your outstanding Tabby Card Split in 4 purchases — AED 839.00.';
+          } else {
+            split4Text.textContent = 'Any future Split in 4 purchases made with your Tabby Card outside partner stores will include a service fee.';
+          }
+        }
+
+        split6Item.parentElement.hidden = !hasActiveSplit6;
       }
 
       document.addEventListener('click', function (e) {
@@ -3744,6 +3783,7 @@
       if (runtimeScenario) {
         applyDebugScenario(runtimeScenario);
       } else {
+        applyCancelWarningState({ hasTabbyCard: true, hasOlPurchases: false, hasActiveSplit6: true });
         try {
           var persisted = localStorage.getItem(SCREEN_KEY);
           if (persisted === 'subscription' || persisted === 'cancel-warning' || persisted === 'cancelled') {

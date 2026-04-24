@@ -230,6 +230,25 @@
       line-height: 18px;
       color: var(--muted);
     }
+    .scenario-conditions {
+      margin-top: 10px;
+      padding-top: 10px;
+      border-top: 1px solid var(--line);
+      display: grid;
+      gap: 8px;
+    }
+    .scenario-check {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 13px;
+      line-height: 18px;
+      color: var(--text);
+    }
+    .scenario-check input {
+      width: 16px;
+      height: 16px;
+    }
     a { color: inherit; }
   </style>
 </head>
@@ -286,6 +305,20 @@
       <div class="scenario-actions">
         <a id="open-scenario" class="is-primary" href="./index.html" target="_blank" rel="noopener noreferrer" data-i18n="openScenario">Open scenario</a>
         <button type="button" id="copy-scenario-link" data-i18n="copyLink">Copy link</button>
+      </div>
+      <div class="scenario-conditions" id="scenario-conditions">
+        <label class="scenario-check">
+          <input type="checkbox" id="cond-has-tabby-card" checked />
+          <span data-i18n="condHasTabbyCard">Has Tabby Card</span>
+        </label>
+        <label class="scenario-check">
+          <input type="checkbox" id="cond-has-ol-purchases" />
+          <span data-i18n="condHasOlPurchases">Has OL purchases (Split in 4 outstanding)</span>
+        </label>
+        <label class="scenario-check">
+          <input type="checkbox" id="cond-has-active-split6" checked />
+          <span data-i18n="condHasActiveSplit6">Has active Split in 6</span>
+        </label>
       </div>
     </section>
 
@@ -432,6 +465,10 @@
       var copyBtn = document.getElementById('copy-scenario-link');
       var scenarioDescription = document.getElementById('scenario-description');
       var langButtons = document.querySelectorAll('[data-lang]');
+      var condWrap = document.getElementById('scenario-conditions');
+      var condHasTabbyCard = document.getElementById('cond-has-tabby-card');
+      var condHasOlPurchases = document.getElementById('cond-has-ol-purchases');
+      var condHasActiveSplit6 = document.getElementById('cond-has-active-split6');
       var currentLang = 'en';
       var I18N = {
         en: {
@@ -449,6 +486,9 @@
           labelLink: 'Shareable link',
           openScenario: 'Open scenario',
           copyLink: 'Copy link',
+          condHasTabbyCard: 'Has Tabby Card',
+          condHasOlPurchases: 'Has OL purchases (Split in 4 outstanding)',
+          condHasActiveSplit6: 'Has active Split in 6',
           footerUrl: 'URL of this screen:',
           descFallback: 'Select scenario and variant, then open/share the link.',
           copyDone: 'Copied'
@@ -468,6 +508,9 @@
           labelLink: 'Ссылка для респондента',
           openScenario: 'Открыть сценарий',
           copyLink: 'Скопировать ссылку',
+          condHasTabbyCard: 'Есть Tabby Card',
+          condHasOlPurchases: 'Есть OL покупки (долг в Split in 4)',
+          condHasActiveSplit6: 'Есть активный Split in 6',
           footerUrl: 'URL этого экрана:',
           descFallback: 'Выберите сценарий и вариант, затем откройте/поделитесь ссылкой.',
           copyDone: 'Скопировано'
@@ -505,6 +548,11 @@
         var url = new URL('./index.html', window.location.href);
         url.searchParams.set('scenario', scenarioId);
         url.searchParams.set('variant', variantId);
+        if (scenarioId === 'cancellation') {
+          url.searchParams.set('cw_has_tabby_card', condHasTabbyCard && condHasTabbyCard.checked ? '1' : '0');
+          url.searchParams.set('cw_has_ol_purchases', condHasOlPurchases && condHasOlPurchases.checked ? '1' : '0');
+          url.searchParams.set('cw_has_active_split6', condHasActiveSplit6 && condHasActiveSplit6.checked ? '1' : '0');
+        }
         return url.toString();
       }
 
@@ -522,6 +570,7 @@
             var en = scenario.descriptionEn || scenario.description || '';
             scenarioDescription.textContent = currentLang === 'ru' ? (ru || en || t('descFallback')) : (en || ru || t('descFallback'));
             if (scenario.flow) activate(scenario.flow);
+            if (condWrap) condWrap.style.display = scenarioId === 'cancellation' ? 'grid' : 'none';
           }
         }
       }
@@ -548,6 +597,9 @@
 
       if (scenarioSelect) scenarioSelect.addEventListener('change', updateScenarioLink);
       if (variantSelect) variantSelect.addEventListener('change', updateScenarioLink);
+      if (condHasTabbyCard) condHasTabbyCard.addEventListener('change', updateScenarioLink);
+      if (condHasOlPurchases) condHasOlPurchases.addEventListener('change', updateScenarioLink);
+      if (condHasActiveSplit6) condHasActiveSplit6.addEventListener('change', updateScenarioLink);
       if (copyBtn) {
         copyBtn.addEventListener('click', function () {
           if (!linkInput || !linkInput.value) return;
