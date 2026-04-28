@@ -635,7 +635,7 @@
             var en = scenario.descriptionEn || scenario.description || '';
             scenarioDescription.textContent = currentLang === 'ru' ? (ru || en || t('descFallback')) : (en || ru || t('descFallback'));
             if (scenario.flow) activate(scenario.flow);
-            if (condWrap) condWrap.style.display = scenarioId === 'cancellation' ? 'grid' : 'none';
+            if (condWrap) condWrap.style.display = 'grid';
           }
         }
       }
