@@ -7,7 +7,7 @@
       description: 'User starts Plus activation and adds a payment card.',
       descriptionEn: 'User starts Plus activation and adds a payment card.',
       descriptionRu: 'Пользователь начинает активацию Plus и добавляет карту для оплаты.',
-      entry: { screen: 'landing', openSheet: 'add-payment-method' },
+      entry: { screen: 'landing' },
       state: { hasPaymentMethod: false },
       variants: {
         A: { id: 'A', title: 'Control copy' },
