@@ -7,8 +7,8 @@
       description: 'User starts Plus activation and adds a payment card.',
       descriptionEn: 'User starts Plus activation and adds a payment card.',
       descriptionRu: 'Пользователь начинает активацию Plus и добавляет карту для оплаты.',
-      entry: { screen: 'subscription' },
-      state: { hasPaymentMethod: false },
+      entry: { screen: 'landing' },
+      state: { hasPaymentMethod: false, isTrial: true },
       variants: {
         A: { id: 'A', title: 'Control copy' },
         B: { id: 'B', title: 'Alternative copy' },
@@ -23,7 +23,7 @@
       descriptionEn: 'Active subscription flow with card and benefits states.',
       descriptionRu: 'Активная подписка с переходом к состояниям карт и бенефитов.',
       entry: { screen: 'subscription' },
-      state: { hasPaymentMethod: true },
+      state: { hasPaymentMethod: true, isTrial: false },
       variants: {
         A: { id: 'A', title: 'Control structure' },
         B: { id: 'B', title: 'Alternative structure' },
@@ -40,6 +40,7 @@
       entry: { screen: 'cancel-warning' },
       state: {
         hasPaymentMethod: true,
+        isTrial: false,
         hasTabbyCard: true,
         hasOlPurchases: false,
         hasActiveSplit6: true

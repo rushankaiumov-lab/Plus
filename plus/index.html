@@ -2114,8 +2114,8 @@
     <div class="scroll-view" id="scroll-view">
       <div class="hero">
         <div class="hero__copy">
-          <h1>Try Plus for free for<br />1 month — on us!</h1>
-          <p>Earn cashback and get extra payment flexibility</p>
+          <h1 id="landing-hero-title">Try Plus for free for<br />1 month — on us!</h1>
+          <p id="landing-hero-subtitle">Earn cashback and get extra payment flexibility</p>
         </div>
       </div>
       <div class="main-area">
@@ -2182,7 +2182,7 @@
           </ul>
         </section>
       </div>
-      <div class="island">
+      <div class="island" id="landing-trial-timeline">
       <section class="section section--timeline">
         <div class="section__title">How your free trial works</div>
         <div class="timeline">
@@ -2289,9 +2289,9 @@
     </div>
     <div class="toolbar-mobile">
       <div class="toolbar-mobile__buttons">
-        <button type="button" class="cta-btn">
-          Start free trial
-          <span>then AED 59/mo</span>
+        <button type="button" class="cta-btn" id="landing-cta-btn">
+          <span class="cta-btn__label" id="landing-cta-label">Start free trial</span>
+          <span id="landing-cta-sub">then AED 59/mo</span>
         </button>
         <div class="toolbar-mobile__legal">By continuing, you accept the <a href="#">Plus T&amp;Cs</a></div>
       </div>
@@ -2936,6 +2936,11 @@
       var subscriptionPage = document.getElementById('subscription-page');
       var cancelWarningPage = document.getElementById('cancel-warning-page');
       var cancelledPage = document.getElementById('cancelled-page');
+      var landingHeroTitle = document.getElementById('landing-hero-title');
+      var landingHeroSubtitle = document.getElementById('landing-hero-subtitle');
+      var landingTrialTimeline = document.getElementById('landing-trial-timeline');
+      var landingCtaLabel = document.getElementById('landing-cta-label');
+      var landingCtaSub = document.getElementById('landing-cta-sub');
       var backButton = document.getElementById('subscription-back');
       var subscriptionScrollEl = document.getElementById('subscription-scroll');
       var subscriptionNavbar = document.getElementById('subscription-navbar');
@@ -2956,6 +2961,39 @@
       var SCREEN_KEY = 'plus-screen';
       var TRIAL_UNTIL_KEY = 'plus-trial-free-until';
       var HAS_PAYMENT_KEY = 'plus-has-payment-method';
+      var IS_TRIAL_KEY = 'plus-is-trial-available';
+
+      function applySubscriptionEntryState(state) {
+        var isTrial = state && state.isTrial !== undefined ? !!state.isTrial : true;
+        document.documentElement.setAttribute('data-plus-is-trial', isTrial ? '1' : '0');
+
+        if (landingHeroTitle) {
+          landingHeroTitle.innerHTML = isTrial
+            ? 'Try Plus for free for<br />1 month — on us!'
+            : 'Save more. Earn more.<br />With Plus.';
+        }
+        if (landingHeroSubtitle) {
+          landingHeroSubtitle.textContent = 'Earn cashback and get extra payment flexibility';
+        }
+        if (landingTrialTimeline) {
+          landingTrialTimeline.hidden = !isTrial;
+        }
+        if (landingCtaLabel) {
+          landingCtaLabel.textContent = isTrial ? 'Start free trial' : 'Get Plus for AED 59/mo';
+        }
+        if (landingCtaSub) {
+          landingCtaSub.hidden = !isTrial;
+          landingCtaSub.textContent = 'then AED 59/mo';
+        }
+
+        document.querySelectorAll('.sheet-cta .sheet-cta__label').forEach(function (el) {
+          el.textContent = isTrial ? 'Start free trial' : 'Get Plus for AED 59/mo';
+        });
+        document.querySelectorAll('.sheet-cta .sheet-cta__sub').forEach(function (el) {
+          el.hidden = !isTrial;
+          el.textContent = 'then AED 59/mo';
+        });
+      }
 
       function updateSubscriptionHeroMeta() {
         var el = document.getElementById('subscription-hero-meta');
@@ -3659,6 +3697,7 @@
         if (params.has('cw_has_tabby_card')) stateOverrides.hasTabbyCard = params.get('cw_has_tabby_card') === '1';
         if (params.has('cw_has_ol_purchases')) stateOverrides.hasOlPurchases = params.get('cw_has_ol_purchases') === '1';
         if (params.has('cw_has_active_split6')) stateOverrides.hasActiveSplit6 = params.get('cw_has_active_split6') === '1';
+        if (params.has('is_trial')) stateOverrides.isTrial = params.get('is_trial') === '1';
         return { scenario: scenario, variant: variant, stateOverrides: stateOverrides };
       }
 
@@ -3677,8 +3716,12 @@
         try {
           if (state.hasPaymentMethod === true) localStorage.setItem(HAS_PAYMENT_KEY, '1');
           else if (state.hasPaymentMethod === false) localStorage.removeItem(HAS_PAYMENT_KEY);
+          if (state.isTrial !== undefined) {
+            localStorage.setItem(IS_TRIAL_KEY, state.isTrial ? '1' : '0');
+          }
         } catch (err) {}
 
+        applySubscriptionEntryState(state);
         applyCancelWarningState(state);
         setScreen(entry.screen || 'landing');
 
@@ -3783,6 +3826,12 @@
       if (runtimeScenario) {
         applyDebugScenario(runtimeScenario);
       } else {
+        try {
+          var isTrialPersisted = localStorage.getItem(IS_TRIAL_KEY);
+          applySubscriptionEntryState({ isTrial: isTrialPersisted !== '0' });
+        } catch (e) {
+          applySubscriptionEntryState({ isTrial: true });
+        }
         applyCancelWarningState({ hasTabbyCard: true, hasOlPurchases: false, hasActiveSplit6: true });
         try {
           var persisted = localStorage.getItem(SCREEN_KEY);

@@ -261,6 +261,10 @@
       </div>
       <div class="scenario-conditions" id="scenario-conditions">
         <label class="scenario-check">
+          <input type="checkbox" id="cond-is-trial" checked />
+          <span data-i18n="condIsTrial">Trial is available</span>
+        </label>
+        <label class="scenario-check">
           <input type="checkbox" id="cond-has-tabby-card" checked />
           <span data-i18n="condHasTabbyCard">Has Tabby Card</span>
         </label>
@@ -299,6 +303,7 @@
       var buildUpdatedAtEl = document.getElementById('build-updated-at');
       var langButtons = document.querySelectorAll('[data-lang]');
       var condWrap = document.getElementById('scenario-conditions');
+      var condIsTrial = document.getElementById('cond-is-trial');
       var condHasTabbyCard = document.getElementById('cond-has-tabby-card');
       var condHasOlPurchases = document.getElementById('cond-has-ol-purchases');
       var condHasActiveSplit6 = document.getElementById('cond-has-active-split6');
@@ -316,6 +321,7 @@
           openScenario: 'Open scenario',
           openMap: 'Open Scenario Map',
           copyLink: 'Copy link',
+          condIsTrial: 'Trial is available',
           condHasTabbyCard: 'Has Tabby Card',
           condHasOlPurchases: 'Has OL purchases (Split in 4 outstanding)',
           condHasActiveSplit6: 'Has active Split in 6',
@@ -338,6 +344,7 @@
           openScenario: 'Открыть сценарий',
           openMap: 'Открыть карту сценариев',
           copyLink: 'Скопировать ссылку',
+          condIsTrial: 'Доступен Trial',
           condHasTabbyCard: 'Есть Tabby Card',
           condHasOlPurchases: 'Есть OL покупки (долг в Split in 4)',
           condHasActiveSplit6: 'Есть активный Split in 6',
@@ -352,8 +359,8 @@
       };
 
       var DEBUG_MENU_BUILD = {
-        version: 'v0.4.1',
-        updatedAt: '2026-04-28 15:39 UTC+2'
+        version: 'v0.5.0',
+        updatedAt: '2026-04-28 15:48 UTC+2'
       };
 
       if (buildVersionEl) buildVersionEl.textContent = DEBUG_MENU_BUILD.version;
@@ -381,6 +388,7 @@
         var url = new URL('./index.html', window.location.href);
         url.searchParams.set('scenario', scenarioId);
         url.searchParams.set('variant', variantId);
+        url.searchParams.set('is_trial', condIsTrial && condIsTrial.checked ? '1' : '0');
         url.searchParams.set('cw_has_tabby_card', condHasTabbyCard && condHasTabbyCard.checked ? '1' : '0');
         url.searchParams.set('cw_has_ol_purchases', condHasOlPurchases && condHasOlPurchases.checked ? '1' : '0');
         url.searchParams.set('cw_has_active_split6', condHasActiveSplit6 && condHasActiveSplit6.checked ? '1' : '0');
@@ -441,6 +449,7 @@
 
       if (scenarioSelect) scenarioSelect.addEventListener('change', updateScenarioLink);
       if (variantSelect) variantSelect.addEventListener('change', updateScenarioLink);
+      if (condIsTrial) condIsTrial.addEventListener('change', updateScenarioLink);
       if (condHasTabbyCard) condHasTabbyCard.addEventListener('change', updateScenarioLink);
       if (condHasOlPurchases) condHasOlPurchases.addEventListener('change', updateScenarioLink);
       if (condHasActiveSplit6) condHasActiveSplit6.addEventListener('change', updateScenarioLink);
