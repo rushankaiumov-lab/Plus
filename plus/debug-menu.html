@@ -96,6 +96,21 @@
       line-height: 18px;
       color: var(--muted);
     }
+    .footer .footer-map-link {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      background: #fff;
+      color: var(--text);
+      font-size: 13px;
+      line-height: 16px;
+      font-weight: 600;
+      padding: 9px 12px;
+      text-decoration: none;
+      cursor: pointer;
+    }
     .scenario-panel {
       margin-top: 20px;
       border: 1px solid var(--line);
@@ -242,7 +257,6 @@
       </div>
       <div class="scenario-actions">
         <a id="open-scenario" class="is-primary" href="./index.html" target="_blank" rel="noopener noreferrer" data-i18n="openScenario">Open scenario</a>
-        <a href="./debug-map.html" target="_blank" rel="noopener noreferrer" data-i18n="openMap">Open Scenario Map</a>
         <button type="button" id="copy-scenario-link" data-i18n="copyLink">Copy link</button>
       </div>
       <div class="scenario-conditions" id="scenario-conditions">
@@ -268,7 +282,7 @@
     </section>
 
     <p class="footer">
-      <span data-i18n="footerUrl">URL of this screen:</span> <a href="./debug-menu.html">`/plus/debug-menu.html`</a>
+      <a class="footer-map-link" href="./debug-map.html" target="_blank" rel="noopener noreferrer" data-i18n="openMap">Open Scenario Map</a>
     </p>
   </main>
 
@@ -338,8 +352,8 @@
       };
 
       var DEBUG_MENU_BUILD = {
-        version: 'v0.4.0',
-        updatedAt: '2026-04-28 14:08 UTC+2'
+        version: 'v0.4.1',
+        updatedAt: '2026-04-28 15:39 UTC+2'
       };
 
       if (buildVersionEl) buildVersionEl.textContent = DEBUG_MENU_BUILD.version;
