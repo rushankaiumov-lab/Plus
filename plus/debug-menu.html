@@ -66,6 +66,24 @@
       line-height: 34px;
       font-weight: 700;
     }
+    .build-meta {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      margin: 2px 0 10px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: var(--surface);
+      padding: 6px 10px;
+      font-size: 12px;
+      line-height: 16px;
+      font-weight: 600;
+      color: var(--muted);
+    }
+    .build-meta strong {
+      color: var(--text);
+      font-weight: 700;
+    }
     .hint {
       margin: 0 0 24px;
       font-size: 14px;
@@ -280,6 +298,11 @@
     </div>
 
     <h1 data-i18n="title">Plus Debug Menu — Scenario Map</h1>
+    <div class="build-meta" aria-live="polite">
+      <span><strong>Version:</strong> <span id="build-version">-</span></span>
+      <span>•</span>
+      <span><strong>Last updated:</strong> <span id="build-updated-at">-</span></span>
+    </div>
     <p class="hint" data-i18n="hint">
       This screen is a visual map of 3 scenarios. Right now it is a flow scheme and screens backlog.
       Next, we will add scenario state logic, A/B/C variants, and URL preset generation.
@@ -487,6 +510,8 @@
       var openScenario = document.getElementById('open-scenario');
       var copyBtn = document.getElementById('copy-scenario-link');
       var scenarioDescription = document.getElementById('scenario-description');
+      var buildVersionEl = document.getElementById('build-version');
+      var buildUpdatedAtEl = document.getElementById('build-updated-at');
       var langButtons = document.querySelectorAll('[data-lang]');
       var condWrap = document.getElementById('scenario-conditions');
       var condHasTabbyCard = document.getElementById('cond-has-tabby-card');
@@ -548,6 +573,14 @@
           copyDone: 'Скопировано'
         }
       };
+
+      var DEBUG_MENU_BUILD = {
+        version: 'v0.4.0',
+        updatedAt: '2026-04-28 14:08 UTC+2'
+      };
+
+      if (buildVersionEl) buildVersionEl.textContent = DEBUG_MENU_BUILD.version;
+      if (buildUpdatedAtEl) buildUpdatedAtEl.textContent = DEBUG_MENU_BUILD.updatedAt;
 
       function t(key) {
         var dict = I18N[currentLang] || I18N.en;
