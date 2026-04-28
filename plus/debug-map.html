@@ -1,0 +1,150 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Plus Scenario Map</title>
+  <style>
+    :root {
+      --bg: #f5f4f2;
+      --surface: #ffffff;
+      --text: #1a1919;
+      --muted: #6d6d6d;
+      --line: #d9d9d9;
+      --ok: #2e9f5d;
+      --todo: #b07a00;
+      --chip: #f0efed;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: var(--bg);
+      color: var(--text);
+    }
+    .wrap { max-width: 1240px; margin: 0 auto; padding: 24px 20px 32px; }
+    h1 { margin: 0 0 8px; font-size: 28px; line-height: 34px; font-weight: 700; }
+    .hint { margin: 0 0 18px; color: var(--muted); font-size: 14px; line-height: 20px; }
+    .toolbar { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 16px; }
+    .toolbar button {
+      border: 1px solid var(--line);
+      background: var(--surface);
+      color: var(--text);
+      border-radius: 12px;
+      padding: 10px 14px;
+      font-size: 14px;
+      line-height: 18px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+    .toolbar button.is-active { border-color: var(--text); background: var(--text); color: #fff; }
+    .legend { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 16px; }
+    .legend span { border-radius: 999px; background: var(--chip); padding: 6px 10px; font-size: 12px; font-weight: 600; }
+    .legend .ok { color: var(--ok); }
+    .legend .todo { color: var(--todo); }
+    .flow { display: none; gap: 12px; overflow-x: auto; padding-bottom: 8px; }
+    .flow.is-active { display: flex; }
+    .col { min-width: 280px; background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 12px; }
+    .col h2 { margin: 0 0 10px; font-size: 14px; line-height: 18px; font-weight: 700; }
+    .node { border: 1px solid var(--line); border-radius: 12px; padding: 10px; margin-bottom: 8px; background: #fff; }
+    .node:last-child { margin-bottom: 0; }
+    .node-title { margin: 0 0 5px; font-size: 14px; line-height: 18px; font-weight: 600; }
+    .node-meta { margin: 0; font-size: 12px; line-height: 16px; color: var(--muted); }
+    .chip { display: inline-block; margin-top: 8px; border-radius: 999px; padding: 4px 8px; font-size: 11px; font-weight: 700; background: var(--chip); }
+    .chip.ok { color: var(--ok); }
+    .chip.todo { color: var(--todo); }
+    .footer { margin-top: 16px; color: var(--muted); font-size: 13px; line-height: 18px; }
+    a { color: inherit; }
+  </style>
+</head>
+<body>
+  <main class="wrap">
+    <h1>Plus Scenario Map</h1>
+    <p class="hint">Visual map of all flows. Use `debug-menu` for scenario launch and shareable links.</p>
+
+    <div class="toolbar" id="flow-switcher">
+      <button type="button" data-flow="activation" class="is-active">a) activation</button>
+      <button type="button" data-flow="activation-cards-benefits">b) activation of cards and benefits</button>
+      <button type="button" data-flow="cancellation">c) cancellation</button>
+    </div>
+
+    <div class="legend">
+      <span class="ok">implemented = screen already exists in `index.html`</span>
+      <span class="todo">planned = scheduled, will be added later</span>
+    </div>
+
+    <section class="flow is-active" data-flow="activation">
+      <article class="col">
+        <h2>Entry</h2>
+        <div class="node"><p class="node-title">Subscription screen</p><p class="node-meta">Continue with Plus / cancellation entry</p><span class="chip ok">implemented</span></div>
+      </article>
+      <article class="col">
+        <h2>Payment Setup</h2>
+        <div class="node"><p class="node-title">Add payment method sheet</p><p class="node-meta">Select method and start tokenization</p><span class="chip ok">implemented</span></div>
+        <div class="node"><p class="node-title">Payment tokenization sheet</p><p class="node-meta">Card number + expiry + CVV + submit</p><span class="chip ok">implemented</span></div>
+      </article>
+      <article class="col">
+        <h2>Outcome</h2>
+        <div class="node"><p class="node-title">Method added sheet</p><p class="node-meta">Card added confirmation</p><span class="chip ok">implemented</span></div>
+        <div class="node"><p class="node-title">Trial success screen</p><p class="node-meta">Activation completed state</p><span class="chip ok">implemented</span></div>
+        <div class="node"><p class="node-title">Charge unsuccessful variant</p><p class="node-meta">Blocked card / insufficient funds</p><span class="chip todo">planned</span></div>
+      </article>
+    </section>
+
+    <section class="flow" data-flow="activation-cards-benefits">
+      <article class="col">
+        <h2>Cards State</h2>
+        <div class="node"><p class="node-title">No cards</p><p class="node-meta">New user with no cards and no purchases</p><span class="chip todo">planned</span></div>
+        <div class="node"><p class="node-title">Only Tabby Card / Only Cash / Both</p><p class="node-meta">Matrix of issued cards</p><span class="chip todo">planned</span></div>
+      </article>
+      <article class="col">
+        <h2>Benefits Usage</h2>
+        <div class="node"><p class="node-title">Split in 4 usage</p><p class="node-meta">OL / CL / both / none</p><span class="chip todo">planned</span></div>
+        <div class="node"><p class="node-title">Split in 6 usage</p><p class="node-meta">Uses or does not use</p><span class="chip todo">planned</span></div>
+        <div class="node"><p class="node-title">Cashback usage</p><p class="node-meta">Categories selected, 5%/1%</p><span class="chip todo">planned</span></div>
+      </article>
+      <article class="col">
+        <h2>Savings and Suspension</h2>
+        <div class="node"><p class="node-title">Lifetime savings block</p><p class="node-meta">Zero / cashback only / fees only / both</p><span class="chip todo">planned</span></div>
+        <div class="node"><p class="node-title">Suspended mode</p><p class="node-meta">Benefits locked due to overdue payment</p><span class="chip todo">planned</span></div>
+      </article>
+    </section>
+
+    <section class="flow" data-flow="cancellation">
+      <article class="col">
+        <h2>Cancellation Entry</h2>
+        <div class="node"><p class="node-title">Cancel warning screen</p><p class="node-meta">Pre-cancel decision step</p><span class="chip ok">implemented</span></div>
+      </article>
+      <article class="col">
+        <h2>Offer & Context</h2>
+        <div class="node"><p class="node-title">Buyback offer AED 25 / AED 1</p><p class="node-meta">Offer available or not + price</p><span class="chip todo">planned</span></div>
+        <div class="node"><p class="node-title">Usage-aware messaging</p><p class="node-meta">Tabby Card / Cash / Split in 6 / BNPL contexts</p><span class="chip todo">planned</span></div>
+      </article>
+      <article class="col">
+        <h2>Final State</h2>
+        <div class="node"><p class="node-title">Cancelled screen</p><p class="node-meta">Cancellation completed</p><span class="chip ok">implemented</span></div>
+        <div class="node"><p class="node-title">Trial re-eligibility</p><p class="node-meta">Trial available again or not</p><span class="chip todo">planned</span></div>
+      </article>
+    </section>
+
+    <p class="footer">Open launcher: <a href="./debug-menu.html">`/plus/debug-menu.html`</a></p>
+  </main>
+  <script>
+    (function () {
+      var buttons = document.querySelectorAll('#flow-switcher [data-flow]');
+      var flows = document.querySelectorAll('.flow[data-flow]');
+      function activate(flowId) {
+        buttons.forEach(function (btn) { btn.classList.toggle('is-active', btn.getAttribute('data-flow') === flowId); });
+        flows.forEach(function (section) { section.classList.toggle('is-active', section.getAttribute('data-flow') === flowId); });
+      }
+      buttons.forEach(function (btn) {
+        btn.addEventListener('click', function () {
+          var id = btn.getAttribute('data-flow');
+          if (!id) return;
+          activate(id);
+        });
+      });
+    })();
+  </script>
+</body>
+</html>
