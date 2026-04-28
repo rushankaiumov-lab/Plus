@@ -697,7 +697,7 @@
       padding-top: 0;
       padding-bottom: 0;
     }
-    .cta-btn.cta-btn--single span:not(.cta-btn__label) {
+    .cta-btn.cta-btn--single > span:not(.cta-btn__label):not(.btn-loader) {
       display: none;
     }
     .cta-btn.is-loading,
@@ -710,12 +710,10 @@
     }
     .btn-loader {
       position: absolute;
-      top: 50%;
-      left: 50%;
+      inset: 0;
       width: 34px;
       height: 34px;
-      margin-top: -17px;
-      margin-left: -17px;
+      margin: auto;
       border-radius: 50%;
       border: 5px solid rgba(245, 244, 242, 0.28);
       border-top-color: #f5f4f2;
@@ -827,19 +825,26 @@
       overflow: auto;
       display: flex;
       flex-direction: column;
-      gap: 14px;
+      gap: 12px;
+    }
+    .payment-select-sheet__handle {
+      width: 42px;
+      height: 5px;
+      border-radius: 999px;
+      background: #d8dee5;
+      margin: 0 auto 2px;
     }
     .payment-select-sheet__title {
-      margin: 8px 0 0;
+      margin: 0;
       font-family: var(--font-display);
       font-size: 24px;
-      line-height: 30px;
+      line-height: 31px;
       font-weight: 600;
-      letter-spacing: 0.1px;
+      letter-spacing: 0.05px;
       color: var(--text-primary);
     }
     .payment-select-sheet__intro {
-      margin: 4px 0 0;
+      margin: 0;
       font-family: var(--font-text);
       font-size: 14px;
       line-height: 18px;
@@ -849,10 +854,11 @@
     }
     .payment-select-sheet__list {
       list-style: none;
-      margin: 0;
-      padding: 4px 0;
+      margin: 2px 0 0;
+      padding: 6px 0;
       border-radius: 20px;
-      background: #f5f4f2;
+      background: #f8f8f8;
+      box-shadow: 0 2px 10px rgba(19, 28, 38, 0.06);
     }
     .payment-select-sheet__row {
       width: 100%;
@@ -871,8 +877,8 @@
       background: rgba(26, 25, 25, 0.05);
     }
     .payment-select-sheet__lead {
-      width: 44px;
-      height: 28px;
+      width: 36px;
+      height: 24px;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -882,39 +888,6 @@
       max-width: 100%;
       max-height: 100%;
       display: block;
-    }
-    .payment-select-sheet__brand-badge {
-      min-width: 36px;
-      height: 22px;
-      border-radius: 5px;
-      border: 1px solid #d7dce2;
-      background: #fff;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      padding: 0 6px;
-      font-size: 13px;
-      line-height: 16px;
-      font-weight: 700;
-      letter-spacing: -0.1px;
-      color: #2b3f8a;
-    }
-    .payment-select-sheet__brand-badge--mc {
-      color: #ec001e;
-    }
-    .payment-select-sheet__add-icon {
-      width: 36px;
-      height: 22px;
-      border-radius: 5px;
-      border: 1px solid #d7dce2;
-      background: #e9edf2;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 24px;
-      line-height: 1;
-      color: #1a1919;
-      padding-bottom: 1px;
     }
     .payment-select-sheet__copy {
       flex: 1;
@@ -964,8 +937,18 @@
       background: #fff;
     }
     .sheet-overlay__panel--select-payment {
-      max-height: min(72vh, 760px);
+      max-height: min(74vh, 780px);
       overflow: hidden;
+    }
+    .payment-select-sheet .sheet-toolbar {
+      padding: 0 0 4px;
+    }
+    .payment-select-sheet .sheet-toolbar__buttons {
+      width: 100%;
+    }
+    .payment-select-sheet .sheet-cta {
+      width: 100%;
+      min-height: 64px;
     }
     .sheet-overlay__panel--select-payment .payment-select-sheet {
       max-height: none;
@@ -2938,21 +2921,14 @@
     </template>
     <template class="sheet-template" data-sheet-id="select-payment-method">
       <div class="payment-select-sheet">
-        <div class="payment-sheet-nav">
-          <div class="payment-sheet-nav__spacer"></div>
-          <button type="button" class="payment-sheet-nav__btn payment-sheet-nav__btn--close" data-sheet-close aria-label="Close">
-            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-              <path d="M6 6L18 18M18 6L6 18" stroke="#1A1919" stroke-width="2" stroke-linecap="round"/>
-            </svg>
-          </button>
-        </div>
+        <div class="payment-select-sheet__handle" aria-hidden="true"></div>
         <h2 class="payment-select-sheet__title">Select payment method</h2>
         <p class="payment-select-sheet__intro">Your subscription will be charged to this payment method</p>
         <ul class="payment-select-sheet__list" role="list">
           <li>
             <button type="button" class="payment-select-sheet__row" data-select-payment-option>
               <span class="payment-select-sheet__lead" aria-hidden="true">
-                <img src="./assets/omni/apple-pay-mark.svg" alt="" width="36" height="22" />
+                <img src="./assets/omni/payment-method-pay.svg" alt="" width="36" height="24" />
               </span>
               <span class="payment-select-sheet__copy">
                 <span class="payment-select-sheet__main">Apple Pay</span>
@@ -2963,7 +2939,7 @@
           <li>
             <button type="button" class="payment-select-sheet__row" data-select-payment-option>
               <span class="payment-select-sheet__lead" aria-hidden="true">
-                <span class="payment-select-sheet__brand-badge">VISA</span>
+                <img src="./assets/omni/payment-method-visa.svg" alt="" width="36" height="24" />
               </span>
               <span class="payment-select-sheet__copy">
                 <span class="payment-select-sheet__sub"><span class="payment-select-sheet__sub--muted">Visa</span> •••• 8230</span>
@@ -2974,7 +2950,7 @@
           <li>
             <button type="button" class="payment-select-sheet__row" data-select-payment-option data-select-default>
               <span class="payment-select-sheet__lead" aria-hidden="true">
-                <span class="payment-select-sheet__brand-badge payment-select-sheet__brand-badge--mc">Mastercard</span>
+                <img src="./assets/omni/payment-method-master.svg" alt="" width="36" height="24" />
               </span>
               <span class="payment-select-sheet__copy">
                 <span class="payment-select-sheet__sub"><span class="payment-select-sheet__sub--muted">Mastercard</span> •••• 6893</span>
@@ -2982,10 +2958,21 @@
               <span class="payment-select-sheet__radio is-selected" aria-hidden="true"></span>
             </button>
           </li>
+          <li hidden data-added-card-row>
+            <button type="button" class="payment-select-sheet__row" data-select-payment-option data-added-card-option>
+              <span class="payment-select-sheet__lead" aria-hidden="true">
+                <img src="./assets/omni/payment-method-visa.svg" alt="" width="36" height="24" data-added-card-icon />
+              </span>
+              <span class="payment-select-sheet__copy">
+                <span class="payment-select-sheet__sub"><span class="payment-select-sheet__sub--muted" data-added-card-brand>Visa</span> <span data-added-card-last4>•••• 0001</span></span>
+              </span>
+              <span class="payment-select-sheet__radio" aria-hidden="true"></span>
+            </button>
+          </li>
           <li>
             <button type="button" class="payment-select-sheet__row" data-open-tokenization-from-select>
               <span class="payment-select-sheet__lead" aria-hidden="true">
-                <span class="payment-select-sheet__add-icon">+</span>
+                <img src="./assets/omni/payment-method-add-card.svg" alt="" width="36" height="24" />
               </span>
               <span class="payment-select-sheet__copy">
                 <span class="payment-select-sheet__main">Add new card</span>
@@ -3818,9 +3805,46 @@
           });
         });
       }
+      var tokenizationBackSheetId = 'add-payment-method';
+      var methodAddedReturnSheetId = null;
+      var latestAddedCard = null;
+
+      function getPaymentBrandDisplay(brand) {
+        return brand === 'mastercard' ? 'Mastercard' : 'Visa';
+      }
+
+      function getPaymentBrandIcon(brand) {
+        return brand === 'mastercard'
+          ? './assets/omni/payment-method-master.svg'
+          : './assets/omni/payment-method-visa.svg';
+      }
+
+      function hydrateSelectPaymentSheet() {
+        var root = document.getElementById('sheet-content');
+        if (!root) return;
+        var addedRow = root.querySelector('[data-added-card-row]');
+        if (!addedRow) return;
+        if (!latestAddedCard) {
+          addedRow.hidden = true;
+          return;
+        }
+        addedRow.hidden = false;
+        var brandEl = root.querySelector('[data-added-card-brand]');
+        var last4El = root.querySelector('[data-added-card-last4]');
+        var iconEl = root.querySelector('[data-added-card-icon]');
+        if (brandEl) brandEl.textContent = getPaymentBrandDisplay(latestAddedCard.brand);
+        if (last4El) last4El.textContent = '•••• ' + latestAddedCard.last4;
+        if (iconEl) iconEl.setAttribute('src', getPaymentBrandIcon(latestAddedCard.brand));
+        root.querySelectorAll('.payment-select-sheet__radio').forEach(function (dot) {
+          dot.classList.remove('is-selected');
+        });
+        var addedRadio = root.querySelector('[data-added-card-option] .payment-select-sheet__radio');
+        if (addedRadio) addedRadio.classList.add('is-selected');
+      }
 
       function goToTokenizationStep() {
         var keepTrigger = activeTrigger;
+        tokenizationBackSheetId = 'add-payment-method';
         dismissPanelThen(function () {
           openSheet('payment-tokenization', keepTrigger);
           initPaymentTokenizationForm();
@@ -3831,7 +3855,7 @@
         if (!document.getElementById('token-keypad')) return;
         var keepTrigger = activeTrigger;
         dismissPanelThen(function () {
-          openSheet('add-payment-method', keepTrigger);
+          openSheet(tokenizationBackSheetId || 'add-payment-method', keepTrigger);
         });
       }
 
@@ -3852,6 +3876,7 @@
       }
 
       function openMethodAddedSheet(last4, brand) {
+        methodAddedReturnSheetId = tokenizationBackSheetId || null;
         openSheet('method-added');
         var root = document.getElementById('sheet-content');
         if (!root) return;
@@ -3867,6 +3892,10 @@
           if (v) v.style.display = 'block';
           if (m) m.style.display = 'none';
         }
+        latestAddedCard = {
+          last4: last4 || '0000',
+          brand: b
+        };
       }
 
       function runCtaWithLoader(button, callback) {
@@ -3975,10 +4004,12 @@
         if (!sub) return;
         e.preventDefault();
         if (!validateTokenization()) return;
-        var digits = getCardDigitsRaw();
-        var last4 = digits.slice(-4);
-        var brand = detectCardBrand(digits) || 'visa';
-        openMethodAddedSheet(last4, brand);
+        runCtaWithLoader(sub, function () {
+          var digits = getCardDigitsRaw();
+          var last4 = digits.slice(-4);
+          var brand = detectCardBrand(digits) || 'visa';
+          openMethodAddedSheet(last4, brand);
+        });
       });
 
       document.addEventListener('click', function (e) {
@@ -4011,6 +4042,7 @@
         var addNew = e.target.closest('[data-open-tokenization-from-select]');
         if (!addNew) return;
         e.preventDefault();
+        tokenizationBackSheetId = 'select-payment-method';
         dismissPanelThen(function () {
           openSheet('payment-tokenization');
           initPaymentTokenizationForm();
@@ -4034,6 +4066,13 @@
         var done = e.target.closest('[data-payment-complete]');
         if (!done) return;
         e.preventDefault();
+        if (methodAddedReturnSheetId === 'select-payment-method') {
+          dismissPanelThen(function () {
+            openSheet('select-payment-method');
+            hydrateSelectPaymentSheet();
+          });
+          return;
+        }
         try {
           localStorage.setItem(HAS_PAYMENT_KEY, '1');
         } catch (err) {}
@@ -4053,6 +4092,7 @@
           }
         } catch (err) {}
         if (!isTrial) {
+          tokenizationBackSheetId = 'select-payment-method';
           openSheet('select-payment-method');
           return;
         }
@@ -4087,6 +4127,9 @@
         if (!wasOpen) {
           applyDocumentScrollLock();
           if (device) device.classList.add('device--sheet-open');
+        }
+        if (sheetId === 'select-payment-method') {
+          hydrateSelectPaymentSheet();
         }
         applyActiveSubscriptionBenefitSheet();
       }
