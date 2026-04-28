@@ -8,7 +8,7 @@
       descriptionEn: 'Non-subscriber entry state with trial available.',
       descriptionRu: 'Входное состояние для non-subscriber с доступным trial.',
       entry: { screen: 'landing' },
-      state: { hasPaymentMethod: false, isTrial: true },
+      state: { hasPaymentMethod: false, isTrial: true, showAddPaymentMethodSheet: true },
       variants: {
         A: { id: 'A', title: 'Control copy' },
         B: { id: 'B', title: 'Alternative copy' },
