@@ -90,97 +90,6 @@
       line-height: 20px;
       color: var(--muted);
     }
-    .toolbar {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 10px;
-      margin-bottom: 20px;
-    }
-    .toolbar button {
-      border: 1px solid var(--line);
-      background: var(--surface);
-      color: var(--text);
-      border-radius: 12px;
-      padding: 10px 14px;
-      font-size: 14px;
-      line-height: 18px;
-      font-weight: 600;
-      cursor: pointer;
-    }
-    .toolbar button.is-active {
-      border-color: var(--text);
-      background: var(--text);
-      color: #fff;
-    }
-    .legend {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-      margin-bottom: 20px;
-    }
-    .legend span {
-      border-radius: 999px;
-      background: var(--chip);
-      padding: 6px 10px;
-      font-size: 12px;
-      line-height: 16px;
-      font-weight: 600;
-    }
-    .legend .ok { color: var(--ok); }
-    .legend .todo { color: var(--todo); }
-    .flow {
-      display: none;
-      gap: 12px;
-      overflow-x: auto;
-      padding-bottom: 8px;
-    }
-    .flow.is-active { display: flex; }
-    .col {
-      min-width: 250px;
-      background: var(--surface);
-      border: 1px solid var(--line);
-      border-radius: 14px;
-      padding: 12px;
-    }
-    .col h2 {
-      margin: 0 0 10px;
-      font-size: 14px;
-      line-height: 18px;
-      font-weight: 700;
-    }
-    .node {
-      border: 1px solid var(--line);
-      border-radius: 12px;
-      padding: 10px;
-      margin-bottom: 8px;
-      background: #fff;
-    }
-    .node:last-child { margin-bottom: 0; }
-    .node-title {
-      margin: 0 0 5px;
-      font-size: 14px;
-      line-height: 18px;
-      font-weight: 600;
-    }
-    .node-meta {
-      margin: 0;
-      font-size: 12px;
-      line-height: 16px;
-      color: var(--muted);
-    }
-    .chip {
-      display: inline-block;
-      margin-top: 8px;
-      border-radius: 999px;
-      padding: 4px 8px;
-      font-size: 11px;
-      line-height: 14px;
-      font-weight: 700;
-      background: var(--chip);
-      color: var(--text);
-    }
-    .chip.ok { color: var(--ok); }
-    .chip.todo { color: var(--todo); }
     .footer {
       margin-top: 20px;
       font-size: 13px;
@@ -308,17 +217,6 @@
       Next, we will add scenario state logic, A/B/C variants, and URL preset generation.
     </p>
 
-    <div class="toolbar" id="flow-switcher">
-      <button type="button" data-flow="activation" class="is-active" data-i18n="flowActivation">a) activation</button>
-      <button type="button" data-flow="activation-cards-benefits" data-i18n="flowCardsBenefits">b) activation of cards and benefits</button>
-      <button type="button" data-flow="cancellation" data-i18n="flowCancellation">c) cancellation</button>
-    </div>
-
-    <div class="legend">
-      <span class="ok" data-i18n="legendImplemented">implemented = screen already exists in `index.html`</span>
-      <span class="todo" data-i18n="legendPlanned">planned = scheduled, will be added later</span>
-    </div>
-
     <section class="scenario-panel" aria-label="Scenario controls">
       <h2 style="margin:0;font-size:16px;line-height:20px;" data-i18n="launcherTitle">Scenario launcher</h2>
       <p class="scenario-desc" id="scenario-description">
@@ -368,132 +266,6 @@
       </div>
     </section>
 
-    <section class="flow is-active" data-flow="activation">
-      <article class="col">
-        <h2>Entry</h2>
-        <div class="node">
-          <p class="node-title">Subscription screen</p>
-          <p class="node-meta">Выбор пути: Continue with Plus / Continue to cancellation</p>
-          <span class="chip ok">implemented</span>
-        </div>
-      </article>
-      <article class="col">
-        <h2>Payment Setup</h2>
-        <div class="node">
-          <p class="node-title">Add payment method sheet</p>
-          <p class="node-meta">Способы оплаты и переход к токенизации</p>
-          <span class="chip ok">implemented</span>
-        </div>
-        <div class="node">
-          <p class="node-title">Payment tokenization sheet</p>
-          <p class="node-meta">Ввод карты, expiry, CVV, submit</p>
-          <span class="chip ok">implemented</span>
-        </div>
-      </article>
-      <article class="col">
-        <h2>Outcome</h2>
-        <div class="node">
-          <p class="node-title">Method added sheet</p>
-          <p class="node-meta">Подтверждение добавленной карты</p>
-          <span class="chip ok">implemented</span>
-        </div>
-        <div class="node">
-          <p class="node-title">Trial success screen</p>
-          <p class="node-meta">После успешной активации</p>
-          <span class="chip ok">implemented</span>
-        </div>
-        <div class="node">
-          <p class="node-title">Charge unsuccessful variant</p>
-          <p class="node-meta">Карта заблокирована / недостаточно средств</p>
-          <span class="chip todo">planned</span>
-        </div>
-      </article>
-    </section>
-
-    <section class="flow" data-flow="activation-cards-benefits">
-      <article class="col">
-        <h2>Cards State</h2>
-        <div class="node">
-          <p class="node-title">No cards</p>
-          <p class="node-meta">Новый пользователь, без карт и покупок</p>
-          <span class="chip todo">planned</span>
-        </div>
-        <div class="node">
-          <p class="node-title">Only Tabby Card / Only Cash / Both</p>
-          <p class="node-meta">Матрица наличия выпущенных карт</p>
-          <span class="chip todo">planned</span>
-        </div>
-      </article>
-      <article class="col">
-        <h2>Benefits Usage</h2>
-        <div class="node">
-          <p class="node-title">Split in 4 usage</p>
-          <p class="node-meta">OL / CL / both / none</p>
-          <span class="chip todo">planned</span>
-        </div>
-        <div class="node">
-          <p class="node-title">Split in 6 usage</p>
-          <p class="node-meta">Использует / не использует</p>
-          <span class="chip todo">planned</span>
-        </div>
-        <div class="node">
-          <p class="node-title">Cashback usage</p>
-          <p class="node-meta">Категории выбраны или нет, 5%/1%</p>
-          <span class="chip todo">planned</span>
-        </div>
-      </article>
-      <article class="col">
-        <h2>Savings and Suspension</h2>
-        <div class="node">
-          <p class="node-title">Lifetime savings block</p>
-          <p class="node-meta">нули / только cashback / только fees / оба</p>
-          <span class="chip todo">planned</span>
-        </div>
-        <div class="node">
-          <p class="node-title">Suspended mode</p>
-          <p class="node-meta">benefits locked из-за задолженности</p>
-          <span class="chip todo">planned</span>
-        </div>
-      </article>
-    </section>
-
-    <section class="flow" data-flow="cancellation">
-      <article class="col">
-        <h2>Cancellation Entry</h2>
-        <div class="node">
-          <p class="node-title">Cancel warning screen</p>
-          <p class="node-meta">Первый экран перед подтверждением отмены</p>
-          <span class="chip ok">implemented</span>
-        </div>
-      </article>
-      <article class="col">
-        <h2>Offer & Context</h2>
-        <div class="node">
-          <p class="node-title">Buyback offer AED 25 / AED 1</p>
-          <p class="node-meta">Наличие оффера: yes/no + цена</p>
-          <span class="chip todo">planned</span>
-        </div>
-        <div class="node">
-          <p class="node-title">Usage-aware messaging</p>
-          <p class="node-meta">есть/нет Tabby Card, Cash card, Split in 6, BNPL</p>
-          <span class="chip todo">planned</span>
-        </div>
-      </article>
-      <article class="col">
-        <h2>Final State</h2>
-        <div class="node">
-          <p class="node-title">Cancelled screen</p>
-          <p class="node-meta">Завершение отмены</p>
-          <span class="chip ok">implemented</span>
-        </div>
-        <div class="node">
-          <p class="node-title">Trial re-eligibility</p>
-          <p class="node-meta">Trial снова доступен / недоступен</p>
-          <span class="chip todo">planned</span>
-        </div>
-      </article>
-    </section>
-
     <p class="footer">
       <span data-i18n="footerUrl">URL of this screen:</span> <a href="./debug-menu.html">`/plus/debug-menu.html`</a>
     </p>
@@ -502,8 +274,6 @@
   <script src="./assets/debug/scenarios.js"></script>
   <script>
     (function () {
-      var buttons = document.querySelectorAll('#flow-switcher [data-flow]');
-      var flows = document.querySelectorAll('.flow[data-flow]');
       var scenarioSelect = document.getElementById('scenario-select');
       var variantSelect = document.getElementById('variant-select');
       var linkInput = document.getElementById('scenario-link');
@@ -524,11 +294,6 @@
           title: 'Plus Debug Menu — Scenario Map',
           hint:
             'This screen is a visual map of 3 scenarios. Right now it is a flow scheme and screens backlog. Next, we will add scenario state logic, A/B/C variants, and URL preset generation.',
-          flowActivation: 'a) activation',
-          flowCardsBenefits: 'b) activation of cards and benefits',
-          flowCancellation: 'c) cancellation',
-          legendImplemented: 'implemented = screen already exists in `index.html`',
-          legendPlanned: 'planned = scheduled, will be added later',
           launcherTitle: 'Scenario launcher',
           labelScenario: 'Scenario',
           labelVariant: 'Variant',
@@ -550,11 +315,6 @@
           title: 'Plus Debug Menu — Карта сценариев',
           hint:
             'Этот экран — наглядная карта 3 сценариев. Сейчас это схема флоу и бэклог экранов. Далее добавим логику состояний сценариев, варианты A/B/C и генерацию URL-пресетов.',
-          flowActivation: 'a) активация',
-          flowCardsBenefits: 'b) активация карт и бенефитов',
-          flowCancellation: 'c) отмена',
-          legendImplemented: 'implemented = экран уже есть в `index.html`',
-          legendPlanned: 'planned = запланирован, добавим позже',
           launcherTitle: 'Запуск сценария',
           labelScenario: 'Сценарий',
           labelVariant: 'Вариант',
@@ -600,15 +360,6 @@
         updateScenarioLink();
       }
 
-      function activate(flowId) {
-        buttons.forEach(function (btn) {
-          btn.classList.toggle('is-active', btn.getAttribute('data-flow') === flowId);
-        });
-        flows.forEach(function (section) {
-          section.classList.toggle('is-active', section.getAttribute('data-flow') === flowId);
-        });
-      }
-
       function buildScenarioLink(scenarioId, variantId) {
         var url = new URL('./index.html', window.location.href);
         url.searchParams.set('scenario', scenarioId);
@@ -632,7 +383,6 @@
             var ru = scenario.descriptionRu || '';
             var en = scenario.descriptionEn || scenario.description || '';
             scenarioDescription.textContent = currentLang === 'ru' ? (ru || en || t('descFallback')) : (en || ru || t('descFallback'));
-            if (scenario.flow) activate(scenario.flow);
             if (condWrap) condWrap.style.display = 'grid';
           }
         }
@@ -671,14 +421,6 @@
         }
         updateScenarioLink();
       }
-
-      buttons.forEach(function (btn) {
-        btn.addEventListener('click', function () {
-          var id = btn.getAttribute('data-flow');
-          if (!id) return;
-          activate(id);
-        });
-      });
 
       if (scenarioSelect) scenarioSelect.addEventListener('change', updateScenarioLink);
       if (variantSelect) variantSelect.addEventListener('change', updateScenarioLink);
