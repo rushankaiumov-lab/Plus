@@ -711,6 +711,7 @@
     .btn-loader {
       position: absolute;
       inset: 0;
+      display: block;
       width: 34px;
       height: 34px;
       margin: auto;
@@ -720,6 +721,7 @@
       opacity: 0;
       animation: plus-btn-loader-spin 0.75s linear infinite;
       pointer-events: none;
+      z-index: 1;
     }
     .cta-btn.is-loading .btn-loader,
     .sheet-cta.is-loading .btn-loader {
@@ -837,8 +839,8 @@
     .payment-select-sheet__title {
       margin: 0;
       font-family: var(--font-display);
-      font-size: 24px;
-      line-height: 31px;
+      font-size: 35px;
+      line-height: 36px;
       font-weight: 600;
       letter-spacing: 0.05px;
       color: var(--text-primary);
@@ -846,19 +848,19 @@
     .payment-select-sheet__intro {
       margin: 0;
       font-family: var(--font-text);
-      font-size: 14px;
-      line-height: 18px;
-      font-weight: 500;
-      letter-spacing: -0.1px;
+      font-size: 16px;
+      line-height: 20px;
+      font-weight: 400;
+      letter-spacing: -0.16px;
       color: var(--text-secondary);
     }
     .payment-select-sheet__list {
       list-style: none;
       margin: 2px 0 0;
       padding: 6px 0;
-      border-radius: 20px;
-      background: #f8f8f8;
-      box-shadow: 0 2px 10px rgba(19, 28, 38, 0.06);
+      border-radius: 24px;
+      background: #fff;
+      box-shadow: 0 3px 20px 0 rgba(147, 165, 184, 0.25);
     }
     .payment-select-sheet__row {
       width: 100%;
@@ -2932,17 +2934,6 @@
               </span>
               <span class="payment-select-sheet__copy">
                 <span class="payment-select-sheet__main">Apple Pay</span>
-              </span>
-              <span class="payment-select-sheet__radio" aria-hidden="true"></span>
-            </button>
-          </li>
-          <li>
-            <button type="button" class="payment-select-sheet__row" data-select-payment-option>
-              <span class="payment-select-sheet__lead" aria-hidden="true">
-                <img src="./assets/omni/payment-method-visa.svg" alt="" width="36" height="24" />
-              </span>
-              <span class="payment-select-sheet__copy">
-                <span class="payment-select-sheet__sub"><span class="payment-select-sheet__sub--muted">Visa</span> •••• 8230</span>
               </span>
               <span class="payment-select-sheet__radio" aria-hidden="true"></span>
             </button>
