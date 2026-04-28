@@ -3,10 +3,10 @@
     {
       id: 'activation',
       flow: 'activation',
-      title: 'Activation baseline',
-      description: 'User starts Plus activation and adds a payment card.',
-      descriptionEn: 'User starts Plus activation and adds a payment card.',
-      descriptionRu: 'Пользователь начинает активацию Plus и добавляет карту для оплаты.',
+      title: 'Non-subscriber • Plus home page • Trial is available',
+      description: 'Non-subscriber entry state with trial available.',
+      descriptionEn: 'Non-subscriber entry state with trial available.',
+      descriptionRu: 'Входное состояние для non-subscriber с доступным trial.',
       entry: { screen: 'landing' },
       state: { hasPaymentMethod: false, isTrial: true },
       variants: {
@@ -18,10 +18,10 @@
     {
       id: 'activation-cards-benefits',
       flow: 'activation-cards-benefits',
-      title: 'Cards and benefits',
-      description: 'Active subscription flow with card and benefits states.',
-      descriptionEn: 'Active subscription flow with card and benefits states.',
-      descriptionRu: 'Активная подписка с переходом к состояниям карт и бенефитов.',
+      title: 'Subscriber • Plus active page • Paid subscription active',
+      description: 'Subscriber active page in paid subscription mode.',
+      descriptionEn: 'Subscriber active page in paid subscription mode.',
+      descriptionRu: 'Экран активной подписки в платном режиме.',
       entry: { screen: 'subscription' },
       state: { hasPaymentMethod: true, isTrial: false },
       variants: {
@@ -31,12 +31,27 @@
       }
     },
     {
+      id: 'subscriber-active-trial',
+      flow: 'activation-cards-benefits',
+      title: 'Subscriber • Plus active page • Trial success',
+      description: 'Subscriber active page in trial mode.',
+      descriptionEn: 'Subscriber active page in trial mode.',
+      descriptionRu: 'Экран активной подписки в режиме trial.',
+      entry: { screen: 'subscription' },
+      state: { hasPaymentMethod: true, isTrial: true },
+      variants: {
+        A: { id: 'A', title: 'Control structure' },
+        B: { id: 'B', title: 'Alternative structure' },
+        C: { id: 'C', title: 'Compressed structure' }
+      }
+    },
+    {
       id: 'cancellation',
       flow: 'cancellation',
-      title: 'Cancellation baseline',
-      description: 'User goes through warning and subscription cancellation completion.',
-      descriptionEn: 'User goes through warning and subscription cancellation completion.',
-      descriptionRu: 'Пользователь проходит предупреждение и завершение отмены подписки.',
+      title: 'Subscriber • Cancel warning page • Baseline',
+      description: 'Cancellation warning state before final cancellation.',
+      descriptionEn: 'Cancellation warning state before final cancellation.',
+      descriptionRu: 'Состояние предупреждения перед финальной отменой подписки.',
       entry: { screen: 'cancel-warning' },
       state: {
         hasPaymentMethod: true,

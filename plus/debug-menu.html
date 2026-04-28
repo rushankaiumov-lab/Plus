@@ -359,8 +359,8 @@
       };
 
       var DEBUG_MENU_BUILD = {
-        version: 'v0.5.0',
-        updatedAt: '2026-04-28 15:48 UTC+2'
+        version: 'v0.5.2',
+        updatedAt: '2026-04-28 18:24 UTC+2'
       };
 
       if (buildVersionEl) buildVersionEl.textContent = DEBUG_MENU_BUILD.version;
@@ -413,6 +413,16 @@
         }
       }
 
+      function applyScenarioStateDefaults() {
+        if (!scenarioSelect || !window.PLUS_DEBUG_API || typeof window.PLUS_DEBUG_API.getScenarioById !== 'function') return;
+        var scenario = window.PLUS_DEBUG_API.getScenarioById(scenarioSelect.value);
+        if (!scenario || !scenario.state) return;
+        if (condIsTrial && scenario.state.isTrial !== undefined) condIsTrial.checked = !!scenario.state.isTrial;
+        if (condHasTabbyCard && scenario.state.hasTabbyCard !== undefined) condHasTabbyCard.checked = !!scenario.state.hasTabbyCard;
+        if (condHasOlPurchases && scenario.state.hasOlPurchases !== undefined) condHasOlPurchases.checked = !!scenario.state.hasOlPurchases;
+        if (condHasActiveSplit6 && scenario.state.hasActiveSplit6 !== undefined) condHasActiveSplit6.checked = !!scenario.state.hasActiveSplit6;
+      }
+
       function initScenarioControls() {
         if (!scenarioSelect || !window.PLUS_DEBUG_SCENARIOS || !window.PLUS_DEBUG_SCENARIOS.length) return;
         window.PLUS_DEBUG_SCENARIOS.forEach(function (scenario) {
@@ -422,6 +432,7 @@
           scenarioSelect.appendChild(option);
         });
         scenarioSelect.value = window.PLUS_DEBUG_SCENARIOS[0].id;
+        applyScenarioStateDefaults();
         updateScenarioLink();
       }
 
@@ -447,7 +458,12 @@
         updateScenarioLink();
       }
 
-      if (scenarioSelect) scenarioSelect.addEventListener('change', updateScenarioLink);
+      if (scenarioSelect) {
+        scenarioSelect.addEventListener('change', function () {
+          applyScenarioStateDefaults();
+          updateScenarioLink();
+        });
+      }
       if (variantSelect) variantSelect.addEventListener('change', updateScenarioLink);
       if (condIsTrial) condIsTrial.addEventListener('change', updateScenarioLink);
       if (condHasTabbyCard) condHasTabbyCard.addEventListener('change', updateScenarioLink);

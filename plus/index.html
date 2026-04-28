@@ -671,6 +671,15 @@
       justify-content: center;
       gap: 2px;
     }
+    .cta-btn .cta-btn__label {
+      display: block;
+      font-weight: 700;
+      font-size: 17px;
+      line-height: 22px;
+      letter-spacing: -0.16px;
+      color: var(--text-on-inverse-primary);
+      margin-top: 0;
+    }
     .cta-btn span {
       display: block;
       font-weight: 500;
@@ -679,6 +688,10 @@
       letter-spacing: -0.16px;
       color: var(--text-on-inverse-secondary);
       margin-top: 0;
+    }
+    .cta-btn.cta-btn--single {
+      padding-top: 0;
+      padding-bottom: 0;
     }
     .footnote { display: none; }
 
@@ -2960,8 +2973,51 @@
 
       var SCREEN_KEY = 'plus-screen';
       var TRIAL_UNTIL_KEY = 'plus-trial-free-until';
+      var RENEWS_ON_KEY = 'plus-renews-on';
       var HAS_PAYMENT_KEY = 'plus-has-payment-method';
       var IS_TRIAL_KEY = 'plus-is-trial-available';
+
+      function formatTrialUntilDate(value) {
+        if (!value) return 'Jan 22';
+        var parsed = new Date(value);
+        if (isNaN(parsed.getTime())) return 'Jan 22';
+        var month = parsed.toLocaleString('en-US', { month: 'short' });
+        return month + ' ' + parsed.getDate();
+      }
+
+      function ensureTrialUntilDate() {
+        try {
+          var existing = localStorage.getItem(TRIAL_UNTIL_KEY);
+          if (existing) return existing;
+          var base = new Date();
+          base.setDate(base.getDate() + 30);
+          var iso = base.toISOString();
+          localStorage.setItem(TRIAL_UNTIL_KEY, iso);
+          return iso;
+        } catch (e) {
+          return null;
+        }
+      }
+
+      function formatRenewDate(value) {
+        if (!value) return 'Mar 20';
+        var parsed = new Date(value);
+        if (isNaN(parsed.getTime())) return 'Mar 20';
+        var month = parsed.toLocaleString('en-US', { month: 'short' });
+        return month + ' ' + parsed.getDate();
+      }
+
+      function ensureRenewDate() {
+        try {
+          var existing = localStorage.getItem(RENEWS_ON_KEY);
+          if (existing) return existing;
+          var defaultIso = '2026-03-20T00:00:00.000Z';
+          localStorage.setItem(RENEWS_ON_KEY, defaultIso);
+          return defaultIso;
+        } catch (e) {
+          return null;
+        }
+      }
 
       function applySubscriptionEntryState(state) {
         var isTrial = state && state.isTrial !== undefined ? !!state.isTrial : true;
@@ -2985,6 +3041,10 @@
           landingCtaSub.hidden = !isTrial;
           landingCtaSub.textContent = 'then AED 59/mo';
         }
+        var landingCtaBtn = document.getElementById('landing-cta-btn');
+        if (landingCtaBtn) {
+          landingCtaBtn.classList.toggle('cta-btn--single', !isTrial);
+        }
 
         document.querySelectorAll('.sheet-cta .sheet-cta__label').forEach(function (el) {
           el.textContent = isTrial ? 'Start free trial' : 'Get Plus for AED 59/mo';
@@ -2998,14 +3058,27 @@
       function updateSubscriptionHeroMeta() {
         var el = document.getElementById('subscription-hero-meta');
         if (!el) return;
-        el.textContent = 'Active Subscription · Eligible all';
+        var isTrial = true;
+        try {
+          isTrial = localStorage.getItem(IS_TRIAL_KEY) !== '0';
+        } catch (e) {}
+        if (isTrial) {
+          var trialUntilValue = ensureTrialUntilDate();
+          el.textContent = 'Active trial · Free until ' + formatTrialUntilDate(trialUntilValue);
+          return;
+        }
+        var renewDateValue = ensureRenewDate();
+        el.textContent = 'Active • Renews ' + formatRenewDate(renewDateValue);
       }
 
       function applyActiveSubscriptionBenefitSheet() {
         var root = document.getElementById('sheet-content');
         if (!root || !subscriptionPage.classList.contains('is-active')) return;
         var meta = document.getElementById('subscription-hero-meta');
-        if (!meta || meta.textContent.indexOf('Active Subscription') === -1) return;
+        if (!meta) return;
+        var isActiveSubscriptionMeta = meta.textContent.indexOf('Active Subscription') !== -1;
+        var isActiveTrialMeta = meta.textContent.indexOf('Active trial') !== -1;
+        if (!isActiveSubscriptionMeta && !isActiveTrialMeta) return;
         var cta = root.querySelector('.sheet-toolbar .sheet-cta[data-subscription-cta]');
         if (!cta) return;
         cta.removeAttribute('data-subscription-cta');
@@ -3155,6 +3228,10 @@
           trialSuccessPage.setAttribute('aria-hidden', 'false');
           device.classList.add('has-subscription-open');
           navbar.classList.remove('navbar--on-light');
+          try {
+            localStorage.setItem(IS_TRIAL_KEY, '1');
+            ensureTrialUntilDate();
+          } catch (e) {}
           requestAnimationFrame(function () {
             requestAnimationFrame(function () {
               fireTrialConfetti();
