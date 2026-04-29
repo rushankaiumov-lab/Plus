@@ -58,7 +58,9 @@
         isTrial: false,
         hasTabbyCard: true,
         hasOlPurchases: false,
-        hasActiveSplit6: true
+        hasActiveSplit6: true,
+        offerAvailable: true,
+        buybackAed: 25
       },
       variants: {
         A: { id: 'A', title: 'Control framing' },

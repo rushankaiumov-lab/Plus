@@ -280,6 +280,17 @@
           <input type="checkbox" id="cond-has-active-split6" checked />
           <span data-i18n="condHasActiveSplit6">Has active Split in 6</span>
         </label>
+        <label class="scenario-check">
+          <input type="checkbox" id="cond-offer-available" checked />
+          <span data-i18n="condOfferAvailable">Offer available</span>
+        </label>
+        <div>
+          <label for="cond-buyback-aed" data-i18n="labelBuybackAed">Buyback amount (AED)</label>
+          <select id="cond-buyback-aed">
+            <option value="1">1</option>
+            <option value="25" selected>25</option>
+          </select>
+        </div>
         <div class="scenario-presets">
           <button type="button" data-cw-preset="baseline" data-i18n="presetBaseline">Baseline</button>
           <button type="button" data-cw-preset="ol-debt" data-i18n="presetOlDebt">OL debt</button>
@@ -312,6 +323,8 @@
       var condHasTabbyCard = document.getElementById('cond-has-tabby-card');
       var condHasOlPurchases = document.getElementById('cond-has-ol-purchases');
       var condHasActiveSplit6 = document.getElementById('cond-has-active-split6');
+      var condOfferAvailable = document.getElementById('cond-offer-available');
+      var condBuybackAed = document.getElementById('cond-buyback-aed');
       var presetButtons = document.querySelectorAll('[data-cw-preset]');
       var currentLang = 'en';
       var I18N = {
@@ -331,6 +344,8 @@
           condHasTabbyCard: 'Has Tabby Card',
           condHasOlPurchases: 'Has OL purchases (Split in 4 outstanding)',
           condHasActiveSplit6: 'Has active Split in 6',
+          condOfferAvailable: 'Offer available',
+          labelBuybackAed: 'Buyback amount (AED)',
           presetBaseline: 'Baseline',
           presetOlDebt: 'OL debt',
           presetNoSplit6: 'No Split in 6',
@@ -355,6 +370,8 @@
           condHasTabbyCard: 'Есть Tabby Card',
           condHasOlPurchases: 'Есть OL покупки (долг в Split in 4)',
           condHasActiveSplit6: 'Есть активный Split in 6',
+          condOfferAvailable: 'Оффер доступен',
+          labelBuybackAed: 'Сумма байбэка (AED)',
           presetBaseline: 'Базовый',
           presetOlDebt: 'OL долг',
           presetNoSplit6: 'Без Split in 6',
@@ -366,8 +383,8 @@
       };
 
       var DEBUG_MENU_BUILD = {
-        version: 'v0.5.3',
-        updatedAt: '2026-04-28 18:30 UTC+2'
+        version: 'v0.6.1',
+        updatedAt: '2026-04-29 12:52 UTC+2'
       };
 
       if (buildVersionEl) buildVersionEl.textContent = DEBUG_MENU_BUILD.version;
@@ -400,6 +417,8 @@
         url.searchParams.set('cw_has_tabby_card', condHasTabbyCard && condHasTabbyCard.checked ? '1' : '0');
         url.searchParams.set('cw_has_ol_purchases', condHasOlPurchases && condHasOlPurchases.checked ? '1' : '0');
         url.searchParams.set('cw_has_active_split6', condHasActiveSplit6 && condHasActiveSplit6.checked ? '1' : '0');
+        url.searchParams.set('offer_available', condOfferAvailable && condOfferAvailable.checked ? '1' : '0');
+        url.searchParams.set('buyback_aed', condBuybackAed ? (condBuybackAed.value || '25') : '25');
         return url.toString();
       }
 
@@ -425,11 +444,13 @@
         if (!scenarioSelect || !window.PLUS_DEBUG_API || typeof window.PLUS_DEBUG_API.getScenarioById !== 'function') return;
         var scenario = window.PLUS_DEBUG_API.getScenarioById(scenarioSelect.value);
         if (!scenario || !scenario.state) return;
-        if (condIsTrial && scenario.state.isTrial !== undefined) condIsTrial.checked = !!scenario.state.isTrial;
-        if (condShowAddPaymentSheet && scenario.state.showAddPaymentMethodSheet !== undefined) condShowAddPaymentSheet.checked = !!scenario.state.showAddPaymentMethodSheet;
-        if (condHasTabbyCard && scenario.state.hasTabbyCard !== undefined) condHasTabbyCard.checked = !!scenario.state.hasTabbyCard;
-        if (condHasOlPurchases && scenario.state.hasOlPurchases !== undefined) condHasOlPurchases.checked = !!scenario.state.hasOlPurchases;
-        if (condHasActiveSplit6 && scenario.state.hasActiveSplit6 !== undefined) condHasActiveSplit6.checked = !!scenario.state.hasActiveSplit6;
+        if (condIsTrial) condIsTrial.checked = scenario.state.isTrial !== undefined ? !!scenario.state.isTrial : true;
+        if (condShowAddPaymentSheet) condShowAddPaymentSheet.checked = scenario.state.showAddPaymentMethodSheet !== undefined ? !!scenario.state.showAddPaymentMethodSheet : true;
+        if (condHasTabbyCard) condHasTabbyCard.checked = scenario.state.hasTabbyCard !== undefined ? !!scenario.state.hasTabbyCard : true;
+        if (condHasOlPurchases) condHasOlPurchases.checked = scenario.state.hasOlPurchases !== undefined ? !!scenario.state.hasOlPurchases : false;
+        if (condHasActiveSplit6) condHasActiveSplit6.checked = scenario.state.hasActiveSplit6 !== undefined ? !!scenario.state.hasActiveSplit6 : true;
+        if (condOfferAvailable) condOfferAvailable.checked = scenario.state.offerAvailable !== undefined ? !!scenario.state.offerAvailable : false;
+        if (condBuybackAed) condBuybackAed.value = scenario.state.buybackAed !== undefined ? String(scenario.state.buybackAed) : '25';
       }
 
       function initScenarioControls() {
@@ -479,6 +500,8 @@
       if (condHasTabbyCard) condHasTabbyCard.addEventListener('change', updateScenarioLink);
       if (condHasOlPurchases) condHasOlPurchases.addEventListener('change', updateScenarioLink);
       if (condHasActiveSplit6) condHasActiveSplit6.addEventListener('change', updateScenarioLink);
+      if (condOfferAvailable) condOfferAvailable.addEventListener('change', updateScenarioLink);
+      if (condBuybackAed) condBuybackAed.addEventListener('change', updateScenarioLink);
       presetButtons.forEach(function (btn) {
         btn.addEventListener('click', function () {
           var preset = btn.getAttribute('data-cw-preset');

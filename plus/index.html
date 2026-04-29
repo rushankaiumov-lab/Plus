@@ -941,8 +941,17 @@
       background: #fff;
     }
     .sheet-overlay__panel--select-payment {
+      width: 100%;
+      max-width: 414px;
       max-height: min(74vh, 780px);
       overflow: hidden;
+    }
+    .sheet-overlay:has(.sheet-overlay__panel--select-payment) .sheet-overlay__viewport {
+      padding-left: 0;
+      padding-right: 0;
+    }
+    .sheet-overlay:has(.sheet-overlay__panel--select-payment) .sheet-overlay__backdrop {
+      background: rgba(26, 25, 25, 0.95);
     }
     .payment-select-sheet .sheet-toolbar {
       padding: 0 0 4px;
@@ -2025,6 +2034,94 @@
       gap: 21px;
       max-width: 320px;
     }
+    .flow-offer-page {
+      background: var(--ds-bg-general-l1);
+      color: var(--text-primary);
+    }
+    .flow-offer__content {
+      flex: 1;
+      min-height: 0;
+      overflow-y: auto;
+      overflow-x: hidden;
+      padding: 68px 24px 20px;
+    }
+    .flow-offer__nav {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 220;
+      background: var(--ds-bg-general-l1);
+      color: var(--text-primary);
+      display: grid;
+      grid-template-columns: 48px 1fr 48px;
+      align-items: center;
+      height: 64px;
+    }
+    .flow-offer__hero {
+      width: 100%;
+      max-width: 366px;
+      height: 220px;
+      border-radius: 24px;
+      display: block;
+      object-fit: cover;
+      margin: 0 auto;
+      background: #bed4c4;
+    }
+    .flow-offer__title {
+      margin: 22px 0 10px;
+      font-family: var(--font-display);
+      font-size: 48px;
+      line-height: 52px;
+      font-weight: 700;
+      letter-spacing: -0.2px;
+      color: var(--text-primary);
+    }
+    .flow-offer__subtitle {
+      margin: 0;
+      font-family: var(--font-text);
+      font-size: 17px;
+      line-height: 24px;
+      font-weight: 500;
+      color: var(--text-primary);
+    }
+    .flow-offer__list {
+      margin: 16px 0 0;
+      padding-left: 24px;
+      display: grid;
+      gap: 8px;
+      font-family: var(--font-text);
+      font-size: 17px;
+      line-height: 24px;
+      font-weight: 500;
+      color: var(--text-primary);
+    }
+    .flow-offer__foot {
+      margin: 16px 0 0;
+      font-family: var(--font-text);
+      font-size: 17px;
+      line-height: 24px;
+      font-weight: 500;
+      color: var(--text-primary);
+    }
+    .flow-offer__billing {
+      margin: 12px 0 0;
+      text-align: center;
+      font-family: var(--font-text);
+      font-size: 14px;
+      line-height: 18px;
+      font-weight: 500;
+      color: var(--text-secondary);
+    }
+    .flow-offer-footer {
+      background: var(--ds-bg-general-l1);
+      padding: 10px 16px 0;
+    }
+    .flow-offer-footer .flow-page__btn--secondary {
+      background: #e5e2df;
+      border: none;
+      color: var(--text-primary);
+    }
     .subscription-scroll {
       flex: 1;
       min-height: 0;
@@ -3085,7 +3182,7 @@
               </span>
               <span>
                 <p class="action-sheet__title">Change payment method</p>
-                <p class="action-sheet__sub">Next payment AED 59 on Mar 20</p>
+                <p class="action-sheet__sub" id="subscription-next-payment-copy">Next payment AED 59 on Mar 20</p>
               </span>
               <img class="action-sheet__chevron" src="./assets/omni/chevron-right.svg" alt="" />
             </button>
@@ -3143,7 +3240,45 @@
       </div>
       <div class="flow-page__footer cancel-warning-footer toolbar-mobile">
         <button type="button" class="flow-page__btn flow-page__btn--primary" data-flow-target="subscription">Continue with Plus</button>
-        <button type="button" class="flow-page__btn flow-page__btn--secondary" data-flow-target="cancelled">Continue to cancellation</button>
+        <button type="button" class="flow-page__btn flow-page__btn--secondary" data-flow-target="cancel-next">Continue to cancellation</button>
+        <div class="home-indicator" aria-hidden="true"></div>
+      </div>
+    </div>
+
+    <div class="flow-page flow-offer-page" id="offer-page" aria-hidden="true">
+      <nav class="flow-offer__nav" aria-label="Primary">
+        <div class="navbar__lead">
+          <button type="button" class="navbar__back" data-flow-back="cancel-warning" aria-label="Back">
+            <svg class="navbar__back-icon" width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true" focusable="false">
+              <path d="M12 6.34326L7.34277 11.0005H21V13.0005H7.34277L12 17.6567L10.5859 19.0718L3.51465 12.0005L10.5859 4.9292L12 6.34326Z" fill="currentColor"/>
+            </svg>
+          </button>
+        </div>
+        <div></div>
+        <div class="navbar__trail">
+          <button type="button" class="navbar__back" data-flow-back="cancel-warning" aria-label="Close">
+            <svg class="navbar__back-icon" width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true" focusable="false">
+              <path d="M6 6L18 18M18 6L6 18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+            </svg>
+          </button>
+        </div>
+      </nav>
+      <div class="flow-offer__content">
+        <img class="flow-offer__hero" src="./assets/omni/offer-buyback-hero.png" alt="" />
+        <h2 class="flow-offer__title">Get Plus for only AED <span id="offer-aed-title">25</span> next month!</h2>
+        <p class="flow-offer__subtitle">Keep all your benefits with this exclusive one-time offer.</p>
+        <ul class="flow-offer__list">
+          <li>Free Split in 4 on all Tabby Card purchases</li>
+          <li>Free Split in 6</li>
+          <li>Up to 5% cashback at home and abroad</li>
+          <li>Priority support</li>
+        </ul>
+        <p class="flow-offer__foot">This offer is valid for one month only. Continued subscriptions cost AED 59/mo.</p>
+      </div>
+      <div class="flow-page__footer flow-offer-footer">
+        <button type="button" class="flow-page__btn flow-page__btn--primary" data-flow-target="subscription" data-offer-accept>Keep Plus</button>
+        <button type="button" class="flow-page__btn flow-page__btn--secondary" data-flow-target="cancelled">No thanks, cancel plan</button>
+        <p class="flow-offer__billing">You’ll be billed AED <span id="offer-aed-billing">25</span> on &lt;Date&gt; &lt;Month&gt;</p>
         <div class="home-indicator" aria-hidden="true"></div>
       </div>
     </div>
@@ -3183,7 +3318,10 @@
       var trialSuccessPage = document.getElementById('trial-success-page');
       var subscriptionPage = document.getElementById('subscription-page');
       var cancelWarningPage = document.getElementById('cancel-warning-page');
+      var offerPage = document.getElementById('offer-page');
       var cancelledPage = document.getElementById('cancelled-page');
+      var offerAedTitle = document.getElementById('offer-aed-title');
+      var offerAedBilling = document.getElementById('offer-aed-billing');
       var landingHeroTitle = document.getElementById('landing-hero-title');
       var landingHeroSubtitle = document.getElementById('landing-hero-subtitle');
       var landingTrialTimeline = document.getElementById('landing-trial-timeline');
@@ -3193,7 +3331,7 @@
       var subscriptionScrollEl = document.getElementById('subscription-scroll');
       var subscriptionNavbar = document.getElementById('subscription-navbar');
       var subscriptionMainEl = document.getElementById('subscription-main');
-      if (!scrollView || !sheetCard || !navbar || !device || !overlay || !backdrop || !sheetContent || !trialSuccessPage || !subscriptionPage || !cancelWarningPage || !cancelledPage || !backButton) return;
+      if (!scrollView || !sheetCard || !navbar || !device || !overlay || !backdrop || !sheetContent || !trialSuccessPage || !subscriptionPage || !cancelWarningPage || !offerPage || !cancelledPage || !backButton) return;
 
       function applyDocumentScrollLock() {
         var gap = window.innerWidth - document.documentElement.clientWidth;
@@ -3212,6 +3350,53 @@
       var HAS_PAYMENT_KEY = 'plus-has-payment-method';
       var IS_TRIAL_KEY = 'plus-is-trial-available';
       var SHOW_ADD_PAYMENT_SHEET_KEY = 'plus-show-add-payment-sheet';
+      var OFFER_AVAILABLE_KEY = 'plus-offer-available';
+      var BUYBACK_AED_KEY = 'plus-buyback-aed';
+      var BUYBACK_ACCEPTED_KEY = 'plus-buyback-accepted';
+      function isOfferAvailable() {
+        try {
+          return localStorage.getItem(OFFER_AVAILABLE_KEY) !== '0';
+        } catch (e) {
+          return true;
+        }
+      }
+
+      function getBuybackAed() {
+        try {
+          var raw = localStorage.getItem(BUYBACK_AED_KEY) || '25';
+          return raw === '1' ? 1 : 25;
+        } catch (e) {
+          return 25;
+        }
+      }
+
+      function applyOfferState(state) {
+        var offerAvailable = state && state.offerAvailable !== undefined ? !!state.offerAvailable : true;
+        var buybackAed = state && state.buybackAed !== undefined ? Number(state.buybackAed) : 25;
+        if (buybackAed !== 1) buybackAed = 25;
+        try {
+          localStorage.setItem(OFFER_AVAILABLE_KEY, offerAvailable ? '1' : '0');
+          localStorage.setItem(BUYBACK_AED_KEY, String(buybackAed));
+        } catch (e) {}
+        if (offerAedTitle) offerAedTitle.textContent = String(buybackAed);
+        if (offerAedBilling) offerAedBilling.textContent = String(buybackAed);
+      }
+
+      function getNextPaymentAmount() {
+        try {
+          if (localStorage.getItem(BUYBACK_ACCEPTED_KEY) === '1') {
+            return getBuybackAed();
+          }
+        } catch (e) {}
+        return 59;
+      }
+
+      function hydrateSubscriptionActionsSheet() {
+        var copyEl = document.getElementById('subscription-next-payment-copy');
+        if (!copyEl) return;
+        var amount = getNextPaymentAmount();
+        copyEl.textContent = 'Next payment AED ' + amount + ' on Mar 20';
+      }
       function shouldShowAddPaymentSheet() {
         try {
           return localStorage.getItem(SHOW_ADD_PAYMENT_SHEET_KEY) !== '0';
@@ -3420,6 +3605,7 @@
           panel.classList.remove(
             'sheet-overlay__panel--add-payment',
             'sheet-overlay__panel--tokenization',
+            'sheet-overlay__panel--select-payment',
             'sheet-overlay__panel--dismiss-payment'
           );
         }
@@ -3460,10 +3646,12 @@
         trialSuccessPage.classList.remove('is-active');
         subscriptionPage.classList.remove('is-active');
         cancelWarningPage.classList.remove('is-active');
+        offerPage.classList.remove('is-active');
         cancelledPage.classList.remove('is-active');
         trialSuccessPage.setAttribute('aria-hidden', 'true');
         subscriptionPage.setAttribute('aria-hidden', 'true');
         cancelWarningPage.setAttribute('aria-hidden', 'true');
+        offerPage.setAttribute('aria-hidden', 'true');
         cancelledPage.setAttribute('aria-hidden', 'true');
         device.classList.remove('has-subscription-open');
 
@@ -3505,6 +3693,12 @@
           try {
             localStorage.removeItem(HAS_PAYMENT_KEY);
           } catch (err) {}
+        } else if (screen === 'offer') {
+          offerPage.classList.add('is-active');
+          offerPage.setAttribute('aria-hidden', 'false');
+          device.classList.add('has-subscription-open');
+          navbar.classList.remove('navbar--on-light');
+          applyOfferState({ offerAvailable: isOfferAvailable(), buybackAed: getBuybackAed() });
         } else {
           updateNavOnScroll();
           try {
@@ -4123,6 +4317,8 @@
         }
         if (sheetId === 'select-payment-method') {
           hydrateSelectPaymentSheet();
+        } else if (sheetId === 'subscription-actions') {
+          hydrateSubscriptionActionsSheet();
         }
         applyActiveSubscriptionBenefitSheet();
       }
@@ -4139,6 +4335,11 @@
         if (params.has('cw_has_tabby_card')) stateOverrides.hasTabbyCard = params.get('cw_has_tabby_card') === '1';
         if (params.has('cw_has_ol_purchases')) stateOverrides.hasOlPurchases = params.get('cw_has_ol_purchases') === '1';
         if (params.has('cw_has_active_split6')) stateOverrides.hasActiveSplit6 = params.get('cw_has_active_split6') === '1';
+        if (params.has('offer_available')) stateOverrides.offerAvailable = params.get('offer_available') === '1';
+        if (params.has('buyback_aed')) {
+          var buyback = Number(params.get('buyback_aed'));
+          stateOverrides.buybackAed = buyback === 1 ? 1 : 25;
+        }
         if (params.has('is_trial')) stateOverrides.isTrial = params.get('is_trial') === '1';
         if (params.has('show_add_payment_sheet')) stateOverrides.showAddPaymentMethodSheet = params.get('show_add_payment_sheet') === '1';
         return { scenario: scenario, variant: variant, stateOverrides: stateOverrides };
@@ -4165,10 +4366,18 @@
           if (state.showAddPaymentMethodSheet !== undefined) {
             localStorage.setItem(SHOW_ADD_PAYMENT_SHEET_KEY, state.showAddPaymentMethodSheet ? '1' : '0');
           }
+          if (state.offerAvailable !== undefined) {
+            localStorage.setItem(OFFER_AVAILABLE_KEY, state.offerAvailable ? '1' : '0');
+          }
+          if (state.buybackAed !== undefined) {
+            localStorage.setItem(BUYBACK_AED_KEY, String(Number(state.buybackAed) === 1 ? 1 : 25));
+          }
+          localStorage.setItem(BUYBACK_ACCEPTED_KEY, '0');
         } catch (err) {}
 
         applySubscriptionEntryState(state);
         applyCancelWarningState(state);
+        applyOfferState(state);
         setScreen(entry.screen || 'landing');
 
         if (entry.openSheet === 'payment-tokenization') {
@@ -4246,7 +4455,17 @@
           setScreen('landing');
           return;
         }
-        if (targetScreen === 'trial-success' || targetScreen === 'subscription' || targetScreen === 'cancel-warning' || targetScreen === 'cancelled') {
+        if (targetScreen === 'cancel-next') {
+          if (isOfferAvailable()) setScreen('offer');
+          else setScreen('cancelled');
+          return;
+        }
+        if (targetScreen === 'subscription' && flowTarget.hasAttribute('data-offer-accept')) {
+          try {
+            localStorage.setItem(BUYBACK_ACCEPTED_KEY, '1');
+          } catch (e) {}
+        }
+        if (targetScreen === 'trial-success' || targetScreen === 'subscription' || targetScreen === 'cancel-warning' || targetScreen === 'offer' || targetScreen === 'cancelled') {
           setScreen(targetScreen);
         }
       });
@@ -4257,6 +4476,7 @@
         e.preventDefault();
         var backScreen = flowBack.getAttribute('data-flow-back');
         if (backScreen === 'subscription') setScreen('subscription');
+        else if (backScreen === 'cancel-warning') setScreen('cancel-warning');
       });
 
       backdrop.addEventListener('click', closeSheet);
@@ -4283,7 +4503,7 @@
         applyCancelWarningState({ hasTabbyCard: true, hasOlPurchases: false, hasActiveSplit6: true });
         try {
           var persisted = localStorage.getItem(SCREEN_KEY);
-          if (persisted === 'subscription' || persisted === 'cancel-warning' || persisted === 'cancelled') {
+          if (persisted === 'subscription' || persisted === 'cancel-warning' || persisted === 'offer' || persisted === 'cancelled') {
             setScreen(persisted);
           } else {
             setScreen('landing');
