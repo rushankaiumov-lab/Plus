@@ -76,36 +76,39 @@
     <section class="flow is-active" data-flow="activation">
       <article class="col">
         <h2>Entry</h2>
-        <div class="node"><p class="node-title">Subscription screen</p><p class="node-meta">Continue with Plus / cancellation entry</p><span class="chip ok">implemented</span></div>
+        <div class="node"><p class="node-title">Non-subscriber • Plus home page • Trial is available</p><p class="node-meta">Trial copy + timeline + Start free trial CTA</p><span class="chip ok">implemented</span></div>
+        <div class="node"><p class="node-title">Non-subscriber • Plus home page • Trial is not available</p><p class="node-meta">No-trial copy + Get Plus for AED 59/mo CTA</p><span class="chip ok">implemented</span></div>
       </article>
       <article class="col">
         <h2>Payment Setup</h2>
-        <div class="node"><p class="node-title">Add payment method sheet</p><p class="node-meta">Select method and start tokenization</p><span class="chip ok">implemented</span></div>
-        <div class="node"><p class="node-title">Payment tokenization sheet</p><p class="node-meta">Card number + expiry + CVV + submit</p><span class="chip ok">implemented</span></div>
+        <div class="node"><p class="node-title">Add payment method sheet</p><p class="node-meta">Trial flow: optional step before Add new card</p><span class="chip ok">implemented</span></div>
+        <div class="node"><p class="node-title">Select payment method sheet</p><p class="node-meta">Non-trial flow: Apple Pay / saved cards / Add new card</p><span class="chip ok">implemented</span></div>
+        <div class="node"><p class="node-title">Add new card sheet</p><p class="node-meta">Card number + expiry + CVV + CTA loader</p><span class="chip ok">implemented</span></div>
+        <div class="node"><p class="node-title">Debit •••• 0001 added sheet</p><p class="node-meta">Card added confirmation; returns to Select payment method in no-trial path</p><span class="chip ok">implemented</span></div>
       </article>
       <article class="col">
         <h2>Outcome</h2>
-        <div class="node"><p class="node-title">Method added sheet</p><p class="node-meta">Card added confirmation</p><span class="chip ok">implemented</span></div>
-        <div class="node"><p class="node-title">Trial success screen</p><p class="node-meta">Activation completed state</p><span class="chip ok">implemented</span></div>
+        <div class="node"><p class="node-title">Subscriber • Plus active page • Trial success</p><p class="node-meta">Header meta: Active trial • Free until Jan 22</p><span class="chip ok">implemented</span></div>
+        <div class="node"><p class="node-title">Subscriber • Plus active page • Paid subscription active</p><p class="node-meta">Header meta: Active • Renews Mar 20</p><span class="chip ok">implemented</span></div>
         <div class="node"><p class="node-title">Charge unsuccessful variant</p><p class="node-meta">Blocked card / insufficient funds</p><span class="chip todo">planned</span></div>
       </article>
     </section>
 
     <section class="flow" data-flow="activation-cards-benefits">
       <article class="col">
-        <h2>Cards State</h2>
-        <div class="node"><p class="node-title">No cards</p><p class="node-meta">New user with no cards and no purchases</p><span class="chip todo">planned</span></div>
-        <div class="node"><p class="node-title">Only Tabby Card / Only Cash / Both</p><p class="node-meta">Matrix of issued cards</p><span class="chip todo">planned</span></div>
+        <h2>Active Page States</h2>
+        <div class="node"><p class="node-title">Subscriber • Plus active page • Trial success</p><p class="node-meta">Active trial state in subscription screen</p><span class="chip ok">implemented</span></div>
+        <div class="node"><p class="node-title">Subscriber • Plus active page • Paid subscription active</p><p class="node-meta">Paid subscription state in subscription screen</p><span class="chip ok">implemented</span></div>
       </article>
       <article class="col">
-        <h2>Benefits Usage</h2>
-        <div class="node"><p class="node-title">Split in 4 usage</p><p class="node-meta">OL / CL / both / none</p><span class="chip todo">planned</span></div>
-        <div class="node"><p class="node-title">Split in 6 usage</p><p class="node-meta">Uses or does not use</p><span class="chip todo">planned</span></div>
-        <div class="node"><p class="node-title">Cashback usage</p><p class="node-meta">Categories selected, 5%/1%</p><span class="chip todo">planned</span></div>
+        <h2>Benefits Blocks</h2>
+        <div class="node"><p class="node-title">How to maximise your Plus benefits</p><p class="node-meta">Top recommendation island</p><span class="chip ok">implemented</span></div>
+        <div class="node"><p class="node-title">Free split in 6 module</p><p class="node-meta">Middle block with Select purchase CTA</p><span class="chip ok">implemented</span></div>
+        <div class="node"><p class="node-title">Benefits list</p><p class="node-meta">Supercells with detail sheets and CTA loaders</p><span class="chip ok">implemented</span></div>
       </article>
       <article class="col">
-        <h2>Savings and Suspension</h2>
-        <div class="node"><p class="node-title">Lifetime savings block</p><p class="node-meta">Zero / cashback only / fees only / both</p><span class="chip todo">planned</span></div>
+        <h2>Savings and Future Scope</h2>
+        <div class="node"><p class="node-title">Lifetime savings block</p><p class="node-meta">Sheet + visible header metric</p><span class="chip ok">implemented</span></div>
         <div class="node"><p class="node-title">Suspended mode</p><p class="node-meta">Benefits locked due to overdue payment</p><span class="chip todo">planned</span></div>
       </article>
     </section>
