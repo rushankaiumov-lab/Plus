@@ -1859,6 +1859,7 @@
       height: 220px;
       display: block;
       border-radius: 24px;
+      overflow: hidden;
       margin-top: 0;
     }
     .flow-warning__title-wrap {
@@ -1972,8 +1973,8 @@
       background: linear-gradient(0deg, #fff 0%, rgba(255, 255, 255, 0) 100%);
     }
     .cancel-warning-footer {
-      background: var(--color-page-gray);
-      padding: 16px 24px 0;
+      background: transparent;
+      padding: 16px 16px 0;
     }
     .cancel-warning-footer .flow-page__btn--secondary {
       background: #e5e2df;
@@ -2063,6 +2064,7 @@
       max-width: 366px;
       height: 220px;
       border-radius: 24px;
+      overflow: hidden;
       display: block;
       object-fit: contain;
       margin: 0 auto;
@@ -3265,13 +3267,7 @@
 
     <div class="flow-page flow-offer-page" id="offer-page" aria-hidden="true">
       <nav class="flow-offer__nav" aria-label="Primary">
-        <div class="navbar__lead">
-          <button type="button" class="navbar__back" data-flow-back="cancel-warning" aria-label="Back">
-            <svg class="navbar__back-icon" width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true" focusable="false">
-              <path d="M12 6.34326L7.34277 11.0005H21V13.0005H7.34277L12 17.6567L10.5859 19.0718L3.51465 12.0005L10.5859 4.9292L12 6.34326Z" fill="currentColor"/>
-            </svg>
-          </button>
-        </div>
+        <div class="navbar__lead" aria-hidden="true"></div>
         <div></div>
         <div class="navbar__trail">
           <button type="button" class="navbar__back" data-flow-back="cancel-warning" aria-label="Close">
