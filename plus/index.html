@@ -2043,7 +2043,7 @@
       min-height: 0;
       overflow-y: auto;
       overflow-x: hidden;
-      padding: 68px 24px 20px;
+      padding: 68px 24px 16px;
     }
     .flow-offer__nav {
       position: absolute;
@@ -2064,43 +2064,61 @@
       height: 220px;
       border-radius: 24px;
       display: block;
-      object-fit: cover;
+      object-fit: contain;
       margin: 0 auto;
-      background: #bed4c4;
     }
     .flow-offer__title {
       margin: 22px 0 10px;
       font-family: var(--font-display);
-      font-size: 48px;
-      line-height: 52px;
-      font-weight: 700;
-      letter-spacing: -0.2px;
+      font-size: var(--ds-type-display-lg-size);
+      line-height: var(--ds-type-display-lg-line);
+      font-weight: 600;
+      letter-spacing: 0.1px;
       color: var(--text-primary);
     }
     .flow-offer__subtitle {
       margin: 0;
       font-family: var(--font-text);
-      font-size: 17px;
-      line-height: 24px;
+      font-size: var(--ds-type-body-lg-size);
+      line-height: var(--ds-type-body-lg-line);
       font-weight: 500;
       color: var(--text-primary);
     }
     .flow-offer__list {
       margin: 16px 0 0;
-      padding-left: 24px;
-      display: grid;
-      gap: 8px;
+      padding: 0;
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
       font-family: var(--font-text);
-      font-size: 17px;
-      line-height: 24px;
+      font-size: var(--ds-type-body-lg-size);
+      line-height: var(--ds-type-body-lg-line);
       font-weight: 500;
       color: var(--text-primary);
+    }
+    .flow-offer__list li {
+      position: relative;
+      padding-left: 30px;
+      min-height: 24px;
+      display: flex;
+      align-items: center;
+    }
+    .flow-offer__list li::before {
+      content: '';
+      width: 24px;
+      height: 24px;
+      position: absolute;
+      top: 0;
+      left: 0;
+      background: url('./assets/omni/bullet.svg') no-repeat center;
+      background-size: 24px 24px;
     }
     .flow-offer__foot {
       margin: 16px 0 0;
       font-family: var(--font-text);
-      font-size: 17px;
-      line-height: 24px;
+      font-size: var(--ds-type-body-lg-size);
+      line-height: var(--ds-type-body-lg-line);
       font-weight: 500;
       color: var(--text-primary);
     }
@@ -3278,7 +3296,7 @@
       <div class="flow-page__footer flow-offer-footer">
         <button type="button" class="flow-page__btn flow-page__btn--primary" data-flow-target="subscription" data-offer-accept>Keep Plus</button>
         <button type="button" class="flow-page__btn flow-page__btn--secondary" data-flow-target="cancelled">No thanks, cancel plan</button>
-        <p class="flow-offer__billing">You’ll be billed AED <span id="offer-aed-billing">25</span> on &lt;Date&gt; &lt;Month&gt;</p>
+        <p class="flow-offer__billing">You’ll be billed AED <span id="offer-aed-billing">25</span> on <span id="offer-billing-date">20 Mar</span></p>
         <div class="home-indicator" aria-hidden="true"></div>
       </div>
     </div>
@@ -3322,6 +3340,7 @@
       var cancelledPage = document.getElementById('cancelled-page');
       var offerAedTitle = document.getElementById('offer-aed-title');
       var offerAedBilling = document.getElementById('offer-aed-billing');
+      var offerBillingDate = document.getElementById('offer-billing-date');
       var landingHeroTitle = document.getElementById('landing-hero-title');
       var landingHeroSubtitle = document.getElementById('landing-hero-subtitle');
       var landingTrialTimeline = document.getElementById('landing-trial-timeline');
@@ -3380,6 +3399,35 @@
         } catch (e) {}
         if (offerAedTitle) offerAedTitle.textContent = String(buybackAed);
         if (offerAedBilling) offerAedBilling.textContent = String(buybackAed);
+        if (offerBillingDate) offerBillingDate.textContent = formatNextChargeDateDayMonth(resolveNextChargeDate());
+      }
+
+      function createMonthDateSafe(year, monthIndex, dayOfMonth) {
+        var maxDay = new Date(year, monthIndex + 1, 0).getDate();
+        var day = Math.max(1, Math.min(dayOfMonth, maxDay));
+        return new Date(year, monthIndex, day);
+      }
+
+      function resolveNextChargeDate() {
+        var renewValue = ensureRenewDate();
+        var renewParsed = new Date(renewValue || '');
+        var anchorDay = !isNaN(renewParsed.getTime()) ? renewParsed.getDate() : 20;
+        var now = new Date();
+        var candidate = createMonthDateSafe(now.getFullYear(), now.getMonth(), anchorDay);
+        candidate.setHours(0, 0, 0, 0);
+        var today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+        if (candidate.getTime() <= today.getTime()) {
+          candidate = createMonthDateSafe(now.getFullYear(), now.getMonth() + 1, anchorDay);
+          candidate.setHours(0, 0, 0, 0);
+        }
+        return candidate;
+      }
+
+      function formatNextChargeDateDayMonth(dateValue) {
+        var date = dateValue instanceof Date ? dateValue : new Date(dateValue || '');
+        if (isNaN(date.getTime())) return '20 Mar';
+        var month = date.toLocaleString('en-US', { month: 'short' });
+        return date.getDate() + ' ' + month;
       }
 
       function getNextPaymentAmount() {
@@ -3395,7 +3443,9 @@
         var copyEl = document.getElementById('subscription-next-payment-copy');
         if (!copyEl) return;
         var amount = getNextPaymentAmount();
-        copyEl.textContent = 'Next payment AED ' + amount + ' on Mar 20';
+        var nextDate = resolveNextChargeDate();
+        var nextDateLabel = formatRenewDate(nextDate);
+        copyEl.textContent = 'Next payment AED ' + amount + ' on ' + nextDateLabel;
       }
       function shouldShowAddPaymentSheet() {
         try {

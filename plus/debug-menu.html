@@ -191,6 +191,40 @@
       width: 16px;
       height: 16px;
     }
+    .scenario-check--buyback {
+      justify-content: space-between;
+      gap: 12px;
+    }
+    .scenario-check__label {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      min-width: 0;
+    }
+    .scenario-check__inline {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      margin-left: auto;
+    }
+    .scenario-check__inline[hidden] {
+      display: none;
+    }
+    .scenario-check__inline-label {
+      font-size: 12px;
+      line-height: 16px;
+      color: var(--muted);
+      white-space: nowrap;
+    }
+    .scenario-check__inline select {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 6px 8px;
+      font-size: 13px;
+      line-height: 16px;
+      color: var(--text);
+      background: #fff;
+    }
     .scenario-presets {
       display: flex;
       flex-wrap: wrap;
@@ -280,17 +314,19 @@
           <input type="checkbox" id="cond-has-active-split6" checked />
           <span data-i18n="condHasActiveSplit6">Has active Split in 6</span>
         </label>
-        <label class="scenario-check">
-          <input type="checkbox" id="cond-offer-available" checked />
-          <span data-i18n="condOfferAvailable">Offer available</span>
+        <label class="scenario-check scenario-check--buyback">
+          <span class="scenario-check__label">
+            <input type="checkbox" id="cond-offer-available" checked />
+            <span data-i18n="condOfferAvailable">Buyback offer</span>
+          </span>
+          <span class="scenario-check__inline" id="buyback-amount-inline">
+            <span class="scenario-check__inline-label" data-i18n="labelBuybackAed">amount (AED)</span>
+            <select id="cond-buyback-aed">
+              <option value="1" data-i18n="optionAed1">AED 1</option>
+              <option value="25" selected data-i18n="optionAed25">AED 25</option>
+            </select>
+          </span>
         </label>
-        <div>
-          <label for="cond-buyback-aed" data-i18n="labelBuybackAed">Buyback amount (AED)</label>
-          <select id="cond-buyback-aed">
-            <option value="1">1</option>
-            <option value="25" selected>25</option>
-          </select>
-        </div>
         <div class="scenario-presets">
           <button type="button" data-cw-preset="baseline" data-i18n="presetBaseline">Baseline</button>
           <button type="button" data-cw-preset="ol-debt" data-i18n="presetOlDebt">OL debt</button>
@@ -325,6 +361,7 @@
       var condHasActiveSplit6 = document.getElementById('cond-has-active-split6');
       var condOfferAvailable = document.getElementById('cond-offer-available');
       var condBuybackAed = document.getElementById('cond-buyback-aed');
+      var buybackAmountInline = document.getElementById('buyback-amount-inline');
       var presetButtons = document.querySelectorAll('[data-cw-preset]');
       var currentLang = 'en';
       var I18N = {
@@ -344,8 +381,10 @@
           condHasTabbyCard: 'Has Tabby Card',
           condHasOlPurchases: 'Has OL purchases (Split in 4 outstanding)',
           condHasActiveSplit6: 'Has active Split in 6',
-          condOfferAvailable: 'Offer available',
-          labelBuybackAed: 'Buyback amount (AED)',
+          condOfferAvailable: 'Buyback offer',
+          labelBuybackAed: 'amount (AED)',
+          optionAed1: 'AED 1',
+          optionAed25: 'AED 25',
           presetBaseline: 'Baseline',
           presetOlDebt: 'OL debt',
           presetNoSplit6: 'No Split in 6',
@@ -370,8 +409,10 @@
           condHasTabbyCard: 'Есть Tabby Card',
           condHasOlPurchases: 'Есть OL покупки (долг в Split in 4)',
           condHasActiveSplit6: 'Есть активный Split in 6',
-          condOfferAvailable: 'Оффер доступен',
-          labelBuybackAed: 'Сумма байбэка (AED)',
+          condOfferAvailable: 'Buyback offer',
+          labelBuybackAed: 'amount (AED)',
+          optionAed1: 'AED 1',
+          optionAed25: 'AED 25',
           presetBaseline: 'Базовый',
           presetOlDebt: 'OL долг',
           presetNoSplit6: 'Без Split in 6',
@@ -383,8 +424,8 @@
       };
 
       var DEBUG_MENU_BUILD = {
-        version: 'v0.6.1',
-        updatedAt: '2026-04-29 12:52 UTC+2'
+        version: 'v0.6.2',
+        updatedAt: '2026-04-29 13:02 UTC+2'
       };
 
       if (buildVersionEl) buildVersionEl.textContent = DEBUG_MENU_BUILD.version;
@@ -406,6 +447,11 @@
           el.textContent = t(key);
         });
         updateScenarioLink();
+      }
+
+      function updateBuybackControlsVisibility() {
+        if (!buybackAmountInline || !condOfferAvailable) return;
+        buybackAmountInline.hidden = !condOfferAvailable.checked;
       }
 
       function buildScenarioLink(scenarioId, variantId) {
@@ -451,6 +497,7 @@
         if (condHasActiveSplit6) condHasActiveSplit6.checked = scenario.state.hasActiveSplit6 !== undefined ? !!scenario.state.hasActiveSplit6 : true;
         if (condOfferAvailable) condOfferAvailable.checked = scenario.state.offerAvailable !== undefined ? !!scenario.state.offerAvailable : false;
         if (condBuybackAed) condBuybackAed.value = scenario.state.buybackAed !== undefined ? String(scenario.state.buybackAed) : '25';
+        updateBuybackControlsVisibility();
       }
 
       function initScenarioControls() {
@@ -500,7 +547,12 @@
       if (condHasTabbyCard) condHasTabbyCard.addEventListener('change', updateScenarioLink);
       if (condHasOlPurchases) condHasOlPurchases.addEventListener('change', updateScenarioLink);
       if (condHasActiveSplit6) condHasActiveSplit6.addEventListener('change', updateScenarioLink);
-      if (condOfferAvailable) condOfferAvailable.addEventListener('change', updateScenarioLink);
+      if (condOfferAvailable) {
+        condOfferAvailable.addEventListener('change', function () {
+          updateBuybackControlsVisibility();
+          updateScenarioLink();
+        });
+      }
       if (condBuybackAed) condBuybackAed.addEventListener('change', updateScenarioLink);
       presetButtons.forEach(function (btn) {
         btn.addEventListener('click', function () {
@@ -529,6 +581,7 @@
         });
       });
       initScenarioControls();
+      updateBuybackControlsVisibility();
       applyLanguage('en');
     })();
   </script>
