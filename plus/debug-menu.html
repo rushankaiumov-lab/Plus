@@ -246,6 +246,13 @@
       color: var(--text);
       background: #fff;
     }
+    .scenario-inline-check {
+      margin-left: 24px;
+      margin-top: 2px;
+    }
+    .scenario-inline-check[hidden] {
+      display: none;
+    }
     .scenario-presets {
       display: flex;
       flex-wrap: wrap;
@@ -323,6 +330,10 @@
           <input type="checkbox" id="cond-show-add-payment-sheet" checked />
           <span data-i18n="condShowAddPaymentSheet">Show Add new payment method</span>
         </label>
+        <label class="scenario-check scenario-inline-check" id="trial-tokenization-check">
+          <input type="checkbox" id="cond-trial-tokenize-card" checked />
+          <span data-i18n="condTrialTokenizeCard">Tokenize new card for trial</span>
+        </label>
         <label class="scenario-check">
           <input type="checkbox" id="cond-animate-savings-counter" checked />
           <span data-i18n="condAnimateSavingsCounter">Animate savings counter</span>
@@ -390,6 +401,8 @@
       var condWrap = document.getElementById('scenario-conditions');
       var condIsTrial = document.getElementById('cond-is-trial');
       var condShowAddPaymentSheet = document.getElementById('cond-show-add-payment-sheet');
+      var condTrialTokenizeCard = document.getElementById('cond-trial-tokenize-card');
+      var trialTokenizationCheck = document.getElementById('trial-tokenization-check');
       var condAnimateSavingsCounter = document.getElementById('cond-animate-savings-counter');
       var condAnimateStartValue = document.getElementById('cond-animate-start-value');
       var condAnimateDeltaValue = document.getElementById('cond-animate-delta-value');
@@ -416,6 +429,7 @@
           copyLink: 'Copy link',
           condIsTrial: 'Trial is available',
           condShowAddPaymentSheet: 'Show Add new payment method',
+          condTrialTokenizeCard: 'Tokenize new card for trial',
           condAnimateSavingsCounter: 'Animate savings counter',
           labelAnimateStartValue: 'Start value',
           labelAnimateDeltaValue: 'Increase by',
@@ -446,6 +460,7 @@
           copyLink: 'Скопировать ссылку',
           condIsTrial: 'Доступен Trial',
           condShowAddPaymentSheet: 'Показывать Add new payment method',
+          condTrialTokenizeCard: 'Токенизировать новую карту для trial',
           condAnimateSavingsCounter: 'Анимировать счетчик savings',
           labelAnimateStartValue: 'Стартовое значение',
           labelAnimateDeltaValue: 'На сколько увеличить',
@@ -466,8 +481,8 @@
       };
 
       var DEBUG_MENU_BUILD = {
-        version: 'v0.6.5',
-        updatedAt: '2026-04-29 18:28 UTC+2'
+        version: 'v0.6.7',
+        updatedAt: '2026-04-29 18:41 UTC+2'
       };
 
       if (buildVersionEl) buildVersionEl.textContent = DEBUG_MENU_BUILD.version;
@@ -501,6 +516,12 @@
         animateCounterFields.hidden = !condAnimateSavingsCounter.checked;
       }
 
+      function updateTrialTokenizationVisibility() {
+        if (!trialTokenizationCheck || !condShowAddPaymentSheet || !condTrialTokenizeCard) return;
+        var showInline = !condShowAddPaymentSheet.checked;
+        trialTokenizationCheck.hidden = !showInline;
+      }
+
       function syncCancellationDependencies(source) {
         if (!condHasTabbyCard || !condHasOlPurchases) return;
         if (source === 'ol' && condHasOlPurchases.checked) {
@@ -520,6 +541,7 @@
         url.searchParams.set('variant', variantId);
         url.searchParams.set('is_trial', condIsTrial && condIsTrial.checked ? '1' : '0');
         url.searchParams.set('show_add_payment_sheet', condShowAddPaymentSheet && condShowAddPaymentSheet.checked ? '1' : '0');
+        url.searchParams.set('trial_tokenize_card', condTrialTokenizeCard && condTrialTokenizeCard.checked ? '1' : '0');
         url.searchParams.set('animate_savings_counter', condAnimateSavingsCounter && condAnimateSavingsCounter.checked ? '1' : '0');
         if (condAnimateStartValue && condAnimateStartValue.value.trim()) {
           url.searchParams.set('animate_savings_start', condAnimateStartValue.value.trim());
@@ -563,6 +585,7 @@
         if (!scenario || !scenario.state) return;
         if (condIsTrial) condIsTrial.checked = scenario.state.isTrial !== undefined ? !!scenario.state.isTrial : true;
         if (condShowAddPaymentSheet) condShowAddPaymentSheet.checked = scenario.state.showAddPaymentMethodSheet !== undefined ? !!scenario.state.showAddPaymentMethodSheet : true;
+        if (condTrialTokenizeCard) condTrialTokenizeCard.checked = scenario.state.trialTokenizeCard !== undefined ? !!scenario.state.trialTokenizeCard : true;
         if (condAnimateSavingsCounter) condAnimateSavingsCounter.checked = scenario.state.animateSavingsCounter !== undefined ? !!scenario.state.animateSavingsCounter : true;
         if (condAnimateStartValue) condAnimateStartValue.value = scenario.state.animateSavingsStart !== undefined ? String(scenario.state.animateSavingsStart) : '1019.97';
         if (condAnimateDeltaValue) condAnimateDeltaValue.value = scenario.state.animateSavingsDelta !== undefined ? String(scenario.state.animateSavingsDelta) : '';
@@ -574,6 +597,7 @@
         syncCancellationDependencies();
         updateBuybackControlsVisibility();
         updateCounterFieldsVisibility();
+        updateTrialTokenizationVisibility();
       }
 
       function initScenarioControls() {
@@ -613,13 +637,18 @@
 
       if (scenarioSelect) {
         scenarioSelect.addEventListener('change', function () {
-          applyScenarioStateDefaults();
           updateScenarioLink();
         });
       }
       if (variantSelect) variantSelect.addEventListener('change', updateScenarioLink);
       if (condIsTrial) condIsTrial.addEventListener('change', updateScenarioLink);
-      if (condShowAddPaymentSheet) condShowAddPaymentSheet.addEventListener('change', updateScenarioLink);
+      if (condShowAddPaymentSheet) {
+        condShowAddPaymentSheet.addEventListener('change', function () {
+          updateTrialTokenizationVisibility();
+          updateScenarioLink();
+        });
+      }
+      if (condTrialTokenizeCard) condTrialTokenizeCard.addEventListener('change', updateScenarioLink);
       if (condAnimateSavingsCounter) condAnimateSavingsCounter.addEventListener('change', updateScenarioLink);
       if (condAnimateSavingsCounter) {
         condAnimateSavingsCounter.addEventListener('change', function () {
@@ -678,6 +707,7 @@
       syncCancellationDependencies();
       updateBuybackControlsVisibility();
       updateCounterFieldsVisibility();
+      updateTrialTokenizationVisibility();
       applyLanguage('en');
     })();
   </script>

@@ -3775,6 +3775,7 @@
       var HAS_PAYMENT_KEY = 'plus-has-payment-method';
       var IS_TRIAL_KEY = 'plus-is-trial-available';
       var SHOW_ADD_PAYMENT_SHEET_KEY = 'plus-show-add-payment-sheet';
+      var TRIAL_TOKENIZE_CARD_KEY = 'plus-trial-tokenize-card';
       var ANIMATE_SAVINGS_COUNTER_KEY = 'plus-animate-savings-counter';
       var ANIMATE_SAVINGS_START_KEY = 'plus-animate-savings-start';
       var ANIMATE_SAVINGS_DELTA_KEY = 'plus-animate-savings-delta';
@@ -3886,6 +3887,14 @@
         }
       }
 
+      function shouldTokenizeTrialCard() {
+        try {
+          return localStorage.getItem(TRIAL_TOKENIZE_CARD_KEY) !== '0';
+        } catch (e) {
+          return true;
+        }
+      }
+
       function parseSavingsNumber(raw) {
         var n = Number(String(raw || '').replace(',', '.').trim());
         if (!isFinite(n)) return null;
@@ -3950,7 +3959,8 @@
         /* Animation spec:
            - whole animation starts after 1000ms
            - 1 drum step takes 400ms
-           - reels start with overlap using staggered delays */
+           - reels start with overlap using staggered delays
+           - order is right-to-left (fraction first, then carry to integer part) */
         var startDelayMs = 1000;
         var stepMs = 400;
         var staggerMs = 220;
@@ -3987,7 +3997,7 @@
           var deltaSteps = (target - startDigit + 10) % 10;
           var steps = deltaSteps === 0 ? 0 : (10 + deltaSteps);
           var duration = Math.max(1, steps) * stepMs;
-          var delay = startDelayMs + idx * staggerMs;
+          var delay = startDelayMs + (digits.length - 1 - idx) * staggerMs;
           track.style.transitionProperty = 'none';
           track.style.transform = 'translateY(0)';
           track.getBoundingClientRect();
@@ -4952,6 +4962,11 @@
           openSheet('add-payment-method');
           return;
         }
+        if (!shouldTokenizeTrialCard()) {
+          closeSheet();
+          setScreen('trial-success');
+          return;
+        }
         openSheet('payment-tokenization');
         initPaymentTokenizationForm();
       }
@@ -5006,6 +5021,7 @@
           stateOverrides.buybackAed = buyback === 1 ? 1 : 25;
         }
         if (params.has('animate_savings_counter')) stateOverrides.animateSavingsCounter = params.get('animate_savings_counter') === '1';
+        if (params.has('trial_tokenize_card')) stateOverrides.trialTokenizeCard = params.get('trial_tokenize_card') === '1';
         if (params.has('animate_savings_start')) stateOverrides.animateSavingsStart = params.get('animate_savings_start');
         if (params.has('animate_savings_delta')) stateOverrides.animateSavingsDelta = params.get('animate_savings_delta');
         if (params.has('is_trial')) stateOverrides.isTrial = params.get('is_trial') === '1';
@@ -5033,6 +5049,9 @@
           }
           if (state.showAddPaymentMethodSheet !== undefined) {
             localStorage.setItem(SHOW_ADD_PAYMENT_SHEET_KEY, state.showAddPaymentMethodSheet ? '1' : '0');
+          }
+          if (state.trialTokenizeCard !== undefined) {
+            localStorage.setItem(TRIAL_TOKENIZE_CARD_KEY, state.trialTokenizeCard ? '1' : '0');
           }
           if (state.animateSavingsCounter !== undefined) {
             localStorage.setItem(ANIMATE_SAVINGS_COUNTER_KEY, state.animateSavingsCounter ? '1' : '0');
