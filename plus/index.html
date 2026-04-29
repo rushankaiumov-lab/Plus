@@ -2142,6 +2142,104 @@
       border: none;
       color: var(--text-primary);
     }
+    .flow-settle-page {
+      background: var(--ds-bg-general-l1);
+      color: var(--text-primary);
+    }
+    .flow-settle__nav {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 220;
+      background: var(--ds-bg-general-l1);
+      color: var(--text-primary);
+      display: grid;
+      grid-template-columns: 48px 1fr 48px;
+      align-items: center;
+      height: 64px;
+    }
+    .flow-settle__content {
+      flex: 1;
+      min-height: 0;
+      overflow-y: auto;
+      overflow-x: hidden;
+      padding: 68px 24px 20px;
+      display: flex;
+      flex-direction: column;
+    }
+    .flow-settle__title {
+      margin: 0;
+      font-family: var(--font-display);
+      font-size: var(--ds-type-display-lg-size);
+      line-height: var(--ds-type-display-lg-line);
+      letter-spacing: 0.1px;
+      font-weight: 600;
+      color: var(--text-primary);
+    }
+    .flow-settle__subtitle {
+      margin: 10px 0 0;
+      font-family: var(--font-text);
+      font-size: var(--ds-type-body-lg-size);
+      line-height: var(--ds-type-body-lg-line);
+      font-weight: 500;
+      color: var(--text-secondary);
+    }
+    .flow-settle__list {
+      margin: 22px 0 0;
+      padding: 0;
+      list-style: none;
+      border: 1px solid var(--ds-line-primary-l1);
+      border-radius: 16px;
+      overflow: hidden;
+      background: var(--ds-bg-general-l1);
+    }
+    .flow-settle__item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 16px;
+      padding: 14px 16px;
+      border-bottom: 1px solid var(--ds-line-primary-l1);
+    }
+    .flow-settle__item:last-child {
+      border-bottom: none;
+    }
+    .flow-settle__item-label {
+      font-family: var(--font-text);
+      font-size: var(--ds-type-body-md-size);
+      line-height: var(--ds-type-body-md-line);
+      font-weight: 500;
+      color: var(--text-primary);
+    }
+    .flow-settle__item-value {
+      font-family: var(--font-text);
+      font-size: var(--ds-type-body-md-size);
+      line-height: var(--ds-type-body-md-line);
+      font-weight: 600;
+      color: var(--text-primary);
+      white-space: nowrap;
+    }
+    .flow-settle__total {
+      margin: 14px 0 0;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-family: var(--font-text);
+      font-size: var(--ds-type-title-sm-size);
+      line-height: var(--ds-type-title-sm-line);
+      font-weight: 700;
+      color: var(--text-primary);
+    }
+    .flow-settle-footer {
+      background: var(--ds-bg-general-l1);
+      padding: 16px 16px 0;
+    }
+    .flow-settle-footer .flow-page__btn--secondary {
+      background: #e5e2df;
+      border: none;
+      color: var(--text-primary);
+    }
     .subscription-scroll {
       flex: 1;
       min-height: 0;
@@ -3267,7 +3365,13 @@
 
     <div class="flow-page flow-offer-page" id="offer-page" aria-hidden="true">
       <nav class="flow-offer__nav" aria-label="Primary">
-        <div class="navbar__lead" aria-hidden="true"></div>
+        <div class="navbar__lead">
+          <button type="button" class="navbar__back" data-flow-back="cancel-warning" aria-label="Back">
+            <svg class="navbar__back-icon" width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true" focusable="false">
+              <path d="M12 6.34326L7.34277 11.0005H21V13.0005H7.34277L12 17.6567L10.5859 19.0718L3.51465 12.0005L10.5859 4.9292L12 6.34326Z" fill="currentColor"/>
+            </svg>
+          </button>
+        </div>
         <div></div>
         <div class="navbar__trail">
           <button type="button" class="navbar__back" data-flow-back="cancel-warning" aria-label="Close">
@@ -3293,6 +3397,41 @@
         <button type="button" class="flow-page__btn flow-page__btn--primary" data-flow-target="subscription" data-offer-accept>Keep Plus</button>
         <button type="button" class="flow-page__btn flow-page__btn--secondary" data-flow-target="cancelled">No thanks, cancel plan</button>
         <p class="flow-offer__billing">You’ll be billed AED <span id="offer-aed-billing">25</span> on <span id="offer-billing-date">20 Mar</span></p>
+        <div class="home-indicator" aria-hidden="true"></div>
+      </div>
+    </div>
+
+    <div class="flow-page flow-settle-page" id="settle-payments-page" aria-hidden="true">
+      <nav class="flow-settle__nav" aria-label="Primary">
+        <div class="navbar__lead">
+          <button type="button" class="navbar__back" data-flow-back="offer" aria-label="Back">
+            <svg class="navbar__back-icon" width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true" focusable="false">
+              <path d="M12 6.34326L7.34277 11.0005H21V13.0005H7.34277L12 17.6567L10.5859 19.0718L3.51465 12.0005L10.5859 4.9292L12 6.34326Z" fill="currentColor"/>
+            </svg>
+          </button>
+        </div>
+        <div></div>
+        <div class="navbar__trail">
+          <button type="button" class="navbar__back" data-flow-back="offer" aria-label="Close">
+            <svg class="navbar__back-icon" width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true" focusable="false">
+              <path d="M6 6L18 18M18 6L6 18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+            </svg>
+          </button>
+        </div>
+      </nav>
+      <div class="flow-settle__content">
+        <h2 class="flow-settle__title">Settle your payments</h2>
+        <p class="flow-settle__subtitle">Before cancellation, repay your outstanding Split in 4 purchases.</p>
+        <ul class="flow-settle__list" id="settle-payments-list">
+          <li class="flow-settle__item"><span class="flow-settle__item-label">Noon — Electronics</span><span class="flow-settle__item-value">AED 319.00</span></li>
+          <li class="flow-settle__item"><span class="flow-settle__item-label">Amazon — Home goods</span><span class="flow-settle__item-value">AED 275.00</span></li>
+          <li class="flow-settle__item"><span class="flow-settle__item-label">Namshi — Fashion</span><span class="flow-settle__item-value">AED 245.00</span></li>
+        </ul>
+        <p class="flow-settle__total"><span>Total outstanding</span><span id="settle-payments-total">AED 839.00</span></p>
+      </div>
+      <div class="flow-page__footer flow-settle-footer">
+        <button type="button" class="flow-page__btn flow-page__btn--primary" data-flow-target="subscription">Keep Plus</button>
+        <button type="button" class="flow-page__btn flow-page__btn--secondary" data-flow-target="cancelled">Continue to cancellation</button>
         <div class="home-indicator" aria-hidden="true"></div>
       </div>
     </div>
@@ -3333,6 +3472,7 @@
       var subscriptionPage = document.getElementById('subscription-page');
       var cancelWarningPage = document.getElementById('cancel-warning-page');
       var offerPage = document.getElementById('offer-page');
+      var settlePaymentsPage = document.getElementById('settle-payments-page');
       var cancelledPage = document.getElementById('cancelled-page');
       var offerAedTitle = document.getElementById('offer-aed-title');
       var offerAedBilling = document.getElementById('offer-aed-billing');
@@ -3346,7 +3486,7 @@
       var subscriptionScrollEl = document.getElementById('subscription-scroll');
       var subscriptionNavbar = document.getElementById('subscription-navbar');
       var subscriptionMainEl = document.getElementById('subscription-main');
-      if (!scrollView || !sheetCard || !navbar || !device || !overlay || !backdrop || !sheetContent || !trialSuccessPage || !subscriptionPage || !cancelWarningPage || !offerPage || !cancelledPage || !backButton) return;
+      if (!scrollView || !sheetCard || !navbar || !device || !overlay || !backdrop || !sheetContent || !trialSuccessPage || !subscriptionPage || !cancelWarningPage || !offerPage || !settlePaymentsPage || !cancelledPage || !backButton) return;
 
       function applyDocumentScrollLock() {
         var gap = window.innerWidth - document.documentElement.clientWidth;
@@ -3368,6 +3508,7 @@
       var OFFER_AVAILABLE_KEY = 'plus-offer-available';
       var BUYBACK_AED_KEY = 'plus-buyback-aed';
       var BUYBACK_ACCEPTED_KEY = 'plus-buyback-accepted';
+      var OUTSTANDING_OL_AMOUNT = 839;
       function isOfferAvailable() {
         try {
           return localStorage.getItem(OFFER_AVAILABLE_KEY) !== '0';
@@ -3396,6 +3537,19 @@
         if (offerAedTitle) offerAedTitle.textContent = String(buybackAed);
         if (offerAedBilling) offerAedBilling.textContent = String(buybackAed);
         if (offerBillingDate) offerBillingDate.textContent = formatNextChargeDateDayMonth(resolveNextChargeDate());
+      }
+
+      function shouldShowSettlePaymentsScreen() {
+        var runtimeScenario = resolveDebugScenarioFromUrl();
+        var state = runtimeScenario && runtimeScenario.stateOverrides
+          ? Object.assign({}, (runtimeScenario.scenario && runtimeScenario.scenario.state) || {}, runtimeScenario.stateOverrides)
+          : null;
+        if (state) {
+          var hasTabbyCard = state.hasTabbyCard !== undefined ? !!state.hasTabbyCard : true;
+          var hasOlPurchases = state.hasOlPurchases !== undefined ? !!state.hasOlPurchases : false;
+          return hasTabbyCard && hasOlPurchases;
+        }
+        return false;
       }
 
       function createMonthDateSafe(year, monthIndex, dayOfMonth) {
@@ -3693,11 +3847,13 @@
         subscriptionPage.classList.remove('is-active');
         cancelWarningPage.classList.remove('is-active');
         offerPage.classList.remove('is-active');
+        settlePaymentsPage.classList.remove('is-active');
         cancelledPage.classList.remove('is-active');
         trialSuccessPage.setAttribute('aria-hidden', 'true');
         subscriptionPage.setAttribute('aria-hidden', 'true');
         cancelWarningPage.setAttribute('aria-hidden', 'true');
         offerPage.setAttribute('aria-hidden', 'true');
+        settlePaymentsPage.setAttribute('aria-hidden', 'true');
         cancelledPage.setAttribute('aria-hidden', 'true');
         device.classList.remove('has-subscription-open');
 
@@ -3745,6 +3901,11 @@
           device.classList.add('has-subscription-open');
           navbar.classList.remove('navbar--on-light');
           applyOfferState({ offerAvailable: isOfferAvailable(), buybackAed: getBuybackAed() });
+        } else if (screen === 'settle-payments') {
+          settlePaymentsPage.classList.add('is-active');
+          settlePaymentsPage.setAttribute('aria-hidden', 'false');
+          device.classList.add('has-subscription-open');
+          navbar.classList.remove('navbar--on-light');
         } else {
           updateNavOnScroll();
           try {
@@ -4453,7 +4614,7 @@
         } else {
           split4Item.parentElement.hidden = false;
           if (hasOlPurchases) {
-            split4Text.textContent = 'You’ll need to pay your outstanding Tabby Card Split in 4 purchases — AED 839.00.';
+            split4Text.textContent = 'You’ll need to pay your outstanding Tabby Card Split in 4 purchases — AED ' + OUTSTANDING_OL_AMOUNT.toFixed(2) + '.';
           } else {
             split4Text.textContent = 'Any future Split in 4 purchases made with your Tabby Card outside partner stores will include a service fee.';
           }
@@ -4506,12 +4667,16 @@
           else setScreen('cancelled');
           return;
         }
+        if (targetScreen === 'cancelled' && offerPage.classList.contains('is-active') && shouldShowSettlePaymentsScreen()) {
+          setScreen('settle-payments');
+          return;
+        }
         if (targetScreen === 'subscription' && flowTarget.hasAttribute('data-offer-accept')) {
           try {
             localStorage.setItem(BUYBACK_ACCEPTED_KEY, '1');
           } catch (e) {}
         }
-        if (targetScreen === 'trial-success' || targetScreen === 'subscription' || targetScreen === 'cancel-warning' || targetScreen === 'offer' || targetScreen === 'cancelled') {
+        if (targetScreen === 'trial-success' || targetScreen === 'subscription' || targetScreen === 'cancel-warning' || targetScreen === 'offer' || targetScreen === 'settle-payments' || targetScreen === 'cancelled') {
           setScreen(targetScreen);
         }
       });
@@ -4523,6 +4688,7 @@
         var backScreen = flowBack.getAttribute('data-flow-back');
         if (backScreen === 'subscription') setScreen('subscription');
         else if (backScreen === 'cancel-warning') setScreen('cancel-warning');
+        else if (backScreen === 'offer') setScreen('offer');
       });
 
       backdrop.addEventListener('click', closeSheet);
@@ -4549,7 +4715,7 @@
         applyCancelWarningState({ hasTabbyCard: true, hasOlPurchases: false, hasActiveSplit6: true });
         try {
           var persisted = localStorage.getItem(SCREEN_KEY);
-          if (persisted === 'subscription' || persisted === 'cancel-warning' || persisted === 'offer' || persisted === 'cancelled') {
+          if (persisted === 'subscription' || persisted === 'cancel-warning' || persisted === 'offer' || persisted === 'settle-payments' || persisted === 'cancelled') {
             setScreen(persisted);
           } else {
             setScreen('landing');
