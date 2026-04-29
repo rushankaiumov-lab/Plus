@@ -2164,9 +2164,12 @@
       min-height: 0;
       overflow-y: auto;
       overflow-x: hidden;
-      padding: 68px 24px 20px;
+      padding: 68px 0 20px;
       display: flex;
       flex-direction: column;
+    }
+    .flow-settle__header {
+      padding: 0 16px;
     }
     .flow-settle__title {
       margin: 0;
@@ -2198,9 +2201,9 @@
     }
     .flow-settle__list {
       margin: 0;
-      padding: 0;
+      padding: 0 16px;
       list-style: none;
-      border-top: 1px solid var(--ds-line-primary-l1);
+      border-top: none;
       border-bottom: 1px solid var(--ds-line-primary-l1);
       background: transparent;
     }
@@ -2210,7 +2213,7 @@
       align-items: start;
       gap: 16px;
       padding: 12px 0;
-      border-bottom: 1px solid var(--ds-line-primary-l1);
+      border-bottom: none;
     }
     .flow-settle__item:last-child {
       border-bottom: none;
@@ -2225,8 +2228,8 @@
     .flow-settle__item-sub {
       margin-top: 2px;
       font-family: var(--font-text);
-      font-size: var(--ds-type-body-md-size);
-      line-height: var(--ds-type-body-md-line);
+      font-size: 14px;
+      line-height: 18px;
       font-weight: 500;
       color: var(--text-secondary);
     }
@@ -2244,14 +2247,15 @@
     .flow-settle__item-note {
       margin-top: 2px;
       font-family: var(--font-text);
-      font-size: var(--ds-type-body-md-size);
-      line-height: var(--ds-type-body-md-line);
+      font-size: 14px;
+      line-height: 18px;
       font-weight: 500;
       color: var(--text-secondary);
       white-space: nowrap;
     }
     .flow-settle__total {
       margin: 14px 0 0;
+      padding: 0 16px;
       display: flex;
       justify-content: space-between;
       align-items: center;
@@ -3445,11 +3449,13 @@
         </div>
       </nav>
       <div class="flow-settle__content">
-        <h2 class="flow-settle__title">You need to pay AED 839.00 to cancel</h2>
-        <p class="flow-settle__subtitle">You need to settle any payments made outside our network of partner stores, which were split in 4</p>
-        <div class="flow-settle__head">
-          <span>Purchases</span>
-          <span>Remaining due</span>
+        <div class="flow-settle__header">
+          <h2 class="flow-settle__title">You need to pay AED 839.00 to cancel</h2>
+          <p class="flow-settle__subtitle">You need to settle any payments made outside our network of partner stores, which were split in 4</p>
+          <div class="flow-settle__head">
+            <span>Purchases</span>
+            <span>Remaining due</span>
+          </div>
         </div>
         <ul class="flow-settle__list" id="settle-payments-list">
           <li class="flow-settle__item">
