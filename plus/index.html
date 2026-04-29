@@ -1968,6 +1968,67 @@
       color: var(--text-primary);
       letter-spacing: -0.16px;
     }
+    .flow-lose-benefits-page {
+      background: var(--ds-bg-general-l1);
+      color: var(--text-primary);
+    }
+    .flow-lose-benefits__content {
+      flex: 1;
+      min-height: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: stretch;
+      padding: 0 24px;
+      text-align: left;
+      margin-top: 0;
+      padding-top: var(--header-nav-height);
+    }
+    .flow-lose-benefits__hero {
+      width: 366px;
+      max-width: 100%;
+      height: 220px;
+      display: block;
+      border-radius: 24px;
+      overflow: hidden;
+      margin-top: 0;
+      object-fit: contain;
+    }
+    .flow-lose-benefits__title-wrap {
+      margin-top: 22px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      width: 100%;
+      max-width: 366px;
+      align-self: center;
+    }
+    .flow-lose-benefits__list {
+      margin-top: 18px;
+      width: 100%;
+      max-width: 366px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      align-self: center;
+      padding-left: 20px;
+    }
+    .flow-lose-benefits__list li {
+      font-family: var(--font-text);
+      font-size: var(--ds-type-body-md-size);
+      line-height: var(--ds-type-body-md-line);
+      font-weight: 500;
+      letter-spacing: -0.16px;
+      color: var(--text-primary);
+    }
+    .flow-lose-benefits-footer {
+      background: transparent;
+      padding: 16px 16px 0;
+    }
+    .flow-lose-benefits-footer .flow-page__btn--secondary {
+      background: #e5e2df;
+      border: none;
+      color: var(--text-primary);
+    }
     .flow-page__footer {
       padding: 16px 16px 0;
       background: linear-gradient(0deg, #fff 0%, rgba(255, 255, 255, 0) 100%);
@@ -2034,6 +2095,10 @@
       align-items: center;
       gap: 21px;
       max-width: 320px;
+    }
+    #cancelled-page .navbar {
+      background: var(--color-page-gray);
+      color: var(--text-primary);
     }
     .flow-offer-page {
       background: var(--ds-bg-general-l1);
@@ -3489,6 +3554,37 @@
       </div>
     </div>
 
+    <div class="flow-page flow-lose-benefits-page" id="lose-benefits-page" aria-hidden="true">
+      <nav class="navbar cancel-warning-navbar" aria-label="Primary">
+        <div class="navbar__lead" aria-hidden="true"></div>
+        <div class="navbar__logo"></div>
+        <div class="navbar__trail">
+          <button type="button" class="navbar__back" data-flow-back="subscription" aria-label="Close">
+            <svg class="navbar__back-icon" width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true" focusable="false">
+              <path d="M6 6L18 18M18 6L6 18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+            </svg>
+          </button>
+        </div>
+      </nav>
+      <div class="flow-lose-benefits__content">
+        <img class="flow-lose-benefits__hero" src="./assets/omni/plus-cancelled-hero.svg" alt="" />
+        <div class="flow-lose-benefits__title-wrap">
+          <h2 class="flow-page__title">You’ll lose your Plus benefits</h2>
+          <p class="flow-page__text">Without Plus, your account will continue in the standard plan.</p>
+        </div>
+        <ul class="flow-lose-benefits__list">
+          <li>Split in 6 for free will no longer be available</li>
+          <li>Cashback rates return to standard levels</li>
+          <li>Priority support is no longer included</li>
+        </ul>
+      </div>
+      <div class="flow-page__footer flow-lose-benefits-footer">
+        <button type="button" class="flow-page__btn flow-page__btn--primary" data-flow-target="subscription">Keep Plus</button>
+        <button type="button" class="flow-page__btn flow-page__btn--secondary" data-flow-target="cancelled">No thanks, cancel plan</button>
+        <div class="home-indicator" aria-hidden="true"></div>
+      </div>
+    </div>
+
     <div class="flow-page flow-settle-page" id="settle-payments-page" aria-hidden="true">
       <nav class="flow-settle__nav" aria-label="Primary">
         <div class="navbar__lead">
@@ -3621,6 +3717,7 @@
       var subscriptionPage = document.getElementById('subscription-page');
       var cancelWarningPage = document.getElementById('cancel-warning-page');
       var offerPage = document.getElementById('offer-page');
+      var loseBenefitsPage = document.getElementById('lose-benefits-page');
       var settlePaymentsPage = document.getElementById('settle-payments-page');
       var cancelledPage = document.getElementById('cancelled-page');
       var offerAedTitle = document.getElementById('offer-aed-title');
@@ -3635,7 +3732,7 @@
       var subscriptionScrollEl = document.getElementById('subscription-scroll');
       var subscriptionNavbar = document.getElementById('subscription-navbar');
       var subscriptionMainEl = document.getElementById('subscription-main');
-      if (!scrollView || !sheetCard || !navbar || !device || !overlay || !backdrop || !sheetContent || !trialSuccessPage || !subscriptionPage || !cancelWarningPage || !offerPage || !settlePaymentsPage || !cancelledPage || !backButton) return;
+      if (!scrollView || !sheetCard || !navbar || !device || !overlay || !backdrop || !sheetContent || !trialSuccessPage || !subscriptionPage || !cancelWarningPage || !offerPage || !loseBenefitsPage || !settlePaymentsPage || !cancelledPage || !backButton) return;
 
       function applyDocumentScrollLock() {
         var gap = window.innerWidth - document.documentElement.clientWidth;
@@ -4010,12 +4107,14 @@
         subscriptionPage.classList.remove('is-active');
         cancelWarningPage.classList.remove('is-active');
         offerPage.classList.remove('is-active');
+        loseBenefitsPage.classList.remove('is-active');
         settlePaymentsPage.classList.remove('is-active');
         cancelledPage.classList.remove('is-active');
         trialSuccessPage.setAttribute('aria-hidden', 'true');
         subscriptionPage.setAttribute('aria-hidden', 'true');
         cancelWarningPage.setAttribute('aria-hidden', 'true');
         offerPage.setAttribute('aria-hidden', 'true');
+        loseBenefitsPage.setAttribute('aria-hidden', 'true');
         settlePaymentsPage.setAttribute('aria-hidden', 'true');
         cancelledPage.setAttribute('aria-hidden', 'true');
         device.classList.remove('has-subscription-open');
@@ -4064,6 +4163,11 @@
           device.classList.add('has-subscription-open');
           navbar.classList.remove('navbar--on-light');
           applyOfferState({ offerAvailable: isOfferAvailable(), buybackAed: getBuybackAed() });
+        } else if (screen === 'lose-benefits') {
+          loseBenefitsPage.classList.add('is-active');
+          loseBenefitsPage.setAttribute('aria-hidden', 'false');
+          device.classList.add('has-subscription-open');
+          navbar.classList.remove('navbar--on-light');
         } else if (screen === 'settle-payments') {
           settlePaymentsPage.classList.add('is-active');
           settlePaymentsPage.setAttribute('aria-hidden', 'false');
@@ -4867,7 +4971,7 @@
         }
         if (targetScreen === 'cancel-warning' && shouldSkipCancelWarningScreen()) {
           if (isOfferAvailable()) setScreen('offer');
-          else setScreen('cancelled');
+          else setScreen('lose-benefits');
           return;
         }
         if (targetScreen === 'cancelled' && offerPage.classList.contains('is-active') && shouldShowSettlePaymentsScreen()) {
@@ -4879,7 +4983,7 @@
             localStorage.setItem(BUYBACK_ACCEPTED_KEY, '1');
           } catch (e) {}
         }
-        if (targetScreen === 'trial-success' || targetScreen === 'subscription' || targetScreen === 'cancel-warning' || targetScreen === 'offer' || targetScreen === 'settle-payments' || targetScreen === 'cancelled') {
+        if (targetScreen === 'trial-success' || targetScreen === 'subscription' || targetScreen === 'cancel-warning' || targetScreen === 'offer' || targetScreen === 'lose-benefits' || targetScreen === 'settle-payments' || targetScreen === 'cancelled') {
           setScreen(targetScreen);
         }
       });
@@ -4918,7 +5022,7 @@
         applyCancelWarningState({ hasTabbyCard: true, hasOlPurchases: false, hasActiveSplit6: true });
         try {
           var persisted = localStorage.getItem(SCREEN_KEY);
-          if (persisted === 'subscription' || persisted === 'cancel-warning' || persisted === 'offer' || persisted === 'settle-payments' || persisted === 'cancelled') {
+          if (persisted === 'subscription' || persisted === 'cancel-warning' || persisted === 'offer' || persisted === 'lose-benefits' || persisted === 'settle-payments' || persisted === 'cancelled') {
             setScreen(persisted);
           } else {
             setScreen('landing');
