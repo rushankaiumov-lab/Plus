@@ -3227,6 +3227,65 @@
         </div>
       </div>
     </template>
+    <template class="sheet-template" data-sheet-id="outstanding-select-payment-method">
+      <div class="payment-select-sheet">
+        <div class="payment-select-sheet__handle" aria-hidden="true"></div>
+        <h2 class="payment-select-sheet__title">Select a payment method</h2>
+        <ul class="payment-select-sheet__list" role="list">
+          <li>
+            <button type="button" class="payment-select-sheet__row" data-select-payment-option>
+              <span class="payment-select-sheet__lead" aria-hidden="true">
+                <img src="./assets/omni/payment-method-pay.svg" alt="" width="36" height="24" />
+              </span>
+              <span class="payment-select-sheet__copy">
+                <span class="payment-select-sheet__main">Apple Pay</span>
+              </span>
+              <span class="payment-select-sheet__radio" aria-hidden="true"></span>
+            </button>
+          </li>
+          <li>
+            <button type="button" class="payment-select-sheet__row" data-select-payment-option data-select-default>
+              <span class="payment-select-sheet__lead" aria-hidden="true">
+                <img src="./assets/omni/payment-method-master.svg" alt="" width="36" height="24" />
+              </span>
+              <span class="payment-select-sheet__copy">
+                <span class="payment-select-sheet__sub"><span class="payment-select-sheet__sub--muted">Mastercard</span> •••• 6893</span>
+              </span>
+              <span class="payment-select-sheet__radio is-selected" aria-hidden="true"></span>
+            </button>
+          </li>
+          <li hidden data-added-card-row>
+            <button type="button" class="payment-select-sheet__row" data-select-payment-option data-added-card-option>
+              <span class="payment-select-sheet__lead" aria-hidden="true">
+                <img src="./assets/omni/payment-method-visa.svg" alt="" width="36" height="24" data-added-card-icon />
+              </span>
+              <span class="payment-select-sheet__copy">
+                <span class="payment-select-sheet__sub"><span class="payment-select-sheet__sub--muted" data-added-card-brand>Visa</span> <span data-added-card-last4>•••• 0001</span></span>
+              </span>
+              <span class="payment-select-sheet__radio" aria-hidden="true"></span>
+            </button>
+          </li>
+          <li>
+            <button type="button" class="payment-select-sheet__row" data-open-tokenization-from-outstanding-select>
+              <span class="payment-select-sheet__lead" aria-hidden="true">
+                <img src="./assets/omni/payment-method-add-card.svg" alt="" width="36" height="24" />
+              </span>
+              <span class="payment-select-sheet__copy">
+                <span class="payment-select-sheet__main">Add new card</span>
+              </span>
+              <span class="payment-select-sheet__radio" aria-hidden="true"></span>
+            </button>
+          </li>
+        </ul>
+        <div class="sheet-toolbar">
+          <div class="sheet-toolbar__buttons sheet-toolbar__buttons--sheet-end">
+            <button type="button" class="sheet-cta sheet-cta--single" data-outstanding-select-payment-submit>
+              <span class="sheet-cta__label">Pay AED 839.00</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </template>
     <template class="sheet-template" data-sheet-id="payment-tokenization">
       <div class="payment-token-sheet">
         <div class="payment-tokenization__handle" aria-hidden="true"></div>
@@ -3521,7 +3580,7 @@
         <p class="flow-settle__total"><span>Total due</span><span id="settle-payments-total">AED 839.00</span></p>
       </div>
       <div class="flow-page__footer flow-settle-footer">
-        <button type="button" class="flow-page__btn flow-page__btn--primary" data-flow-target="cancelled">Pay now</button>
+        <button type="button" class="flow-page__btn flow-page__btn--primary" data-sheet-target="outstanding-select-payment-method">Pay now</button>
         <div class="home-indicator" aria-hidden="true"></div>
       </div>
     </div>
@@ -4534,6 +4593,17 @@
       });
 
       document.addEventListener('click', function (e) {
+        var addNewOutstanding = e.target.closest('[data-open-tokenization-from-outstanding-select]');
+        if (!addNewOutstanding) return;
+        e.preventDefault();
+        tokenizationBackSheetId = 'outstanding-select-payment-method';
+        dismissPanelThen(function () {
+          openSheet('payment-tokenization');
+          initPaymentTokenizationForm();
+        });
+      });
+
+      document.addEventListener('click', function (e) {
         var submit = e.target.closest('[data-select-payment-submit]');
         if (!submit) return;
         e.preventDefault();
@@ -4547,12 +4617,29 @@
       });
 
       document.addEventListener('click', function (e) {
+        var submitOutstanding = e.target.closest('[data-outstanding-select-payment-submit]');
+        if (!submitOutstanding) return;
+        e.preventDefault();
+        runCtaWithLoader(submitOutstanding, function () {
+          closeSheet();
+          setScreen('cancelled');
+        });
+      });
+
+      document.addEventListener('click', function (e) {
         var done = e.target.closest('[data-payment-complete]');
         if (!done) return;
         e.preventDefault();
         if (methodAddedReturnSheetId === 'select-payment-method') {
           dismissPanelThen(function () {
             openSheet('select-payment-method');
+            hydrateSelectPaymentSheet();
+          });
+          return;
+        }
+        if (methodAddedReturnSheetId === 'outstanding-select-payment-method') {
+          dismissPanelThen(function () {
+            openSheet('outstanding-select-payment-method');
             hydrateSelectPaymentSheet();
           });
           return;
@@ -4602,7 +4689,7 @@
           );
           if (sheetId === 'add-payment-method') panel.classList.add('sheet-overlay__panel--add-payment');
           else if (sheetId === 'payment-tokenization') panel.classList.add('sheet-overlay__panel--tokenization');
-          else if (sheetId === 'select-payment-method') panel.classList.add('sheet-overlay__panel--select-payment');
+          else if (sheetId === 'select-payment-method' || sheetId === 'outstanding-select-payment-method') panel.classList.add('sheet-overlay__panel--select-payment');
         }
         sheetContent.innerHTML = template.innerHTML;
         activeTrigger = triggerEl || null;
@@ -4612,7 +4699,7 @@
           applyDocumentScrollLock();
           if (device) device.classList.add('device--sheet-open');
         }
-        if (sheetId === 'select-payment-method') {
+        if (sheetId === 'select-payment-method' || sheetId === 'outstanding-select-payment-method') {
           hydrateSelectPaymentSheet();
         } else if (sheetId === 'subscription-actions') {
           hydrateSubscriptionActionsSheet();
