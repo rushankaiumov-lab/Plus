@@ -2890,7 +2890,7 @@
           <section class="maximise-card" aria-labelledby="maximise-title">
             <h2 id="maximise-title" class="maximise-card__title">How to maximise your Plus benefits</h2>
             <ul class="maximise-list" role="list">
-              <li>
+              <li id="maximise-tabby-card-item">
                 <button type="button" class="maximise-item">
                   <span class="maximise-item__lead" aria-hidden="true">
                     <img class="maximise-item__img--dark" src="./assets/omni/maximise-dark.svg" alt="" loading="lazy" />
@@ -2901,7 +2901,7 @@
                   </span>
                 </button>
               </li>
-              <li>
+              <li id="maximise-tabby-cash-item">
                 <button type="button" class="maximise-item">
                   <span class="maximise-item__lead" aria-hidden="true">
                     <img src="./assets/omni/maximise-green.svg" alt="" loading="lazy" />
@@ -2915,11 +2915,11 @@
             </ul>
           </section>
 
-          <section class="spotlight-card" aria-labelledby="spotlight-title">
-            <h2 id="spotlight-title" class="spotlight-card__title">Free split in 6</h2>
-            <p class="spotlight-card__text">Pay less monthly by spreading 1 purchase over 6 months — without the fee</p>
+          <section class="spotlight-card" id="subscription-cashback-card" aria-labelledby="spotlight-title">
+            <h2 id="spotlight-title" class="spotlight-card__title">Cashback in December</h2>
+            <p class="spotlight-card__text" id="subscription-cashback-text">Earn up to 5% cashback</p>
             <img class="spotlight-card__icon" src="./assets/omni/split-in-7.svg" alt="" loading="lazy" />
-            <button type="button" class="spotlight-card__cta">Select purchase</button>
+            <button type="button" class="spotlight-card__cta" id="subscription-cashback-cta">View categories</button>
           </section>
 
           <div class="island island--benefits">
@@ -3780,6 +3780,7 @@
       var ANIMATE_SAVINGS_START_KEY = 'plus-animate-savings-start';
       var ANIMATE_SAVINGS_DELTA_KEY = 'plus-animate-savings-delta';
       var CW_HAS_TABBY_CARD_KEY = 'plus-cw-has-tabby-card';
+      var HAS_TABBY_CASH_KEY = 'plus-has-tabby-cash';
       var CW_HAS_OL_PURCHASES_KEY = 'plus-cw-has-ol-purchases';
       var CW_HAS_ACTIVE_SPLIT6_KEY = 'plus-cw-has-active-split6';
       var OFFER_AVAILABLE_KEY = 'plus-offer-available';
@@ -3893,6 +3894,46 @@
         } catch (e) {
           return true;
         }
+      }
+
+      function hasTabbyCash() {
+        try {
+          return localStorage.getItem(HAS_TABBY_CASH_KEY) === '1';
+        } catch (e) {
+          return false;
+        }
+      }
+
+      function updateSubscriptionCardAvailabilityUi() {
+        var maximiseCard = document.querySelector('.maximise-card');
+        var tabbyCardItem = document.getElementById('maximise-tabby-card-item');
+        var tabbyCashItem = document.getElementById('maximise-tabby-cash-item');
+        var cashbackCard = document.getElementById('subscription-cashback-card');
+        var cashbackTitle = document.getElementById('spotlight-title');
+        var cashbackText = document.getElementById('subscription-cashback-text');
+        if (!maximiseCard || !tabbyCardItem || !tabbyCashItem || !cashbackCard || !cashbackTitle || !cashbackText) return;
+
+        var hasCard = true;
+        try {
+          hasCard = localStorage.getItem(CW_HAS_TABBY_CARD_KEY) !== '0';
+        } catch (e) {}
+        var hasCash = hasTabbyCash();
+
+        var hasAnyCard = hasCard || hasCash;
+        maximiseCard.hidden = hasCard && hasCash;
+        tabbyCardItem.hidden = hasCash;
+        tabbyCashItem.hidden = hasCard;
+        if (!hasAnyCard) {
+          maximiseCard.hidden = true;
+        }
+
+        cashbackCard.hidden = !hasAnyCard;
+        if (!hasAnyCard) return;
+        var month = new Date().toLocaleString('en-US', { month: 'long' });
+        cashbackTitle.textContent = 'Cashback in ' + month;
+        if (hasCard && hasCash) cashbackText.textContent = 'Earn up to 5% cashback';
+        else if (hasCard) cashbackText.textContent = 'Earn 5% cashback';
+        else cashbackText.textContent = 'Earn 3% cashback';
       }
 
       function parseSavingsNumber(raw) {
@@ -4312,6 +4353,7 @@
           device.classList.add('has-subscription-open');
           navbar.classList.remove('navbar--on-light');
           updateSubscriptionHeroMeta();
+          updateSubscriptionCardAvailabilityUi();
           animateSavingsCounter();
           requestAnimationFrame(function () {
             updateSubscriptionNavOnScroll();
@@ -5013,6 +5055,7 @@
         var variant = window.PLUS_DEBUG_API.resolveVariant(scenario, params.get('variant'));
         var stateOverrides = {};
         if (params.has('cw_has_tabby_card')) stateOverrides.hasTabbyCard = params.get('cw_has_tabby_card') === '1';
+        if (params.has('cw_has_tabby_cash')) stateOverrides.hasTabbyCash = params.get('cw_has_tabby_cash') === '1';
         if (params.has('cw_has_ol_purchases')) stateOverrides.hasOlPurchases = params.get('cw_has_ol_purchases') === '1';
         if (params.has('cw_has_active_split6')) stateOverrides.hasActiveSplit6 = params.get('cw_has_active_split6') === '1';
         if (params.has('offer_available')) stateOverrides.offerAvailable = params.get('offer_available') === '1';
@@ -5049,6 +5092,9 @@
           }
           if (state.showAddPaymentMethodSheet !== undefined) {
             localStorage.setItem(SHOW_ADD_PAYMENT_SHEET_KEY, state.showAddPaymentMethodSheet ? '1' : '0');
+          }
+          if (state.hasTabbyCash !== undefined) {
+            localStorage.setItem(HAS_TABBY_CASH_KEY, state.hasTabbyCash ? '1' : '0');
           }
           if (state.trialTokenizeCard !== undefined) {
             localStorage.setItem(TRIAL_TOKENIZE_CARD_KEY, state.trialTokenizeCard ? '1' : '0');

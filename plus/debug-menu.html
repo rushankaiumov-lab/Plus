@@ -179,6 +179,23 @@
       display: grid;
       gap: 8px;
     }
+    .scenario-group {
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      background: #fff;
+      padding: 10px 10px 8px;
+      display: grid;
+      gap: 8px;
+    }
+    .scenario-group__title {
+      margin: 0;
+      font-size: 12px;
+      line-height: 16px;
+      font-weight: 700;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
     .scenario-check {
       display: flex;
       align-items: center;
@@ -322,61 +339,84 @@
         <button type="button" id="copy-scenario-link" data-i18n="copyLink">Copy link</button>
       </div>
       <div class="scenario-conditions" id="scenario-conditions">
-        <label class="scenario-check">
-          <input type="checkbox" id="cond-is-trial" checked />
-          <span data-i18n="condIsTrial">Trial is available</span>
-        </label>
-        <label class="scenario-check">
-          <input type="checkbox" id="cond-show-add-payment-sheet" checked />
-          <span data-i18n="condShowAddPaymentSheet">Show Add new payment method</span>
-        </label>
-        <label class="scenario-check scenario-inline-check" id="trial-tokenization-check">
-          <input type="checkbox" id="cond-trial-tokenize-card" checked />
-          <span data-i18n="condTrialTokenizeCard">Tokenize new card for trial</span>
-        </label>
-        <label class="scenario-check">
-          <input type="checkbox" id="cond-animate-savings-counter" checked />
-          <span data-i18n="condAnimateSavingsCounter">Animate savings counter</span>
-        </label>
-        <div class="scenario-inline-fields" id="animate-counter-fields">
-          <div class="scenario-inline-field">
-            <label for="cond-animate-start-value" data-i18n="labelAnimateStartValue">Start value</label>
-            <input id="cond-animate-start-value" type="text" value="1019.97" />
-          </div>
-          <div class="scenario-inline-field">
-            <label for="cond-animate-delta-value" data-i18n="labelAnimateDeltaValue">Increase by</label>
-            <input id="cond-animate-delta-value" type="text" value="" placeholder="e.g. 25.00" />
+        <div class="scenario-group">
+          <p class="scenario-group__title" data-i18n="groupActivation">Activation</p>
+          <label class="scenario-check">
+            <input type="checkbox" id="cond-is-trial" checked />
+            <span data-i18n="condIsTrial">Trial is available</span>
+          </label>
+          <label class="scenario-check">
+            <input type="checkbox" id="cond-show-add-payment-sheet" checked />
+            <span data-i18n="condShowAddPaymentSheet">Show Add new payment method</span>
+          </label>
+          <label class="scenario-check scenario-inline-check" id="trial-tokenization-check">
+            <input type="checkbox" id="cond-trial-tokenize-card" checked />
+            <span data-i18n="condTrialTokenizeCard">Tokenize new card for trial</span>
+          </label>
+        </div>
+
+        <div class="scenario-group">
+          <p class="scenario-group__title" data-i18n="groupSavingsCounter">Savings Counter</p>
+          <label class="scenario-check">
+            <input type="checkbox" id="cond-animate-savings-counter" checked />
+            <span data-i18n="condAnimateSavingsCounter">Animate savings counter</span>
+          </label>
+          <div class="scenario-inline-fields" id="animate-counter-fields">
+            <div class="scenario-inline-field">
+              <label for="cond-animate-start-value" data-i18n="labelAnimateStartValue">Start value</label>
+              <input id="cond-animate-start-value" type="text" value="1019.97" />
+            </div>
+            <div class="scenario-inline-field">
+              <label for="cond-animate-delta-value" data-i18n="labelAnimateDeltaValue">Increase by</label>
+              <input id="cond-animate-delta-value" type="text" value="" placeholder="e.g. 25.00" />
+            </div>
           </div>
         </div>
-        <label class="scenario-check">
-          <input type="checkbox" id="cond-has-tabby-card" checked />
-          <span data-i18n="condHasTabbyCard">Has Tabby Card</span>
-        </label>
-        <label class="scenario-check">
-          <input type="checkbox" id="cond-has-ol-purchases" />
-          <span data-i18n="condHasOlPurchases">Has OL purchases (Split in 4 outstanding)</span>
-        </label>
-        <label class="scenario-check">
-          <input type="checkbox" id="cond-has-active-split6" checked />
-          <span data-i18n="condHasActiveSplit6">Has active Split in 6</span>
-        </label>
-        <label class="scenario-check scenario-check--buyback">
-          <span class="scenario-check__label">
-            <input type="checkbox" id="cond-offer-available" checked />
-            <span data-i18n="condOfferAvailable">Buyback offer</span>
-          </span>
-          <span class="scenario-check__inline" id="buyback-amount-inline">
-            <select id="cond-buyback-aed">
-              <option value="1" data-i18n="optionAed1">AED 1</option>
-              <option value="25" selected data-i18n="optionAed25">AED 25</option>
-            </select>
-          </span>
-        </label>
-        <div class="scenario-presets">
-          <button type="button" data-cw-preset="baseline" data-i18n="presetBaseline">Baseline</button>
-          <button type="button" data-cw-preset="ol-debt" data-i18n="presetOlDebt">OL debt</button>
-          <button type="button" data-cw-preset="no-split6" data-i18n="presetNoSplit6">No Split in 6</button>
-          <button type="button" data-cw-preset="no-card" data-i18n="presetNoCard">No Tabby Card</button>
+
+        <div class="scenario-group">
+          <p class="scenario-group__title" data-i18n="groupCardsDebt">Cards & Debt</p>
+          <label class="scenario-check">
+            <input type="checkbox" id="cond-has-tabby-card" checked />
+            <span data-i18n="condHasTabbyCard">Has Tabby Card</span>
+          </label>
+          <label class="scenario-check">
+            <input type="checkbox" id="cond-has-tabby-cash" />
+            <span data-i18n="condHasTabbyCash">Has Tabby Cash</span>
+          </label>
+          <label class="scenario-check">
+            <input type="checkbox" id="cond-has-ol-purchases" />
+            <span data-i18n="condHasOlPurchases">Has OL purchases (Split in 4 outstanding)</span>
+          </label>
+          <label class="scenario-check">
+            <input type="checkbox" id="cond-has-active-split6" checked />
+            <span data-i18n="condHasActiveSplit6">Has active Split in 6</span>
+          </label>
+        </div>
+
+        <div class="scenario-group">
+          <p class="scenario-group__title" data-i18n="groupCancellationOffer">Cancellation Offer</p>
+          <label class="scenario-check scenario-check--buyback">
+            <span class="scenario-check__label">
+              <input type="checkbox" id="cond-offer-available" checked />
+              <span data-i18n="condOfferAvailable">Buyback offer</span>
+            </span>
+            <span class="scenario-check__inline" id="buyback-amount-inline">
+              <select id="cond-buyback-aed">
+                <option value="1" data-i18n="optionAed1">AED 1</option>
+                <option value="25" selected data-i18n="optionAed25">AED 25</option>
+              </select>
+            </span>
+          </label>
+        </div>
+
+        <div class="scenario-group">
+          <p class="scenario-group__title" data-i18n="groupPresets">Presets</p>
+          <div class="scenario-presets">
+            <button type="button" data-cw-preset="baseline" data-i18n="presetBaseline">Baseline</button>
+            <button type="button" data-cw-preset="ol-debt" data-i18n="presetOlDebt">OL debt</button>
+            <button type="button" data-cw-preset="no-split6" data-i18n="presetNoSplit6">No Split in 6</button>
+            <button type="button" data-cw-preset="no-card" data-i18n="presetNoCard">No Tabby Card</button>
+          </div>
         </div>
       </div>
     </section>
@@ -408,6 +448,7 @@
       var condAnimateDeltaValue = document.getElementById('cond-animate-delta-value');
       var animateCounterFields = document.getElementById('animate-counter-fields');
       var condHasTabbyCard = document.getElementById('cond-has-tabby-card');
+      var condHasTabbyCash = document.getElementById('cond-has-tabby-cash');
       var condHasOlPurchases = document.getElementById('cond-has-ol-purchases');
       var condHasActiveSplit6 = document.getElementById('cond-has-active-split6');
       var condOfferAvailable = document.getElementById('cond-offer-available');
@@ -424,6 +465,11 @@
           labelScenario: 'Scenario',
           labelVariant: 'Variant',
           labelLink: 'Shareable link',
+          groupActivation: 'Activation',
+          groupSavingsCounter: 'Savings Counter',
+          groupCardsDebt: 'Cards & Debt',
+          groupCancellationOffer: 'Cancellation Offer',
+          groupPresets: 'Presets',
           openScenario: 'Open scenario',
           openMap: 'Open Scenario Map',
           copyLink: 'Copy link',
@@ -434,6 +480,7 @@
           labelAnimateStartValue: 'Start value',
           labelAnimateDeltaValue: 'Increase by',
           condHasTabbyCard: 'Has Tabby Card',
+          condHasTabbyCash: 'Has Tabby Cash',
           condHasOlPurchases: 'Has OL purchases (Split in 4 outstanding)',
           condHasActiveSplit6: 'Has active Split in 6',
           condOfferAvailable: 'Buyback offer',
@@ -455,6 +502,11 @@
           labelScenario: 'Сценарий',
           labelVariant: 'Вариант',
           labelLink: 'Ссылка для респондента',
+          groupActivation: 'Активация',
+          groupSavingsCounter: 'Счетчик Savings',
+          groupCardsDebt: 'Карты и задолженность',
+          groupCancellationOffer: 'Оффер при отмене',
+          groupPresets: 'Пресеты',
           openScenario: 'Открыть сценарий',
           openMap: 'Открыть карту сценариев',
           copyLink: 'Скопировать ссылку',
@@ -465,6 +517,7 @@
           labelAnimateStartValue: 'Стартовое значение',
           labelAnimateDeltaValue: 'На сколько увеличить',
           condHasTabbyCard: 'Есть Tabby Card',
+          condHasTabbyCash: 'Есть Tabby Cash',
           condHasOlPurchases: 'Есть OL покупки (долг в Split in 4)',
           condHasActiveSplit6: 'Есть активный Split in 6',
           condOfferAvailable: 'Buyback offer',
@@ -481,8 +534,8 @@
       };
 
       var DEBUG_MENU_BUILD = {
-        version: 'v0.6.7',
-        updatedAt: '2026-04-29 18:41 UTC+2'
+        version: 'v0.6.9',
+        updatedAt: '2026-04-29 19:12 UTC+2'
       };
 
       if (buildVersionEl) buildVersionEl.textContent = DEBUG_MENU_BUILD.version;
@@ -554,6 +607,7 @@
           url.searchParams.delete('animate_savings_delta');
         }
         url.searchParams.set('cw_has_tabby_card', condHasTabbyCard && condHasTabbyCard.checked ? '1' : '0');
+        url.searchParams.set('cw_has_tabby_cash', condHasTabbyCash && condHasTabbyCash.checked ? '1' : '0');
         url.searchParams.set('cw_has_ol_purchases', condHasOlPurchases && condHasOlPurchases.checked ? '1' : '0');
         url.searchParams.set('cw_has_active_split6', condHasActiveSplit6 && condHasActiveSplit6.checked ? '1' : '0');
         url.searchParams.set('offer_available', condOfferAvailable && condOfferAvailable.checked ? '1' : '0');
@@ -590,6 +644,7 @@
         if (condAnimateStartValue) condAnimateStartValue.value = scenario.state.animateSavingsStart !== undefined ? String(scenario.state.animateSavingsStart) : '1019.97';
         if (condAnimateDeltaValue) condAnimateDeltaValue.value = scenario.state.animateSavingsDelta !== undefined ? String(scenario.state.animateSavingsDelta) : '';
         if (condHasTabbyCard) condHasTabbyCard.checked = scenario.state.hasTabbyCard !== undefined ? !!scenario.state.hasTabbyCard : true;
+        if (condHasTabbyCash) condHasTabbyCash.checked = scenario.state.hasTabbyCash !== undefined ? !!scenario.state.hasTabbyCash : false;
         if (condHasOlPurchases) condHasOlPurchases.checked = scenario.state.hasOlPurchases !== undefined ? !!scenario.state.hasOlPurchases : false;
         if (condHasActiveSplit6) condHasActiveSplit6.checked = scenario.state.hasActiveSplit6 !== undefined ? !!scenario.state.hasActiveSplit6 : true;
         if (condOfferAvailable) condOfferAvailable.checked = scenario.state.offerAvailable !== undefined ? !!scenario.state.offerAvailable : false;
@@ -663,6 +718,7 @@
           updateScenarioLink();
         });
       }
+      if (condHasTabbyCash) condHasTabbyCash.addEventListener('change', updateScenarioLink);
       if (condHasOlPurchases) {
         condHasOlPurchases.addEventListener('change', function () {
           syncCancellationDependencies('ol');
