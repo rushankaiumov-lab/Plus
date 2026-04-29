@@ -297,6 +297,10 @@
           <span data-i18n="condShowAddPaymentSheet">Show Add new payment method</span>
         </label>
         <label class="scenario-check">
+          <input type="checkbox" id="cond-animate-savings-counter" checked />
+          <span data-i18n="condAnimateSavingsCounter">Animate savings counter</span>
+        </label>
+        <label class="scenario-check">
           <input type="checkbox" id="cond-has-tabby-card" checked />
           <span data-i18n="condHasTabbyCard">Has Tabby Card</span>
         </label>
@@ -349,6 +353,7 @@
       var condWrap = document.getElementById('scenario-conditions');
       var condIsTrial = document.getElementById('cond-is-trial');
       var condShowAddPaymentSheet = document.getElementById('cond-show-add-payment-sheet');
+      var condAnimateSavingsCounter = document.getElementById('cond-animate-savings-counter');
       var condHasTabbyCard = document.getElementById('cond-has-tabby-card');
       var condHasOlPurchases = document.getElementById('cond-has-ol-purchases');
       var condHasActiveSplit6 = document.getElementById('cond-has-active-split6');
@@ -371,6 +376,7 @@
           copyLink: 'Copy link',
           condIsTrial: 'Trial is available',
           condShowAddPaymentSheet: 'Show Add new payment method',
+          condAnimateSavingsCounter: 'Animate savings counter',
           condHasTabbyCard: 'Has Tabby Card',
           condHasOlPurchases: 'Has OL purchases (Split in 4 outstanding)',
           condHasActiveSplit6: 'Has active Split in 6',
@@ -398,6 +404,7 @@
           copyLink: 'Скопировать ссылку',
           condIsTrial: 'Доступен Trial',
           condShowAddPaymentSheet: 'Показывать Add new payment method',
+          condAnimateSavingsCounter: 'Анимировать счетчик savings',
           condHasTabbyCard: 'Есть Tabby Card',
           condHasOlPurchases: 'Есть OL покупки (долг в Split in 4)',
           condHasActiveSplit6: 'Есть активный Split in 6',
@@ -415,8 +422,8 @@
       };
 
       var DEBUG_MENU_BUILD = {
-        version: 'v0.6.3',
-        updatedAt: '2026-04-29 17:52 UTC+2'
+        version: 'v0.6.4',
+        updatedAt: '2026-04-29 18:24 UTC+2'
       };
 
       if (buildVersionEl) buildVersionEl.textContent = DEBUG_MENU_BUILD.version;
@@ -464,6 +471,7 @@
         url.searchParams.set('variant', variantId);
         url.searchParams.set('is_trial', condIsTrial && condIsTrial.checked ? '1' : '0');
         url.searchParams.set('show_add_payment_sheet', condShowAddPaymentSheet && condShowAddPaymentSheet.checked ? '1' : '0');
+        url.searchParams.set('animate_savings_counter', condAnimateSavingsCounter && condAnimateSavingsCounter.checked ? '1' : '0');
         url.searchParams.set('cw_has_tabby_card', condHasTabbyCard && condHasTabbyCard.checked ? '1' : '0');
         url.searchParams.set('cw_has_ol_purchases', condHasOlPurchases && condHasOlPurchases.checked ? '1' : '0');
         url.searchParams.set('cw_has_active_split6', condHasActiveSplit6 && condHasActiveSplit6.checked ? '1' : '0');
@@ -496,6 +504,7 @@
         if (!scenario || !scenario.state) return;
         if (condIsTrial) condIsTrial.checked = scenario.state.isTrial !== undefined ? !!scenario.state.isTrial : true;
         if (condShowAddPaymentSheet) condShowAddPaymentSheet.checked = scenario.state.showAddPaymentMethodSheet !== undefined ? !!scenario.state.showAddPaymentMethodSheet : true;
+        if (condAnimateSavingsCounter) condAnimateSavingsCounter.checked = scenario.state.animateSavingsCounter !== undefined ? !!scenario.state.animateSavingsCounter : true;
         if (condHasTabbyCard) condHasTabbyCard.checked = scenario.state.hasTabbyCard !== undefined ? !!scenario.state.hasTabbyCard : true;
         if (condHasOlPurchases) condHasOlPurchases.checked = scenario.state.hasOlPurchases !== undefined ? !!scenario.state.hasOlPurchases : false;
         if (condHasActiveSplit6) condHasActiveSplit6.checked = scenario.state.hasActiveSplit6 !== undefined ? !!scenario.state.hasActiveSplit6 : true;
@@ -549,6 +558,7 @@
       if (variantSelect) variantSelect.addEventListener('change', updateScenarioLink);
       if (condIsTrial) condIsTrial.addEventListener('change', updateScenarioLink);
       if (condShowAddPaymentSheet) condShowAddPaymentSheet.addEventListener('change', updateScenarioLink);
+      if (condAnimateSavingsCounter) condAnimateSavingsCounter.addEventListener('change', updateScenarioLink);
       if (condHasTabbyCard) {
         condHasTabbyCard.addEventListener('change', function () {
           syncCancellationDependencies('tabby');

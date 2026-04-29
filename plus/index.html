@@ -2417,6 +2417,28 @@
       font-weight: 700;
       letter-spacing: 0.1px;
       font-family: var(--font-display);
+      overflow: hidden;
+      position: relative;
+    }
+    .subscription-counter__reel {
+      position: absolute;
+      inset: 0;
+      overflow: hidden;
+    }
+    .subscription-counter__track {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      transform: translateY(0);
+      transition-timing-function: cubic-bezier(0.2, 0.8, 0.2, 1);
+      will-change: transform;
+    }
+    .subscription-counter__slot {
+      width: 100%;
+      height: 36px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
     }
     .subscription-counter__dot {
       width: 8px;
@@ -3752,6 +3774,7 @@
       var HAS_PAYMENT_KEY = 'plus-has-payment-method';
       var IS_TRIAL_KEY = 'plus-is-trial-available';
       var SHOW_ADD_PAYMENT_SHEET_KEY = 'plus-show-add-payment-sheet';
+      var ANIMATE_SAVINGS_COUNTER_KEY = 'plus-animate-savings-counter';
       var CW_HAS_TABBY_CARD_KEY = 'plus-cw-has-tabby-card';
       var CW_HAS_OL_PURCHASES_KEY = 'plus-cw-has-ol-purchases';
       var CW_HAS_ACTIVE_SPLIT6_KEY = 'plus-cw-has-active-split6';
@@ -3759,6 +3782,8 @@
       var BUYBACK_AED_KEY = 'plus-buyback-aed';
       var BUYBACK_ACCEPTED_KEY = 'plus-buyback-accepted';
       var OUTSTANDING_OL_AMOUNT = 839;
+      var SAVINGS_COUNTER_TARGET = '1019.97';
+      var savingsAnimationToken = 0;
       function isOfferAvailable() {
         try {
           return localStorage.getItem(OFFER_AVAILABLE_KEY) !== '0';
@@ -3848,6 +3873,87 @@
           }
         } catch (e) {}
         return 59;
+      }
+
+      function shouldAnimateSavingsCounter() {
+        try {
+          return localStorage.getItem(ANIMATE_SAVINGS_COUNTER_KEY) !== '0';
+        } catch (e) {
+          return true;
+        }
+      }
+
+      function getSavingsDigitNodes() {
+        return Array.prototype.slice.call(document.querySelectorAll('.subscription-counter__digit'));
+      }
+
+      function applySavingsCounterStatic() {
+        var digits = getSavingsDigitNodes();
+        if (!digits.length) return;
+        var targetDigits = SAVINGS_COUNTER_TARGET.replace('.', '');
+        digits.forEach(function (el, idx) {
+          var value = targetDigits[idx] || '0';
+          el.textContent = value;
+          el.setAttribute('data-value', value);
+        });
+      }
+
+      function animateSavingsCounter() {
+        var digits = getSavingsDigitNodes();
+        if (!digits.length) return;
+        if (!shouldAnimateSavingsCounter()) {
+          applySavingsCounterStatic();
+          return;
+        }
+
+        /* Animation spec:
+           - whole animation starts after 1000ms
+           - 1 drum step takes 400ms
+           - reels start with overlap using staggered delays */
+        var startDelayMs = 1000;
+        var stepMs = 400;
+        var staggerMs = 220;
+        var loop = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '0', '1'];
+        var targetDigits = SAVINGS_COUNTER_TARGET.replace('.', '');
+        var currentToken = savingsAnimationToken + 1;
+        savingsAnimationToken = currentToken;
+
+        digits.forEach(function (el) {
+          el.textContent = '';
+          var reel = document.createElement('span');
+          reel.className = 'subscription-counter__reel';
+          var track = document.createElement('span');
+          track.className = 'subscription-counter__track';
+          loop.forEach(function (d) {
+            var slot = document.createElement('span');
+            slot.className = 'subscription-counter__slot';
+            slot.textContent = d;
+            track.appendChild(slot);
+          });
+          reel.appendChild(track);
+          el.appendChild(reel);
+        });
+
+        digits.forEach(function (el, idx) {
+          var track = el.querySelector('.subscription-counter__track');
+          if (!track) return;
+          var target = Number(targetDigits[idx] || '0');
+          var steps = 10 + target;
+          var duration = Math.max(1, steps) * stepMs;
+          var delay = startDelayMs + idx * staggerMs;
+          track.style.transitionDuration = duration + 'ms';
+          track.style.transitionDelay = delay + 'ms';
+          requestAnimationFrame(function () {
+            requestAnimationFrame(function () {
+              if (savingsAnimationToken !== currentToken) return;
+              track.style.transform = 'translateY(' + (-steps * 36) + 'px)';
+            });
+          });
+          setTimeout(function () {
+            if (savingsAnimationToken !== currentToken) return;
+            el.textContent = String(target);
+          }, delay + duration + 40);
+        });
       }
 
       function hydrateSubscriptionActionsSheet() {
@@ -4141,6 +4247,7 @@
           device.classList.add('has-subscription-open');
           navbar.classList.remove('navbar--on-light');
           updateSubscriptionHeroMeta();
+          animateSavingsCounter();
           requestAnimationFrame(function () {
             updateSubscriptionNavOnScroll();
           });
@@ -4843,6 +4950,7 @@
           var buyback = Number(params.get('buyback_aed'));
           stateOverrides.buybackAed = buyback === 1 ? 1 : 25;
         }
+        if (params.has('animate_savings_counter')) stateOverrides.animateSavingsCounter = params.get('animate_savings_counter') === '1';
         if (params.has('is_trial')) stateOverrides.isTrial = params.get('is_trial') === '1';
         if (params.has('show_add_payment_sheet')) stateOverrides.showAddPaymentMethodSheet = params.get('show_add_payment_sheet') === '1';
         return { scenario: scenario, variant: variant, stateOverrides: stateOverrides };
@@ -4868,6 +4976,9 @@
           }
           if (state.showAddPaymentMethodSheet !== undefined) {
             localStorage.setItem(SHOW_ADD_PAYMENT_SHEET_KEY, state.showAddPaymentMethodSheet ? '1' : '0');
+          }
+          if (state.animateSavingsCounter !== undefined) {
+            localStorage.setItem(ANIMATE_SAVINGS_COUNTER_KEY, state.animateSavingsCounter ? '1' : '0');
           }
           if (state.offerAvailable !== undefined) {
             localStorage.setItem(OFFER_AVAILABLE_KEY, state.offerAvailable ? '1' : '0');
@@ -5021,6 +5132,7 @@
           applySubscriptionEntryState({ isTrial: true });
         }
         applyCancelWarningState({ hasTabbyCard: true, hasOlPurchases: false, hasActiveSplit6: true });
+        applySavingsCounterStatic();
         try {
           var persisted = localStorage.getItem(SCREEN_KEY);
           if (persisted === 'subscription' || persisted === 'cancel-warning' || persisted === 'offer' || persisted === 'lose-benefits' || persisted === 'settle-payments' || persisted === 'cancelled') {
