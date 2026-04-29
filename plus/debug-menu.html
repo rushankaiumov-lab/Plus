@@ -192,8 +192,8 @@
       height: 16px;
     }
     .scenario-check--buyback {
-      justify-content: space-between;
-      gap: 12px;
+      justify-content: flex-start;
+      gap: 8px;
     }
     .scenario-check__label {
       display: inline-flex;
@@ -204,17 +204,11 @@
     .scenario-check__inline {
       display: inline-flex;
       align-items: center;
-      gap: 8px;
-      margin-left: auto;
+      gap: 0;
+      margin-left: 0;
     }
     .scenario-check__inline[hidden] {
       display: none;
-    }
-    .scenario-check__inline-label {
-      font-size: 12px;
-      line-height: 16px;
-      color: var(--muted);
-      white-space: nowrap;
     }
     .scenario-check__inline select {
       border: 1px solid var(--line);
@@ -320,7 +314,6 @@
             <span data-i18n="condOfferAvailable">Buyback offer</span>
           </span>
           <span class="scenario-check__inline" id="buyback-amount-inline">
-            <span class="scenario-check__inline-label" data-i18n="labelBuybackAed">amount (AED)</span>
             <select id="cond-buyback-aed">
               <option value="1" data-i18n="optionAed1">AED 1</option>
               <option value="25" selected data-i18n="optionAed25">AED 25</option>
@@ -382,7 +375,6 @@
           condHasOlPurchases: 'Has OL purchases (Split in 4 outstanding)',
           condHasActiveSplit6: 'Has active Split in 6',
           condOfferAvailable: 'Buyback offer',
-          labelBuybackAed: 'amount (AED)',
           optionAed1: 'AED 1',
           optionAed25: 'AED 25',
           presetBaseline: 'Baseline',
@@ -410,7 +402,6 @@
           condHasOlPurchases: 'Есть OL покупки (долг в Split in 4)',
           condHasActiveSplit6: 'Есть активный Split in 6',
           condOfferAvailable: 'Buyback offer',
-          labelBuybackAed: 'amount (AED)',
           optionAed1: 'AED 1',
           optionAed25: 'AED 25',
           presetBaseline: 'Базовый',
@@ -452,6 +443,19 @@
       function updateBuybackControlsVisibility() {
         if (!buybackAmountInline || !condOfferAvailable) return;
         buybackAmountInline.hidden = !condOfferAvailable.checked;
+      }
+
+      function syncCancellationDependencies(source) {
+        if (!condHasTabbyCard || !condHasOlPurchases) return;
+        if (source === 'ol' && condHasOlPurchases.checked) {
+          condHasTabbyCard.checked = true;
+        }
+        if (!condHasTabbyCard.checked) {
+          condHasOlPurchases.checked = false;
+          condHasOlPurchases.disabled = true;
+        } else {
+          condHasOlPurchases.disabled = false;
+        }
       }
 
       function buildScenarioLink(scenarioId, variantId) {
@@ -497,6 +501,7 @@
         if (condHasActiveSplit6) condHasActiveSplit6.checked = scenario.state.hasActiveSplit6 !== undefined ? !!scenario.state.hasActiveSplit6 : true;
         if (condOfferAvailable) condOfferAvailable.checked = scenario.state.offerAvailable !== undefined ? !!scenario.state.offerAvailable : false;
         if (condBuybackAed) condBuybackAed.value = scenario.state.buybackAed !== undefined ? String(scenario.state.buybackAed) : '25';
+        syncCancellationDependencies();
         updateBuybackControlsVisibility();
       }
 
@@ -544,8 +549,18 @@
       if (variantSelect) variantSelect.addEventListener('change', updateScenarioLink);
       if (condIsTrial) condIsTrial.addEventListener('change', updateScenarioLink);
       if (condShowAddPaymentSheet) condShowAddPaymentSheet.addEventListener('change', updateScenarioLink);
-      if (condHasTabbyCard) condHasTabbyCard.addEventListener('change', updateScenarioLink);
-      if (condHasOlPurchases) condHasOlPurchases.addEventListener('change', updateScenarioLink);
+      if (condHasTabbyCard) {
+        condHasTabbyCard.addEventListener('change', function () {
+          syncCancellationDependencies('tabby');
+          updateScenarioLink();
+        });
+      }
+      if (condHasOlPurchases) {
+        condHasOlPurchases.addEventListener('change', function () {
+          syncCancellationDependencies('ol');
+          updateScenarioLink();
+        });
+      }
       if (condHasActiveSplit6) condHasActiveSplit6.addEventListener('change', updateScenarioLink);
       if (condOfferAvailable) {
         condOfferAvailable.addEventListener('change', function () {
@@ -581,6 +596,7 @@
         });
       });
       initScenarioControls();
+      syncCancellationDependencies();
       updateBuybackControlsVisibility();
       applyLanguage('en');
     })();

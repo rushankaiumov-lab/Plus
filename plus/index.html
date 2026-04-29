@@ -3654,6 +3654,9 @@
       var HAS_PAYMENT_KEY = 'plus-has-payment-method';
       var IS_TRIAL_KEY = 'plus-is-trial-available';
       var SHOW_ADD_PAYMENT_SHEET_KEY = 'plus-show-add-payment-sheet';
+      var CW_HAS_TABBY_CARD_KEY = 'plus-cw-has-tabby-card';
+      var CW_HAS_OL_PURCHASES_KEY = 'plus-cw-has-ol-purchases';
+      var CW_HAS_ACTIVE_SPLIT6_KEY = 'plus-cw-has-active-split6';
       var OFFER_AVAILABLE_KEY = 'plus-offer-available';
       var BUYBACK_AED_KEY = 'plus-buyback-aed';
       var BUYBACK_ACCEPTED_KEY = 'plus-buyback-accepted';
@@ -3699,6 +3702,17 @@
           return hasTabbyCard && hasOlPurchases;
         }
         return false;
+      }
+
+      function shouldSkipCancelWarningScreen() {
+        try {
+          var hasTabbyCard = localStorage.getItem(CW_HAS_TABBY_CARD_KEY) !== '0';
+          var hasOlPurchases = localStorage.getItem(CW_HAS_OL_PURCHASES_KEY) === '1';
+          var hasActiveSplit6 = localStorage.getItem(CW_HAS_ACTIVE_SPLIT6_KEY) !== '0';
+          return !hasTabbyCard && !hasOlPurchases && !hasActiveSplit6;
+        } catch (e) {
+          return false;
+        }
       }
 
       function createMonthDateSafe(year, monthIndex, dayOfMonth) {
@@ -4785,6 +4799,13 @@
         var hasTabbyCard = state && state.hasTabbyCard !== undefined ? !!state.hasTabbyCard : true;
         var hasOlPurchases = state && state.hasOlPurchases !== undefined ? !!state.hasOlPurchases : false;
         var hasActiveSplit6 = state && state.hasActiveSplit6 !== undefined ? !!state.hasActiveSplit6 : true;
+        if (!hasTabbyCard) hasOlPurchases = false;
+
+        try {
+          localStorage.setItem(CW_HAS_TABBY_CARD_KEY, hasTabbyCard ? '1' : '0');
+          localStorage.setItem(CW_HAS_OL_PURCHASES_KEY, hasOlPurchases ? '1' : '0');
+          localStorage.setItem(CW_HAS_ACTIVE_SPLIT6_KEY, hasActiveSplit6 ? '1' : '0');
+        } catch (err) {}
 
         if (!hasTabbyCard) {
           split4Item.parentElement.hidden = true;
@@ -4840,6 +4861,11 @@
           return;
         }
         if (targetScreen === 'cancel-next') {
+          if (isOfferAvailable()) setScreen('offer');
+          else setScreen('cancelled');
+          return;
+        }
+        if (targetScreen === 'cancel-warning' && shouldSkipCancelWarningScreen()) {
           if (isOfferAvailable()) setScreen('offer');
           else setScreen('cancelled');
           return;
