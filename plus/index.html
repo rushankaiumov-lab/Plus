@@ -2436,6 +2436,7 @@
     .subscription-counter__slot {
       width: 100%;
       height: 36px;
+      flex: 0 0 36px;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -3775,6 +3776,8 @@
       var IS_TRIAL_KEY = 'plus-is-trial-available';
       var SHOW_ADD_PAYMENT_SHEET_KEY = 'plus-show-add-payment-sheet';
       var ANIMATE_SAVINGS_COUNTER_KEY = 'plus-animate-savings-counter';
+      var ANIMATE_SAVINGS_START_KEY = 'plus-animate-savings-start';
+      var ANIMATE_SAVINGS_DELTA_KEY = 'plus-animate-savings-delta';
       var CW_HAS_TABBY_CARD_KEY = 'plus-cw-has-tabby-card';
       var CW_HAS_OL_PURCHASES_KEY = 'plus-cw-has-ol-purchases';
       var CW_HAS_ACTIVE_SPLIT6_KEY = 'plus-cw-has-active-split6';
@@ -3782,7 +3785,7 @@
       var BUYBACK_AED_KEY = 'plus-buyback-aed';
       var BUYBACK_ACCEPTED_KEY = 'plus-buyback-accepted';
       var OUTSTANDING_OL_AMOUNT = 839;
-      var SAVINGS_COUNTER_TARGET = '1019.97';
+      var SAVINGS_COUNTER_DEFAULT_START = 1019.97;
       var savingsAnimationToken = 0;
       function isOfferAvailable() {
         try {
@@ -3883,14 +3886,51 @@
         }
       }
 
+      function parseSavingsNumber(raw) {
+        var n = Number(String(raw || '').replace(',', '.').trim());
+        if (!isFinite(n)) return null;
+        return Math.round(n * 100) / 100;
+      }
+
+      function valueToDigitString(value) {
+        var normalized = isFinite(value) ? Math.max(0, value) : 0;
+        var fixed = normalized.toFixed(2);
+        var parts = fixed.split('.');
+        var intPart = parts[0] || '0';
+        var fracPart = parts[1] || '00';
+        intPart = intPart.padStart(4, '0').slice(-4);
+        fracPart = fracPart.padEnd(2, '0').slice(0, 2);
+        return intPart + fracPart;
+      }
+
+      function getSavingsCounterConfig() {
+        var start = SAVINGS_COUNTER_DEFAULT_START;
+        var delta = null;
+        try {
+          var parsedStart = parseSavingsNumber(localStorage.getItem(ANIMATE_SAVINGS_START_KEY));
+          if (parsedStart !== null) start = parsedStart;
+          var rawDelta = localStorage.getItem(ANIMATE_SAVINGS_DELTA_KEY);
+          var parsedDelta = parseSavingsNumber(rawDelta);
+          if (rawDelta !== null && String(rawDelta).trim() !== '' && parsedDelta !== null) {
+            delta = parsedDelta;
+          }
+        } catch (e) {}
+        var target = delta === null ? start : (start + delta);
+        return {
+          start: start,
+          delta: delta,
+          target: target
+        };
+      }
+
       function getSavingsDigitNodes() {
         return Array.prototype.slice.call(document.querySelectorAll('.subscription-counter__digit'));
       }
 
-      function applySavingsCounterStatic() {
+      function applySavingsCounterStatic(targetValue) {
         var digits = getSavingsDigitNodes();
         if (!digits.length) return;
-        var targetDigits = SAVINGS_COUNTER_TARGET.replace('.', '');
+        var targetDigits = valueToDigitString(targetValue);
         digits.forEach(function (el, idx) {
           var value = targetDigits[idx] || '0';
           el.textContent = value;
@@ -3901,8 +3941,9 @@
       function animateSavingsCounter() {
         var digits = getSavingsDigitNodes();
         if (!digits.length) return;
-        if (!shouldAnimateSavingsCounter()) {
-          applySavingsCounterStatic();
+        var config = getSavingsCounterConfig();
+        if (!shouldAnimateSavingsCounter() || config.delta === null || Math.abs(config.delta) < 0.01) {
+          applySavingsCounterStatic(config.target);
           return;
         }
 
@@ -3913,23 +3954,27 @@
         var startDelayMs = 1000;
         var stepMs = 400;
         var staggerMs = 220;
-        var loop = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '0', '1'];
-        var targetDigits = SAVINGS_COUNTER_TARGET.replace('.', '');
+        var startDigits = valueToDigitString(config.start);
+        var targetDigits = valueToDigitString(config.target);
         var currentToken = savingsAnimationToken + 1;
         savingsAnimationToken = currentToken;
 
-        digits.forEach(function (el) {
+        digits.forEach(function (el, idx) {
           el.textContent = '';
           var reel = document.createElement('span');
           reel.className = 'subscription-counter__reel';
           var track = document.createElement('span');
           track.className = 'subscription-counter__track';
-          loop.forEach(function (d) {
+          var startDigit = Number(startDigits[idx] || '0');
+          var target = Number(targetDigits[idx] || '0');
+          var deltaSteps = (target - startDigit + 10) % 10;
+          var steps = deltaSteps === 0 ? 0 : (10 + deltaSteps);
+          for (var i = 0; i <= steps; i += 1) {
             var slot = document.createElement('span');
             slot.className = 'subscription-counter__slot';
-            slot.textContent = d;
+            slot.textContent = String((startDigit + i) % 10);
             track.appendChild(slot);
-          });
+          }
           reel.appendChild(track);
           el.appendChild(reel);
         });
@@ -3937,12 +3982,22 @@
         digits.forEach(function (el, idx) {
           var track = el.querySelector('.subscription-counter__track');
           if (!track) return;
+          var startDigit = Number(startDigits[idx] || '0');
           var target = Number(targetDigits[idx] || '0');
-          var steps = 10 + target;
+          var deltaSteps = (target - startDigit + 10) % 10;
+          var steps = deltaSteps === 0 ? 0 : (10 + deltaSteps);
           var duration = Math.max(1, steps) * stepMs;
           var delay = startDelayMs + idx * staggerMs;
+          track.style.transitionProperty = 'none';
+          track.style.transform = 'translateY(0)';
+          track.getBoundingClientRect();
+          if (steps === 0) {
+            el.textContent = String(target);
+            return;
+          }
           track.style.transitionDuration = duration + 'ms';
           track.style.transitionDelay = delay + 'ms';
+          track.style.transitionProperty = 'transform';
           requestAnimationFrame(function () {
             requestAnimationFrame(function () {
               if (savingsAnimationToken !== currentToken) return;
@@ -4951,6 +5006,8 @@
           stateOverrides.buybackAed = buyback === 1 ? 1 : 25;
         }
         if (params.has('animate_savings_counter')) stateOverrides.animateSavingsCounter = params.get('animate_savings_counter') === '1';
+        if (params.has('animate_savings_start')) stateOverrides.animateSavingsStart = params.get('animate_savings_start');
+        if (params.has('animate_savings_delta')) stateOverrides.animateSavingsDelta = params.get('animate_savings_delta');
         if (params.has('is_trial')) stateOverrides.isTrial = params.get('is_trial') === '1';
         if (params.has('show_add_payment_sheet')) stateOverrides.showAddPaymentMethodSheet = params.get('show_add_payment_sheet') === '1';
         return { scenario: scenario, variant: variant, stateOverrides: stateOverrides };
@@ -4979,6 +5036,12 @@
           }
           if (state.animateSavingsCounter !== undefined) {
             localStorage.setItem(ANIMATE_SAVINGS_COUNTER_KEY, state.animateSavingsCounter ? '1' : '0');
+          }
+          if (state.animateSavingsStart !== undefined) {
+            localStorage.setItem(ANIMATE_SAVINGS_START_KEY, String(state.animateSavingsStart));
+          }
+          if (state.animateSavingsDelta !== undefined) {
+            localStorage.setItem(ANIMATE_SAVINGS_DELTA_KEY, String(state.animateSavingsDelta));
           }
           if (state.offerAvailable !== undefined) {
             localStorage.setItem(OFFER_AVAILABLE_KEY, state.offerAvailable ? '1' : '0');
@@ -5132,7 +5195,7 @@
           applySubscriptionEntryState({ isTrial: true });
         }
         applyCancelWarningState({ hasTabbyCard: true, hasOlPurchases: false, hasActiveSplit6: true });
-        applySavingsCounterStatic();
+        applySavingsCounterStatic(getSavingsCounterConfig().target);
         try {
           var persisted = localStorage.getItem(SCREEN_KEY);
           if (persisted === 'subscription' || persisted === 'cancel-warning' || persisted === 'offer' || persisted === 'lose-benefits' || persisted === 'settle-payments' || persisted === 'cancelled') {

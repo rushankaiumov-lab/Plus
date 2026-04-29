@@ -8,7 +8,7 @@
       descriptionEn: 'Non-subscriber entry state with trial available.',
       descriptionRu: 'Входное состояние для non-subscriber с доступным trial.',
       entry: { screen: 'landing' },
-      state: { hasPaymentMethod: false, isTrial: true, showAddPaymentMethodSheet: true, animateSavingsCounter: true },
+      state: { hasPaymentMethod: false, isTrial: true, showAddPaymentMethodSheet: true, animateSavingsCounter: true, animateSavingsStart: '1019.97', animateSavingsDelta: '' },
       variants: {
         A: { id: 'A', title: 'Control copy' },
         B: { id: 'B', title: 'Alternative copy' },
@@ -23,7 +23,7 @@
       descriptionEn: 'Subscriber active page in paid subscription mode.',
       descriptionRu: 'Экран активной подписки в платном режиме.',
       entry: { screen: 'subscription' },
-      state: { hasPaymentMethod: true, isTrial: false, animateSavingsCounter: true },
+      state: { hasPaymentMethod: true, isTrial: false, animateSavingsCounter: true, animateSavingsStart: '1019.97', animateSavingsDelta: '' },
       variants: {
         A: { id: 'A', title: 'Control structure' },
         B: { id: 'B', title: 'Alternative structure' },
@@ -38,7 +38,7 @@
       descriptionEn: 'Subscriber active page in trial mode.',
       descriptionRu: 'Экран активной подписки в режиме trial.',
       entry: { screen: 'subscription' },
-      state: { hasPaymentMethod: true, isTrial: true, animateSavingsCounter: true },
+      state: { hasPaymentMethod: true, isTrial: true, animateSavingsCounter: true, animateSavingsStart: '1019.97', animateSavingsDelta: '' },
       variants: {
         A: { id: 'A', title: 'Control structure' },
         B: { id: 'B', title: 'Alternative structure' },
@@ -61,7 +61,9 @@
         hasActiveSplit6: true,
         offerAvailable: true,
         buybackAed: 25,
-        animateSavingsCounter: true
+        animateSavingsCounter: true,
+        animateSavingsStart: '1019.97',
+        animateSavingsDelta: ''
       },
       variants: {
         A: { id: 'A', title: 'Control framing' },

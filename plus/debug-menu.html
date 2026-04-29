@@ -219,6 +219,33 @@
       color: var(--text);
       background: #fff;
     }
+    .scenario-inline-fields {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      margin-top: 4px;
+      margin-left: 24px;
+    }
+    .scenario-inline-fields[hidden] {
+      display: none;
+    }
+    .scenario-inline-field label {
+      display: block;
+      font-size: 12px;
+      line-height: 16px;
+      color: var(--muted);
+      margin-bottom: 4px;
+    }
+    .scenario-inline-field input {
+      width: 100%;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 7px 8px;
+      font-size: 13px;
+      line-height: 16px;
+      color: var(--text);
+      background: #fff;
+    }
     .scenario-presets {
       display: flex;
       flex-wrap: wrap;
@@ -300,6 +327,16 @@
           <input type="checkbox" id="cond-animate-savings-counter" checked />
           <span data-i18n="condAnimateSavingsCounter">Animate savings counter</span>
         </label>
+        <div class="scenario-inline-fields" id="animate-counter-fields">
+          <div class="scenario-inline-field">
+            <label for="cond-animate-start-value" data-i18n="labelAnimateStartValue">Start value</label>
+            <input id="cond-animate-start-value" type="text" value="1019.97" />
+          </div>
+          <div class="scenario-inline-field">
+            <label for="cond-animate-delta-value" data-i18n="labelAnimateDeltaValue">Increase by</label>
+            <input id="cond-animate-delta-value" type="text" value="" placeholder="e.g. 25.00" />
+          </div>
+        </div>
         <label class="scenario-check">
           <input type="checkbox" id="cond-has-tabby-card" checked />
           <span data-i18n="condHasTabbyCard">Has Tabby Card</span>
@@ -354,6 +391,9 @@
       var condIsTrial = document.getElementById('cond-is-trial');
       var condShowAddPaymentSheet = document.getElementById('cond-show-add-payment-sheet');
       var condAnimateSavingsCounter = document.getElementById('cond-animate-savings-counter');
+      var condAnimateStartValue = document.getElementById('cond-animate-start-value');
+      var condAnimateDeltaValue = document.getElementById('cond-animate-delta-value');
+      var animateCounterFields = document.getElementById('animate-counter-fields');
       var condHasTabbyCard = document.getElementById('cond-has-tabby-card');
       var condHasOlPurchases = document.getElementById('cond-has-ol-purchases');
       var condHasActiveSplit6 = document.getElementById('cond-has-active-split6');
@@ -377,6 +417,8 @@
           condIsTrial: 'Trial is available',
           condShowAddPaymentSheet: 'Show Add new payment method',
           condAnimateSavingsCounter: 'Animate savings counter',
+          labelAnimateStartValue: 'Start value',
+          labelAnimateDeltaValue: 'Increase by',
           condHasTabbyCard: 'Has Tabby Card',
           condHasOlPurchases: 'Has OL purchases (Split in 4 outstanding)',
           condHasActiveSplit6: 'Has active Split in 6',
@@ -405,6 +447,8 @@
           condIsTrial: 'Доступен Trial',
           condShowAddPaymentSheet: 'Показывать Add new payment method',
           condAnimateSavingsCounter: 'Анимировать счетчик savings',
+          labelAnimateStartValue: 'Стартовое значение',
+          labelAnimateDeltaValue: 'На сколько увеличить',
           condHasTabbyCard: 'Есть Tabby Card',
           condHasOlPurchases: 'Есть OL покупки (долг в Split in 4)',
           condHasActiveSplit6: 'Есть активный Split in 6',
@@ -422,8 +466,8 @@
       };
 
       var DEBUG_MENU_BUILD = {
-        version: 'v0.6.4',
-        updatedAt: '2026-04-29 18:24 UTC+2'
+        version: 'v0.6.5',
+        updatedAt: '2026-04-29 18:28 UTC+2'
       };
 
       if (buildVersionEl) buildVersionEl.textContent = DEBUG_MENU_BUILD.version;
@@ -452,6 +496,11 @@
         buybackAmountInline.hidden = !condOfferAvailable.checked;
       }
 
+      function updateCounterFieldsVisibility() {
+        if (!animateCounterFields || !condAnimateSavingsCounter) return;
+        animateCounterFields.hidden = !condAnimateSavingsCounter.checked;
+      }
+
       function syncCancellationDependencies(source) {
         if (!condHasTabbyCard || !condHasOlPurchases) return;
         if (source === 'ol' && condHasOlPurchases.checked) {
@@ -472,6 +521,16 @@
         url.searchParams.set('is_trial', condIsTrial && condIsTrial.checked ? '1' : '0');
         url.searchParams.set('show_add_payment_sheet', condShowAddPaymentSheet && condShowAddPaymentSheet.checked ? '1' : '0');
         url.searchParams.set('animate_savings_counter', condAnimateSavingsCounter && condAnimateSavingsCounter.checked ? '1' : '0');
+        if (condAnimateStartValue && condAnimateStartValue.value.trim()) {
+          url.searchParams.set('animate_savings_start', condAnimateStartValue.value.trim());
+        } else {
+          url.searchParams.delete('animate_savings_start');
+        }
+        if (condAnimateDeltaValue && condAnimateDeltaValue.value.trim()) {
+          url.searchParams.set('animate_savings_delta', condAnimateDeltaValue.value.trim());
+        } else {
+          url.searchParams.delete('animate_savings_delta');
+        }
         url.searchParams.set('cw_has_tabby_card', condHasTabbyCard && condHasTabbyCard.checked ? '1' : '0');
         url.searchParams.set('cw_has_ol_purchases', condHasOlPurchases && condHasOlPurchases.checked ? '1' : '0');
         url.searchParams.set('cw_has_active_split6', condHasActiveSplit6 && condHasActiveSplit6.checked ? '1' : '0');
@@ -505,6 +564,8 @@
         if (condIsTrial) condIsTrial.checked = scenario.state.isTrial !== undefined ? !!scenario.state.isTrial : true;
         if (condShowAddPaymentSheet) condShowAddPaymentSheet.checked = scenario.state.showAddPaymentMethodSheet !== undefined ? !!scenario.state.showAddPaymentMethodSheet : true;
         if (condAnimateSavingsCounter) condAnimateSavingsCounter.checked = scenario.state.animateSavingsCounter !== undefined ? !!scenario.state.animateSavingsCounter : true;
+        if (condAnimateStartValue) condAnimateStartValue.value = scenario.state.animateSavingsStart !== undefined ? String(scenario.state.animateSavingsStart) : '1019.97';
+        if (condAnimateDeltaValue) condAnimateDeltaValue.value = scenario.state.animateSavingsDelta !== undefined ? String(scenario.state.animateSavingsDelta) : '';
         if (condHasTabbyCard) condHasTabbyCard.checked = scenario.state.hasTabbyCard !== undefined ? !!scenario.state.hasTabbyCard : true;
         if (condHasOlPurchases) condHasOlPurchases.checked = scenario.state.hasOlPurchases !== undefined ? !!scenario.state.hasOlPurchases : false;
         if (condHasActiveSplit6) condHasActiveSplit6.checked = scenario.state.hasActiveSplit6 !== undefined ? !!scenario.state.hasActiveSplit6 : true;
@@ -512,6 +573,7 @@
         if (condBuybackAed) condBuybackAed.value = scenario.state.buybackAed !== undefined ? String(scenario.state.buybackAed) : '25';
         syncCancellationDependencies();
         updateBuybackControlsVisibility();
+        updateCounterFieldsVisibility();
       }
 
       function initScenarioControls() {
@@ -559,6 +621,13 @@
       if (condIsTrial) condIsTrial.addEventListener('change', updateScenarioLink);
       if (condShowAddPaymentSheet) condShowAddPaymentSheet.addEventListener('change', updateScenarioLink);
       if (condAnimateSavingsCounter) condAnimateSavingsCounter.addEventListener('change', updateScenarioLink);
+      if (condAnimateSavingsCounter) {
+        condAnimateSavingsCounter.addEventListener('change', function () {
+          updateCounterFieldsVisibility();
+        });
+      }
+      if (condAnimateStartValue) condAnimateStartValue.addEventListener('input', updateScenarioLink);
+      if (condAnimateDeltaValue) condAnimateDeltaValue.addEventListener('input', updateScenarioLink);
       if (condHasTabbyCard) {
         condHasTabbyCard.addEventListener('change', function () {
           syncCancellationDependencies('tabby');
@@ -608,6 +677,7 @@
       initScenarioControls();
       syncCancellationDependencies();
       updateBuybackControlsVisibility();
+      updateCounterFieldsVisibility();
       applyLanguage('en');
     })();
   </script>
