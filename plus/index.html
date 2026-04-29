@@ -710,11 +710,13 @@
     }
     .btn-loader {
       position: absolute;
-      inset: 0;
       display: block;
+      top: 50%;
+      left: 50%;
       width: 34px;
       height: 34px;
-      margin: auto;
+      margin: 0;
+      transform: translate(-50%, -50%);
       border-radius: 50%;
       border: 5px solid rgba(245, 244, 242, 0.28);
       border-top-color: #f5f4f2;
@@ -728,7 +730,7 @@
       opacity: 1;
     }
     @keyframes plus-btn-loader-spin {
-      to { transform: rotate(360deg); }
+      to { transform: translate(-50%, -50%) rotate(360deg); }
     }
     .footnote { display: none; }
 
