@@ -2178,46 +2178,76 @@
       color: var(--text-primary);
     }
     .flow-settle__subtitle {
-      margin: 10px 0 0;
+      margin: 8px 0 0;
       font-family: var(--font-text);
       font-size: var(--ds-type-body-lg-size);
       line-height: var(--ds-type-body-lg-line);
       font-weight: 500;
       color: var(--text-secondary);
     }
+    .flow-settle__head {
+      margin: 28px 0 10px;
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 16px;
+      font-family: var(--font-text);
+      font-size: var(--ds-type-body-md-size);
+      line-height: var(--ds-type-body-md-line);
+      font-weight: 500;
+      color: var(--text-secondary);
+    }
     .flow-settle__list {
-      margin: 22px 0 0;
+      margin: 0;
       padding: 0;
       list-style: none;
-      border: 1px solid var(--ds-line-primary-l1);
-      border-radius: 16px;
-      overflow: hidden;
-      background: var(--ds-bg-general-l1);
+      border-top: 1px solid var(--ds-line-primary-l1);
+      border-bottom: 1px solid var(--ds-line-primary-l1);
+      background: transparent;
     }
     .flow-settle__item {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
+      display: grid;
+      grid-template-columns: 1fr auto;
+      align-items: start;
       gap: 16px;
-      padding: 14px 16px;
+      padding: 12px 0;
       border-bottom: 1px solid var(--ds-line-primary-l1);
     }
     .flow-settle__item:last-child {
       border-bottom: none;
     }
-    .flow-settle__item-label {
+    .flow-settle__item-main {
       font-family: var(--font-text);
       font-size: var(--ds-type-body-md-size);
       line-height: var(--ds-type-body-md-line);
       font-weight: 500;
       color: var(--text-primary);
     }
+    .flow-settle__item-sub {
+      margin-top: 2px;
+      font-family: var(--font-text);
+      font-size: var(--ds-type-body-md-size);
+      line-height: var(--ds-type-body-md-line);
+      font-weight: 500;
+      color: var(--text-secondary);
+    }
+    .flow-settle__item-right {
+      text-align: right;
+    }
     .flow-settle__item-value {
       font-family: var(--font-text);
       font-size: var(--ds-type-body-md-size);
       line-height: var(--ds-type-body-md-line);
-      font-weight: 600;
+      font-weight: 500;
       color: var(--text-primary);
+      white-space: nowrap;
+    }
+    .flow-settle__item-note {
+      margin-top: 2px;
+      font-family: var(--font-text);
+      font-size: var(--ds-type-body-md-size);
+      line-height: var(--ds-type-body-md-line);
+      font-weight: 500;
+      color: var(--text-secondary);
       white-space: nowrap;
     }
     .flow-settle__total {
@@ -2234,11 +2264,6 @@
     .flow-settle-footer {
       background: var(--ds-bg-general-l1);
       padding: 16px 16px 0;
-    }
-    .flow-settle-footer .flow-page__btn--secondary {
-      background: #e5e2df;
-      border: none;
-      color: var(--text-primary);
     }
     .subscription-scroll {
       flex: 1;
@@ -3374,7 +3399,7 @@
         </div>
         <div></div>
         <div class="navbar__trail">
-          <button type="button" class="navbar__back" data-flow-back="cancel-warning" aria-label="Close">
+          <button type="button" class="navbar__back" data-flow-back="subscription" aria-label="Close">
             <svg class="navbar__back-icon" width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true" focusable="false">
               <path d="M6 6L18 18M18 6L6 18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
             </svg>
@@ -3412,7 +3437,7 @@
         </div>
         <div></div>
         <div class="navbar__trail">
-          <button type="button" class="navbar__back" data-flow-back="offer" aria-label="Close">
+          <button type="button" class="navbar__back" data-flow-back="subscription" aria-label="Close">
             <svg class="navbar__back-icon" width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true" focusable="false">
               <path d="M6 6L18 18M18 6L6 18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
             </svg>
@@ -3420,18 +3445,77 @@
         </div>
       </nav>
       <div class="flow-settle__content">
-        <h2 class="flow-settle__title">Settle your payments</h2>
-        <p class="flow-settle__subtitle">Before cancellation, repay your outstanding Split in 4 purchases.</p>
+        <h2 class="flow-settle__title">You need to pay AED 839.00 to cancel</h2>
+        <p class="flow-settle__subtitle">You need to settle any payments made outside our network of partner stores, which were split in 4</p>
+        <div class="flow-settle__head">
+          <span>Purchases</span>
+          <span>Remaining due</span>
+        </div>
         <ul class="flow-settle__list" id="settle-payments-list">
-          <li class="flow-settle__item"><span class="flow-settle__item-label">Noon — Electronics</span><span class="flow-settle__item-value">AED 319.00</span></li>
-          <li class="flow-settle__item"><span class="flow-settle__item-label">Amazon — Home goods</span><span class="flow-settle__item-value">AED 275.00</span></li>
-          <li class="flow-settle__item"><span class="flow-settle__item-label">Namshi — Fashion</span><span class="flow-settle__item-value">AED 245.00</span></li>
+          <li class="flow-settle__item">
+            <div>
+              <div class="flow-settle__item-main">Noon</div>
+              <div class="flow-settle__item-sub">Purchased 19 Aug</div>
+            </div>
+            <div class="flow-settle__item-right">
+              <div class="flow-settle__item-value">AED 167.40</div>
+            </div>
+          </li>
+          <li class="flow-settle__item">
+            <div>
+              <div class="flow-settle__item-main">LuLu Hypermarket - Al Barsha</div>
+              <div class="flow-settle__item-sub">Purchased 19 Aug</div>
+            </div>
+            <div class="flow-settle__item-right">
+              <div class="flow-settle__item-value">AED 125.75</div>
+              <div class="flow-settle__item-note">Payment 1 of 4</div>
+            </div>
+          </li>
+          <li class="flow-settle__item">
+            <div>
+              <div class="flow-settle__item-main">Fogo de Chao Brazilian Steakhouse</div>
+              <div class="flow-settle__item-sub">Purchased 19 Aug</div>
+            </div>
+            <div class="flow-settle__item-right">
+              <div class="flow-settle__item-value">AED 141.30</div>
+              <div class="flow-settle__item-note">Payment 2 of 4</div>
+            </div>
+          </li>
+          <li class="flow-settle__item">
+            <div>
+              <div class="flow-settle__item-main">LuLu Hypermarket - Al Barsha</div>
+              <div class="flow-settle__item-sub">Purchased 17 Sep</div>
+            </div>
+            <div class="flow-settle__item-right">
+              <div class="flow-settle__item-value">AED 117.55</div>
+              <div class="flow-settle__item-note">Payment 3 of 4</div>
+            </div>
+          </li>
+          <li class="flow-settle__item">
+            <div>
+              <div class="flow-settle__item-main">Museum of the Future</div>
+              <div class="flow-settle__item-sub">Purchased 15 Aug</div>
+            </div>
+            <div class="flow-settle__item-right">
+              <div class="flow-settle__item-value">AED 153.20</div>
+              <div class="flow-settle__item-note">Payment 2 of 4</div>
+            </div>
+          </li>
+          <li class="flow-settle__item">
+            <div>
+              <div class="flow-settle__item-main">Sephora</div>
+              <div class="flow-settle__item-sub">Purchased 10 Jul</div>
+            </div>
+            <div class="flow-settle__item-right">
+              <div class="flow-settle__item-value">AED 133.80</div>
+              <div class="flow-settle__item-note">Payment 1 of 4</div>
+            </div>
+          </li>
         </ul>
-        <p class="flow-settle__total"><span>Total outstanding</span><span id="settle-payments-total">AED 839.00</span></p>
+        <p class="flow-settle__total"><span>Total due</span><span id="settle-payments-total">AED 839.00</span></p>
       </div>
       <div class="flow-page__footer flow-settle-footer">
-        <button type="button" class="flow-page__btn flow-page__btn--primary" data-flow-target="subscription">Keep Plus</button>
-        <button type="button" class="flow-page__btn flow-page__btn--secondary" data-flow-target="cancelled">Continue to cancellation</button>
+        <button type="button" class="flow-page__btn flow-page__btn--primary" data-flow-target="cancelled">Pay now</button>
         <div class="home-indicator" aria-hidden="true"></div>
       </div>
     </div>
