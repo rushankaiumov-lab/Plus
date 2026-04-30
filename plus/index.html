@@ -4425,6 +4425,7 @@
         titleEl.textContent = 'Choose ' + month + ' cashback categories';
 
         var cards = [];
+        var cashbackActive = hasCashbackActive();
         var sharedCategoryIds = ['restaurants-and-dining', 'petrol-stations', 'beauty-and-self-care', 'taxis'];
 
         if (hasCard && hasCash) {
@@ -4474,7 +4475,7 @@
 
         cardsEl.textContent = '';
         contentEl.scrollTop = 0;
-        var persisted = loadPersistedCashbackSelectionState();
+        var persisted = cashbackActive ? loadPersistedCashbackSelectionState() : null;
         cashbackSelectionReviewMode = false;
         cards.forEach(function (card) {
           if (persisted && persisted[card.id] && persisted[card.id].selected) {
@@ -5924,6 +5925,9 @@
           }
           if (state.hasCashbackActive !== undefined) {
             localStorage.setItem(HAS_CASHBACK_ACTIVE_KEY, state.hasCashbackActive ? '1' : '0');
+            if (!state.hasCashbackActive) {
+              localStorage.removeItem(CASHBACK_SELECTED_STATE_KEY);
+            }
           }
           if (state.cashbackCategory1 !== undefined) {
             localStorage.setItem(CASHBACK_CATEGORY_1_KEY, String(state.cashbackCategory1));
@@ -6040,7 +6044,7 @@
       if (subscriptionCashbackCta) {
         subscriptionCashbackCta.addEventListener('click', function (e) {
           e.preventDefault();
-          cashbackSelectionState = loadPersistedCashbackSelectionState() || {};
+          cashbackSelectionState = hasCashbackActive() ? (loadPersistedCashbackSelectionState() || {}) : {};
           setScreen('cashback-selection');
         });
       }
