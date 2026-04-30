@@ -1749,7 +1749,7 @@
     .cashback-selection-card {
       border-radius: 24px;
       background: #ffffff;
-      padding: 16px;
+      padding: 16px 16px 0;
     }
     .cashback-selection-card__head {
       display: flex;
@@ -1813,7 +1813,7 @@
     }
     .cashback-selection-chip--chosen {
       background: #ffffff;
-      border-color: #d9d9d9;
+      border-color: var(--color-success);
     }
     .cashback-selection-chip--disabled {
       background: #eceae8;
@@ -2863,9 +2863,9 @@
       gap: 10px;
       padding: 0 20px;
       font-family: var(--font-text);
-      font-size: 32px;
-      line-height: 36px;
-      letter-spacing: -0.02em;
+      font-size: var(--ds-type-body1-size);
+      line-height: var(--ds-type-body-md-tight-line);
+      letter-spacing: -0.16px;
       font-weight: 500;
       box-shadow: 0 10px 26px rgba(62, 19, 164, 0.36);
       opacity: 0;
@@ -4316,6 +4316,8 @@
       var CASHBACK_CATEGORY_REGISTRY = buildCashbackCategoryRegistry();
       var CASHBACK_CATEGORY_DEFAULT_IDS = ['vehicle-rental', 'groceries', 'clothing-and-shoes'];
       var cashbackSelectionState = {};
+      var cashbackSelectionReviewMode = false;
+      var CASHBACK_SELECTED_STATE_KEY = 'plus-cashback-selected-state';
       var showCashbackSuccessToastOnSubscription = false;
       var cashbackSuccessToastTimer = null;
 
@@ -4337,6 +4339,23 @@
             cashbackSuccessToastTimer = null;
           }, 2600);
         });
+      }
+
+      function loadPersistedCashbackSelectionState() {
+        try {
+          var raw = localStorage.getItem(CASHBACK_SELECTED_STATE_KEY);
+          if (!raw) return null;
+          var parsed = JSON.parse(raw);
+          return parsed && typeof parsed === 'object' ? parsed : null;
+        } catch (e) {
+          return null;
+        }
+      }
+
+      function savePersistedCashbackSelectionState() {
+        try {
+          localStorage.setItem(CASHBACK_SELECTED_STATE_KEY, JSON.stringify(cashbackSelectionState || {}));
+        } catch (e) {}
       }
 
       function getConfiguredCashbackCategories() {
@@ -4453,9 +4472,18 @@
 
         cardsEl.textContent = '';
         contentEl.scrollTop = 0;
+        var persisted = loadPersistedCashbackSelectionState();
+        cashbackSelectionReviewMode = false;
         cards.forEach(function (card) {
-          if (!cashbackSelectionState[card.id]) cashbackSelectionState[card.id] = {};
-          if (!cashbackSelectionState[card.id].selected) cashbackSelectionState[card.id].selected = {};
+          if (persisted && persisted[card.id] && persisted[card.id].selected) {
+            cashbackSelectionState[card.id] = {
+              selected: Object.assign({}, persisted[card.id].selected),
+              showError: false
+            };
+          } else {
+            if (!cashbackSelectionState[card.id]) cashbackSelectionState[card.id] = {};
+            if (!cashbackSelectionState[card.id].selected) cashbackSelectionState[card.id].selected = {};
+          }
           var cardNode = document.createElement('article');
           cardNode.className = 'cashback-selection-card';
           cardNode.setAttribute('data-cashback-card-id', card.id);
@@ -4515,6 +4543,12 @@
 
           cardsEl.appendChild(cardNode);
         });
+        cashbackSelectionReviewMode = cards.length > 0 && cards.every(function (card) {
+          return getCardSelectionCount(card.id) === 3;
+        });
+        if (cashbackSelectionReviewMode) {
+          titleEl.textContent = month + ' cashback categories';
+        }
         requestAnimationFrame(function () {
           contentEl.scrollTop = 0;
         });
@@ -4587,6 +4621,7 @@
           var showError = !!cardState.showError && count < 3;
           var counter = cardNode.querySelector('[data-card-counter="' + cardId + '"]');
           if (counter) {
+            counter.hidden = cashbackSelectionReviewMode;
             counter.textContent = count + ' of 3 categories selected';
             counter.classList.remove('cashback-selection-card__counter--none', 'cashback-selection-card__counter--progress', 'cashback-selection-card__counter--done');
             if (isFull) counter.classList.add('cashback-selection-card__counter--done');
@@ -4600,7 +4635,10 @@
             chip.classList.remove('cashback-selection-chip--selected', 'cashback-selection-chip--chosen', 'cashback-selection-chip--disabled');
             chip.disabled = false;
             if (selected) {
-              chip.classList.add('cashback-selection-chip--selected');
+              chip.classList.add(cashbackSelectionReviewMode ? 'cashback-selection-chip--chosen' : 'cashback-selection-chip--selected');
+            } else if (cashbackSelectionReviewMode) {
+              chip.classList.add('cashback-selection-chip--disabled');
+              chip.disabled = true;
             }
           });
         });
@@ -5995,7 +6033,7 @@
       if (subscriptionCashbackCta) {
         subscriptionCashbackCta.addEventListener('click', function (e) {
           e.preventDefault();
-          cashbackSelectionState = {};
+          cashbackSelectionState = loadPersistedCashbackSelectionState() || {};
           setScreen('cashback-selection');
         });
       }
@@ -6003,6 +6041,7 @@
       document.addEventListener('click', function (e) {
         var chip = e.target.closest('.cashback-selection-chip[data-card-id][data-category-id]');
         if (!chip) return;
+        if (cashbackSelectionReviewMode) return;
         e.preventDefault();
         var cardId = chip.getAttribute('data-card-id');
         var categoryId = chip.getAttribute('data-category-id');
@@ -6027,6 +6066,7 @@
       if (cashbackSelectionConfirm) {
         cashbackSelectionConfirm.addEventListener('click', function (e) {
           if (isCashbackSelectionComplete()) {
+            savePersistedCashbackSelectionState();
             showCashbackSuccessToastOnSubscription = true;
             return;
           }
