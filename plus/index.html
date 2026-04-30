@@ -1812,11 +1812,13 @@
       border-color: var(--color-success);
     }
     .cashback-selection-chip--chosen {
-      background: #ffffff;
+      background: #e3f5e8;
       border-color: var(--color-success);
+      pointer-events: none;
+      cursor: default;
     }
     .cashback-selection-chip--disabled {
-      background: #eceae8;
+      background: #f5f4f2;
       color: #b8b3ae;
       pointer-events: none;
       cursor: default;
@@ -4613,6 +4615,10 @@
       }
 
       function updateCashbackSelectionUi() {
+        var confirmBtn = document.getElementById('cashback-selection-confirm');
+        if (confirmBtn) {
+          confirmBtn.textContent = cashbackSelectionReviewMode ? 'Got it' : 'Confirm';
+        }
         document.querySelectorAll('.cashback-selection-card[data-cashback-card-id]').forEach(function (cardNode) {
           var cardId = cardNode.getAttribute('data-cashback-card-id');
           var count = getCardSelectionCount(cardId);
@@ -4636,6 +4642,7 @@
             chip.disabled = false;
             if (selected) {
               chip.classList.add(cashbackSelectionReviewMode ? 'cashback-selection-chip--chosen' : 'cashback-selection-chip--selected');
+              if (cashbackSelectionReviewMode) chip.disabled = true;
             } else if (cashbackSelectionReviewMode) {
               chip.classList.add('cashback-selection-chip--disabled');
               chip.disabled = true;
