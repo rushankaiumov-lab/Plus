@@ -2551,8 +2551,8 @@
     }
     .spotlight-card__title {
       margin: 0;
-      font-size: var(--ds-type-title-sm-size);
-      line-height: var(--ds-type-title-sm-line);
+      font-size: 16px;
+      line-height: 20px;
       letter-spacing: -0.16px;
       font-weight: 700;
       color: var(--text-primary);
@@ -2560,8 +2560,8 @@
     }
     .spotlight-card__text {
       margin: 0;
-      font-size: var(--ds-type-caption-lg-size);
-      line-height: var(--ds-type-caption-lg-line);
+      font-size: 14px;
+      line-height: 18px;
       font-weight: 500;
       color: var(--text-secondary);
       letter-spacing: -0.16px;
@@ -2916,10 +2916,10 @@
           </section>
 
           <section class="spotlight-card" id="subscription-cashback-card" aria-labelledby="spotlight-title">
-            <h2 id="spotlight-title" class="spotlight-card__title">Cashback in December</h2>
-            <p class="spotlight-card__text" id="subscription-cashback-text">Earn up to 5% cashback</p>
-            <img class="spotlight-card__icon" src="./assets/omni/split-in-7.svg" alt="" loading="lazy" />
-            <button type="button" class="spotlight-card__cta" id="subscription-cashback-cta">View categories</button>
+            <h2 id="spotlight-title" class="spotlight-card__title">Earn {number}% cashback</h2>
+            <p class="spotlight-card__text" id="subscription-cashback-text">Select December categories</p>
+            <img class="spotlight-card__icon" src="./assets/omni/cashback-widget.svg" alt="" loading="lazy" />
+            <button type="button" class="spotlight-card__cta" id="subscription-cashback-cta">Select categories</button>
           </section>
 
           <div class="island island--benefits">
@@ -3930,10 +3930,10 @@
         cashbackCard.hidden = !hasAnyCard;
         if (!hasAnyCard) return;
         var month = new Date().toLocaleString('en-US', { month: 'long' });
-        cashbackTitle.textContent = 'Cashback in ' + month;
-        if (hasCard && hasCash) cashbackText.textContent = 'Earn up to 5% cashback';
-        else if (hasCard) cashbackText.textContent = 'Earn 5% cashback';
-        else cashbackText.textContent = 'Earn 3% cashback';
+        if (hasCard && hasCash) cashbackTitle.textContent = 'Earn up to 5% cashback';
+        else if (hasCard) cashbackTitle.textContent = 'Earn 5% cashback';
+        else cashbackTitle.textContent = 'Earn 3% cashback';
+        cashbackText.textContent = 'Select ' + month + ' categories';
       }
 
       function parseSavingsNumber(raw) {
