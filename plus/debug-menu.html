@@ -263,6 +263,16 @@
       color: var(--text);
       background: #fff;
     }
+    .scenario-inline-field select {
+      width: 100%;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 7px 8px;
+      font-size: 13px;
+      line-height: 16px;
+      color: var(--text);
+      background: #fff;
+    }
     .scenario-inline-check {
       margin-left: 24px;
       margin-top: 2px;
@@ -387,6 +397,24 @@
           <input type="checkbox" id="cond-has-cashback-active" />
           <span data-i18n="condHasCashbackActive">Has cashback active</span>
         </label>
+          <div class="scenario-inline-fields">
+            <div class="scenario-inline-field">
+              <label for="cond-cashback-category-1" data-i18n="labelCashbackCategory1">Category icon 1</label>
+              <select id="cond-cashback-category-1"></select>
+            </div>
+            <div class="scenario-inline-field">
+              <label for="cond-cashback-category-2" data-i18n="labelCashbackCategory2">Category icon 2</label>
+              <select id="cond-cashback-category-2"></select>
+            </div>
+            <div class="scenario-inline-field">
+              <label for="cond-cashback-category-3" data-i18n="labelCashbackCategory3">Category icon 3</label>
+              <select id="cond-cashback-category-3"></select>
+            </div>
+            <div class="scenario-inline-field">
+              <label for="cond-cashback-category-extra" data-i18n="labelCashbackCategoryExtra">Extra categories (+N)</label>
+              <input id="cond-cashback-category-extra" type="number" min="0" max="99" value="3" />
+            </div>
+          </div>
           <label class="scenario-check">
             <input type="checkbox" id="cond-has-ol-purchases" />
             <span data-i18n="condHasOlPurchases">Has OL purchases (Split in 4 outstanding)</span>
@@ -454,6 +482,10 @@
       var condHasTabbyCard = document.getElementById('cond-has-tabby-card');
       var condHasTabbyCash = document.getElementById('cond-has-tabby-cash');
       var condHasCashbackActive = document.getElementById('cond-has-cashback-active');
+      var condCashbackCategory1 = document.getElementById('cond-cashback-category-1');
+      var condCashbackCategory2 = document.getElementById('cond-cashback-category-2');
+      var condCashbackCategory3 = document.getElementById('cond-cashback-category-3');
+      var condCashbackCategoryExtra = document.getElementById('cond-cashback-category-extra');
       var condHasOlPurchases = document.getElementById('cond-has-ol-purchases');
       var condHasActiveSplit6 = document.getElementById('cond-has-active-split6');
       var condOfferAvailable = document.getElementById('cond-offer-available');
@@ -487,6 +519,10 @@
           condHasTabbyCard: 'Has Tabby Card',
           condHasTabbyCash: 'Has Tabby Cash',
           condHasCashbackActive: 'Has cashback active',
+          labelCashbackCategory1: 'Category icon 1',
+          labelCashbackCategory2: 'Category icon 2',
+          labelCashbackCategory3: 'Category icon 3',
+          labelCashbackCategoryExtra: 'Extra categories (+N)',
           condHasOlPurchases: 'Has OL purchases (Split in 4 outstanding)',
           condHasActiveSplit6: 'Has active Split in 6',
           condOfferAvailable: 'Buyback offer',
@@ -525,6 +561,10 @@
           condHasTabbyCard: 'Есть Tabby Card',
           condHasTabbyCash: 'Есть Tabby Cash',
           condHasCashbackActive: 'Кэшбэк активен',
+          labelCashbackCategory1: 'Иконка категории 1',
+          labelCashbackCategory2: 'Иконка категории 2',
+          labelCashbackCategory3: 'Иконка категории 3',
+          labelCashbackCategoryExtra: 'Доп. категории (+N)',
           condHasOlPurchases: 'Есть OL покупки (долг в Split in 4)',
           condHasActiveSplit6: 'Есть активный Split in 6',
           condOfferAvailable: 'Buyback offer',
@@ -541,9 +581,85 @@
       };
 
       var DEBUG_MENU_BUILD = {
-        version: 'v0.7.0',
-        updatedAt: '2026-04-30 15:06 UTC+2'
+        version: 'v0.8.0',
+        updatedAt: '2026-04-30 15:22 UTC+2'
       };
+
+      var CASHBACK_CATEGORY_FILE_NAMES = [
+        'ArtAndAntiquesDark',
+        'AutoDark',
+        'BeautyAndSelfCareDark',
+        'BooksDark',
+        'CashWithdrawalsDark',
+        'ChildrenProductsDark',
+        'CinemaDark',
+        'ClothingAndShoesDark',
+        'DigitalAndMediaGoodsDark',
+        'DutyFreeDark',
+        'EducationDark',
+        'EntertainmentDark',
+        'FinancialServicesDark',
+        'FitnessDark',
+        'FlowersDark',
+        'FurnitureDark',
+        'GlasswareAndCrystaStoresDark',
+        'GlobalTransfer',
+        'GovernmentPaymentsDark',
+        'GroceriesDark',
+        'HomeRenovationDark',
+        'HotelsAndAccommodationDark',
+        'InternalPurchasesDark',
+        'ItServicesDark',
+        'JewelleryDark',
+        'MarketplaceDark',
+        'MedicalServicesDark',
+        'MoneyTransfersDark',
+        'MusicDark',
+        'NonprofitsDark',
+        'OtherDark',
+        'PayLaterDark',
+        'PetCareDark',
+        'PetrolStationsDark',
+        'PharmaciesDark',
+        'PhotoAndVideoDark',
+        'PlaneTicketsDark',
+        'PublicTransportDark',
+        'RealEstateDark',
+        'RestaurantsAndDiningDark',
+        'ServiceProvidersDark',
+        'SouvenirsDark',
+        'SportingGoodsDark',
+        'StationeryDark',
+        'TaxisDark',
+        'TelecomsDark',
+        'TrainTicketsDark',
+        'TransportationDark',
+        'TravelAgenciesDark',
+        'UtilitiesDark',
+        'VehicleRentalDark'
+      ];
+
+      function toCategoryId(fileName) {
+        return String(fileName || '').replace(/Dark$/, '').replace(/([a-z0-9])([A-Z])/g, '$1-$2').toLowerCase();
+      }
+
+      function toCategoryLabel(fileName) {
+        var base = String(fileName || '').replace(/Dark$/, '').replace(/([a-z0-9])([A-Z])/g, '$1 $2');
+        return base.replace(/\b\w/g, function (ch) { return ch.toUpperCase(); }).trim();
+      }
+
+      function populateCashbackCategorySelect(selectEl, selectedId) {
+        if (!selectEl) return;
+        selectEl.innerHTML = '';
+        CASHBACK_CATEGORY_FILE_NAMES.forEach(function (fileName) {
+          var option = document.createElement('option');
+          var id = toCategoryId(fileName);
+          option.value = id;
+          option.textContent = toCategoryLabel(fileName);
+          if (id === selectedId) option.selected = true;
+          selectEl.appendChild(option);
+        });
+      }
 
       if (buildVersionEl) buildVersionEl.textContent = DEBUG_MENU_BUILD.version;
       if (buildUpdatedAtEl) buildUpdatedAtEl.textContent = DEBUG_MENU_BUILD.updatedAt;
@@ -616,6 +732,10 @@
         url.searchParams.set('cw_has_tabby_card', condHasTabbyCard && condHasTabbyCard.checked ? '1' : '0');
         url.searchParams.set('cw_has_tabby_cash', condHasTabbyCash && condHasTabbyCash.checked ? '1' : '0');
         url.searchParams.set('cw_has_cashback_active', condHasCashbackActive && condHasCashbackActive.checked ? '1' : '0');
+        if (condCashbackCategory1 && condCashbackCategory1.value) url.searchParams.set('cw_cb_cat_1', condCashbackCategory1.value);
+        if (condCashbackCategory2 && condCashbackCategory2.value) url.searchParams.set('cw_cb_cat_2', condCashbackCategory2.value);
+        if (condCashbackCategory3 && condCashbackCategory3.value) url.searchParams.set('cw_cb_cat_3', condCashbackCategory3.value);
+        if (condCashbackCategoryExtra && condCashbackCategoryExtra.value !== '') url.searchParams.set('cw_cb_cat_extra', condCashbackCategoryExtra.value);
         url.searchParams.set('cw_has_ol_purchases', condHasOlPurchases && condHasOlPurchases.checked ? '1' : '0');
         url.searchParams.set('cw_has_active_split6', condHasActiveSplit6 && condHasActiveSplit6.checked ? '1' : '0');
         url.searchParams.set('offer_available', condOfferAvailable && condOfferAvailable.checked ? '1' : '0');
@@ -654,6 +774,10 @@
         if (condHasTabbyCard) condHasTabbyCard.checked = scenario.state.hasTabbyCard !== undefined ? !!scenario.state.hasTabbyCard : true;
         if (condHasTabbyCash) condHasTabbyCash.checked = scenario.state.hasTabbyCash !== undefined ? !!scenario.state.hasTabbyCash : false;
         if (condHasCashbackActive) condHasCashbackActive.checked = scenario.state.hasCashbackActive !== undefined ? !!scenario.state.hasCashbackActive : false;
+        populateCashbackCategorySelect(condCashbackCategory1, 'vehicle-rental');
+        populateCashbackCategorySelect(condCashbackCategory2, 'groceries');
+        populateCashbackCategorySelect(condCashbackCategory3, 'clothing-and-shoes');
+        if (condCashbackCategoryExtra) condCashbackCategoryExtra.value = '3';
         if (condHasOlPurchases) condHasOlPurchases.checked = scenario.state.hasOlPurchases !== undefined ? !!scenario.state.hasOlPurchases : false;
         if (condHasActiveSplit6) condHasActiveSplit6.checked = scenario.state.hasActiveSplit6 !== undefined ? !!scenario.state.hasActiveSplit6 : true;
         if (condOfferAvailable) condOfferAvailable.checked = scenario.state.offerAvailable !== undefined ? !!scenario.state.offerAvailable : false;
@@ -729,6 +853,10 @@
       }
       if (condHasTabbyCash) condHasTabbyCash.addEventListener('change', updateScenarioLink);
       if (condHasCashbackActive) condHasCashbackActive.addEventListener('change', updateScenarioLink);
+      if (condCashbackCategory1) condCashbackCategory1.addEventListener('change', updateScenarioLink);
+      if (condCashbackCategory2) condCashbackCategory2.addEventListener('change', updateScenarioLink);
+      if (condCashbackCategory3) condCashbackCategory3.addEventListener('change', updateScenarioLink);
+      if (condCashbackCategoryExtra) condCashbackCategoryExtra.addEventListener('input', updateScenarioLink);
       if (condHasOlPurchases) {
         condHasOlPurchases.addEventListener('change', function () {
           syncCancellationDependencies('ol');

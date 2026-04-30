@@ -1702,6 +1702,139 @@
     .flow-page.is-active {
       display: flex;
     }
+    .cashback-selection-page {
+      z-index: 187;
+      background: var(--ds-bg-general-l1);
+      color: var(--text-primary);
+    }
+    .cashback-selection__content {
+      padding: calc(var(--header-nav-height) + 8px) 16px 0;
+      overflow: auto;
+      min-height: 0;
+      flex: 1 1 auto;
+    }
+    .cashback-selection-page .cancel-warning-navbar {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 220;
+      background: var(--ds-bg-general-l1);
+      color: var(--text-primary);
+    }
+    .cashback-selection__title {
+      margin: 0;
+      font-family: var(--font-display);
+      font-size: var(--ds-type-display-lg-size);
+      line-height: var(--ds-type-display-lg-line);
+      letter-spacing: 0.1px;
+      font-weight: 600;
+      color: var(--text-primary);
+    }
+    .cashback-selection__subtitle {
+      margin: 12px 0 0;
+      font-size: 16px;
+      line-height: 24px;
+      letter-spacing: -0.16px;
+      color: var(--text-secondary);
+      font-family: var(--font-text);
+      font-weight: 500;
+    }
+    .cashback-selection__cards {
+      margin-top: 24px;
+      display: grid;
+      gap: 12px;
+      padding-bottom: 120px;
+    }
+    .cashback-selection-card {
+      border-radius: 24px;
+      background: var(--ds-surface-primary);
+      padding: 16px;
+    }
+    .cashback-selection-card__head {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+    .cashback-selection-card__rate {
+      font-size: 35px;
+      line-height: 36px;
+      letter-spacing: -0.02em;
+      font-weight: 700;
+      color: var(--text-primary);
+      font-family: var(--font-display);
+    }
+    .cashback-selection-card__line {
+      margin-top: 0;
+      font-size: 16px;
+      line-height: 24px;
+      letter-spacing: -0.16px;
+      color: var(--text-primary);
+      font-family: var(--font-text);
+      font-weight: 500;
+    }
+    .cashback-selection-card__hero {
+      width: 48px;
+      height: 48px;
+      object-fit: contain;
+      flex-shrink: 0;
+    }
+    .cashback-selection-card__chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    .cashback-selection-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 14px 8px 8px;
+      border-radius: 999px;
+      background: #f5f4f2;
+      min-height: 48px;
+      font-size: 16px;
+      line-height: 20px;
+      color: var(--text-primary);
+      font-weight: 500;
+      white-space: nowrap;
+    }
+    .cashback-selection-chip span:last-child {
+      padding-right: 2px;
+    }
+    .cashback-selection-chip__icon-wrap {
+      width: 32px;
+      height: 32px;
+      border-radius: 999px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+    .cashback-selection-chip__icon-wrap img {
+      width: 32px;
+      height: 32px;
+      display: block;
+      object-fit: contain;
+    }
+    .cashback-selection-card__counter {
+      margin: 16px 0 0;
+      text-align: center;
+      color: var(--text-secondary);
+      font-size: 16px;
+      line-height: 24px;
+      letter-spacing: -0.16px;
+      font-weight: 500;
+      font-family: var(--font-text);
+    }
+    .cashback-selection-footer {
+      flex-shrink: 0;
+      position: sticky;
+      bottom: 0;
+      padding: 12px 16px 0;
+      background: linear-gradient(180deg, rgba(245, 244, 242, 0) 0%, #f5f4f2 24px);
+    }
     .trial-success-page {
       background: var(--ds-bg-general-l1);
       z-index: 186;
@@ -2567,16 +2700,63 @@
       letter-spacing: -0.16px;
       grid-column: 1;
     }
-    .spotlight-card__icon {
+    .spotlight-card__visual {
       grid-column: 2;
       grid-row: 1 / span 2;
       align-self: start;
       justify-self: end;
+      display: inline-flex;
+      align-items: center;
+      gap: 0;
+    }
+    .spotlight-card__icon {
       width: 41px;
       height: 40px;
       display: block;
       object-fit: contain;
       margin-top: -2px;
+    }
+    .spotlight-card__categories {
+      display: inline-flex;
+      align-items: center;
+      justify-content: flex-end;
+    }
+    .spotlight-card__categories[hidden] {
+      display: none;
+    }
+    .spotlight-card__category-chip {
+      width: 40px;
+      height: 40px;
+      border-radius: 999px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border: 4px solid #f5f4f2;
+      margin-left: -6px;
+      box-sizing: border-box;
+      overflow: hidden;
+      color: #fff;
+      flex-shrink: 0;
+    }
+    .spotlight-card__category-chip:first-child {
+      margin-left: 0;
+    }
+    .spotlight-card__category-chip img {
+      width: 20px;
+      height: 20px;
+      display: block;
+      object-fit: contain;
+      filter: brightness(0) invert(1);
+    }
+    .spotlight-card__category-chip--extra {
+      background: #fff;
+      border: 4px dashed #c4c1be;
+      color: var(--text-primary);
+      font-size: 16px;
+      line-height: 20px;
+      font-weight: 700;
+      font-family: var(--font-text);
+      letter-spacing: -0.16px;
     }
     .spotlight-card__cta {
       grid-column: 1 / -1;
@@ -2922,7 +3102,10 @@
           <section class="spotlight-card" id="subscription-cashback-card" aria-labelledby="spotlight-title">
             <h2 id="spotlight-title" class="spotlight-card__title">Earn {number}% cashback</h2>
             <p class="spotlight-card__text" id="subscription-cashback-text">Select December categories</p>
-            <img class="spotlight-card__icon" src="./assets/omni/cashback-widget.svg" alt="" loading="lazy" />
+            <div class="spotlight-card__visual">
+              <div class="spotlight-card__categories" id="subscription-cashback-categories" hidden></div>
+              <img class="spotlight-card__icon" id="subscription-cashback-icon" src="./assets/omni/cashback-widget.svg" alt="" loading="lazy" />
+            </div>
             <button type="button" class="spotlight-card__cta" id="subscription-cashback-cta">Select categories</button>
           </section>
 
@@ -3709,6 +3892,29 @@
       </div>
     </div>
 
+    <div class="flow-page cashback-selection-page" id="cashback-selection-page" aria-hidden="true">
+      <nav class="navbar cancel-warning-navbar" aria-label="Primary">
+        <div class="navbar__lead" aria-hidden="true"></div>
+        <div class="navbar__logo"></div>
+        <div class="navbar__trail">
+          <button type="button" class="navbar__back" data-flow-back="subscription" aria-label="Close">
+            <svg class="navbar__back-icon" width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">
+              <path d="M6 6L18 18M18 6L6 18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+            </svg>
+          </button>
+        </div>
+      </nav>
+      <div class="cashback-selection__content">
+        <h1 class="cashback-selection__title" id="cashback-selection-title">Choose September cashback categories</h1>
+        <p class="cashback-selection__subtitle" id="cashback-selection-subtitle">Earn up to AED 200 cashback per card each month, up to AED 400 total across both cards</p>
+        <div class="cashback-selection__cards" id="cashback-selection-cards"></div>
+      </div>
+      <div class="flow-page__footer cashback-selection-footer">
+        <button type="button" class="flow-page__btn flow-page__btn--primary" data-flow-target="subscription">Confirm</button>
+        <div class="home-indicator" aria-hidden="true"></div>
+      </div>
+    </div>
+
     <div class="flow-page" id="cancelled-page" aria-hidden="true">
       <nav class="navbar" aria-label="Primary" aria-hidden="true">
         <div class="navbar__lead"></div>
@@ -3747,6 +3953,7 @@
       var offerPage = document.getElementById('offer-page');
       var loseBenefitsPage = document.getElementById('lose-benefits-page');
       var settlePaymentsPage = document.getElementById('settle-payments-page');
+      var cashbackSelectionPage = document.getElementById('cashback-selection-page');
       var cancelledPage = document.getElementById('cancelled-page');
       var offerAedTitle = document.getElementById('offer-aed-title');
       var offerAedBilling = document.getElementById('offer-aed-billing');
@@ -3760,7 +3967,7 @@
       var subscriptionScrollEl = document.getElementById('subscription-scroll');
       var subscriptionNavbar = document.getElementById('subscription-navbar');
       var subscriptionMainEl = document.getElementById('subscription-main');
-      if (!scrollView || !sheetCard || !navbar || !device || !overlay || !backdrop || !sheetContent || !trialSuccessPage || !subscriptionPage || !cancelWarningPage || !offerPage || !loseBenefitsPage || !settlePaymentsPage || !cancelledPage || !backButton) return;
+      if (!scrollView || !sheetCard || !navbar || !device || !overlay || !backdrop || !sheetContent || !trialSuccessPage || !subscriptionPage || !cancelWarningPage || !offerPage || !loseBenefitsPage || !settlePaymentsPage || !cashbackSelectionPage || !cancelledPage || !backButton) return;
 
       function applyDocumentScrollLock() {
         var gap = window.innerWidth - document.documentElement.clientWidth;
@@ -3786,6 +3993,10 @@
       var CW_HAS_TABBY_CARD_KEY = 'plus-cw-has-tabby-card';
       var HAS_TABBY_CASH_KEY = 'plus-has-tabby-cash';
       var HAS_CASHBACK_ACTIVE_KEY = 'plus-has-cashback-active';
+      var CASHBACK_CATEGORY_1_KEY = 'plus-cashback-category-1';
+      var CASHBACK_CATEGORY_2_KEY = 'plus-cashback-category-2';
+      var CASHBACK_CATEGORY_3_KEY = 'plus-cashback-category-3';
+      var CASHBACK_CATEGORY_EXTRA_KEY = 'plus-cashback-category-extra';
       var CW_HAS_OL_PURCHASES_KEY = 'plus-cw-has-ol-purchases';
       var CW_HAS_ACTIVE_SPLIT6_KEY = 'plus-cw-has-active-split6';
       var OFFER_AVAILABLE_KEY = 'plus-offer-available';
@@ -3917,6 +4128,268 @@
         }
       }
 
+      var CASHBACK_CATEGORY_FILE_NAMES = [
+        'ArtAndAntiquesDark',
+        'AutoDark',
+        'BeautyAndSelfCareDark',
+        'BooksDark',
+        'CashWithdrawalsDark',
+        'ChildrenProductsDark',
+        'CinemaDark',
+        'ClothingAndShoesDark',
+        'DigitalAndMediaGoodsDark',
+        'DutyFreeDark',
+        'EducationDark',
+        'EntertainmentDark',
+        'FinancialServicesDark',
+        'FitnessDark',
+        'FlowersDark',
+        'FurnitureDark',
+        'GlasswareAndCrystaStoresDark',
+        'GlobalTransfer',
+        'GovernmentPaymentsDark',
+        'GroceriesDark',
+        'HomeRenovationDark',
+        'HotelsAndAccommodationDark',
+        'InternalPurchasesDark',
+        'ItServicesDark',
+        'JewelleryDark',
+        'MarketplaceDark',
+        'MedicalServicesDark',
+        'MoneyTransfersDark',
+        'MusicDark',
+        'NonprofitsDark',
+        'OtherDark',
+        'PayLaterDark',
+        'PetCareDark',
+        'PetrolStationsDark',
+        'PharmaciesDark',
+        'PhotoAndVideoDark',
+        'PlaneTicketsDark',
+        'PublicTransportDark',
+        'RealEstateDark',
+        'RestaurantsAndDiningDark',
+        'ServiceProvidersDark',
+        'SouvenirsDark',
+        'SportingGoodsDark',
+        'StationeryDark',
+        'TaxisDark',
+        'TelecomsDark',
+        'TrainTicketsDark',
+        'TransportationDark',
+        'TravelAgenciesDark',
+        'UtilitiesDark',
+        'VehicleRentalDark'
+      ];
+      var CASHBACK_CATEGORY_COLORS = ['#c37e90', '#3ac98a', '#a27bf7', '#54b0f8', '#f1bd30', '#56d6bf', '#8c929f'];
+
+      function toCategoryId(fileName) {
+        return String(fileName || '').replace(/Dark$/, '').replace(/([a-z0-9])([A-Z])/g, '$1-$2').toLowerCase();
+      }
+
+      function toCategoryLabel(fileName) {
+        var base = String(fileName || '').replace(/Dark$/, '').replace(/([a-z0-9])([A-Z])/g, '$1 $2');
+        return base.replace(/\b\w/g, function (ch) { return ch.toUpperCase(); }).trim();
+      }
+
+      var CASHBACK_CATEGORY_LABEL_OVERRIDES = {
+        'beauty-and-self-care': 'Beauty & self care',
+        'restaurants-and-dining': 'Dining',
+        'global-transfer': 'International payments',
+        'petrol-stations': 'Petrol stations',
+        'taxis': 'Taxis',
+        'telecoms': 'Telecom',
+        'pharmacies': 'Pharmacies'
+      };
+
+      function buildCashbackCategoryRegistry() {
+        var map = {};
+        CASHBACK_CATEGORY_FILE_NAMES.forEach(function (fileName, index) {
+          var id = toCategoryId(fileName);
+          map[id] = {
+            id: id,
+            label: CASHBACK_CATEGORY_LABEL_OVERRIDES[id] || toCategoryLabel(fileName),
+            icon: './assets/omni/transaction-categories/' + fileName + '.svg',
+            bg: CASHBACK_CATEGORY_COLORS[index % CASHBACK_CATEGORY_COLORS.length]
+          };
+        });
+        return map;
+      }
+
+      var CASHBACK_CATEGORY_REGISTRY = buildCashbackCategoryRegistry();
+      var CASHBACK_CATEGORY_DEFAULT_IDS = ['vehicle-rental', 'groceries', 'clothing-and-shoes'];
+
+      function getConfiguredCashbackCategories() {
+        var ids = CASHBACK_CATEGORY_DEFAULT_IDS.slice(0, 3);
+        var extraCount = 3;
+        try {
+          var candidate1 = localStorage.getItem(CASHBACK_CATEGORY_1_KEY);
+          var candidate2 = localStorage.getItem(CASHBACK_CATEGORY_2_KEY);
+          var candidate3 = localStorage.getItem(CASHBACK_CATEGORY_3_KEY);
+          if (candidate1 && CASHBACK_CATEGORY_REGISTRY[candidate1]) ids[0] = candidate1;
+          if (candidate2 && CASHBACK_CATEGORY_REGISTRY[candidate2]) ids[1] = candidate2;
+          if (candidate3 && CASHBACK_CATEGORY_REGISTRY[candidate3]) ids[2] = candidate3;
+          var parsedExtra = parseInt(localStorage.getItem(CASHBACK_CATEGORY_EXTRA_KEY) || '', 10);
+          if (!isNaN(parsedExtra)) extraCount = Math.max(0, Math.min(99, parsedExtra));
+        } catch (e) {}
+        return {
+          badges: ids.map(function (id) { return CASHBACK_CATEGORY_REGISTRY[id]; }).filter(Boolean),
+          extraCount: extraCount
+        };
+      }
+
+      function renderCashbackCategoryBadges(container, badges, options) {
+        if (!container) return;
+        var opts = options || {};
+        var extraCount = Number(opts.extraCount || 0);
+        var showExtra = extraCount > 0;
+        var extraDashed = opts.extraDashed !== false;
+        container.textContent = '';
+        badges.forEach(function (badge) {
+          var chip = document.createElement('span');
+          chip.className = 'spotlight-card__category-chip';
+          chip.style.backgroundColor = badge.bg || '#d3d2ce';
+          chip.title = badge.label || '';
+          var icon = document.createElement('img');
+          icon.src = badge.icon;
+          icon.alt = '';
+          icon.loading = 'lazy';
+          chip.appendChild(icon);
+          container.appendChild(chip);
+        });
+        if (showExtra) {
+          var extraChip = document.createElement('span');
+          extraChip.className = 'spotlight-card__category-chip spotlight-card__category-chip--extra';
+          if (!extraDashed) {
+            extraChip.style.borderStyle = 'solid';
+          }
+          extraChip.textContent = '+' + String(extraCount);
+          container.appendChild(extraChip);
+        }
+      }
+
+      function renderCashbackSelectionPage() {
+        var titleEl = document.getElementById('cashback-selection-title');
+        var subtitleEl = document.getElementById('cashback-selection-subtitle');
+        var cardsEl = document.getElementById('cashback-selection-cards');
+        var contentEl = document.querySelector('.cashback-selection__content');
+        if (!titleEl || !subtitleEl || !cardsEl || !contentEl) return;
+
+        var hasCard = true;
+        try {
+          hasCard = localStorage.getItem(CW_HAS_TABBY_CARD_KEY) !== '0';
+        } catch (e) {}
+        var hasCash = hasTabbyCash();
+        var month = new Date().toLocaleString('en-US', { month: 'long' });
+        titleEl.textContent = 'Choose ' + month + ' cashback categories';
+
+        var cards = [];
+        var sharedCategoryIds = ['restaurants-and-dining', 'petrol-stations', 'beauty-and-self-care', 'taxis'];
+        var selectionCountText = '0 of 3 categories selected';
+
+        if (hasCard && hasCash) {
+          subtitleEl.textContent = 'Earn up to AED 200 cashback per card each month, up to AED 400 total across both cards';
+          cards = [
+            {
+              rate: '3%',
+              cardLabel: 'On Tabby Cash with',
+              hero: './assets/omni/cb-card-tabby-cash.svg',
+              categories: sharedCategoryIds.concat(['telecoms', 'global-transfer'])
+            },
+            {
+              rate: '5%',
+              cardLabel: 'On Tabby Card with',
+              hero: './assets/omni/cb-card-tabby-card.svg',
+              categories: sharedCategoryIds.concat(['pharmacies'])
+            }
+          ];
+        } else if (hasCard) {
+          subtitleEl.textContent = 'Earn up to AED 200 cashback on your purchases throughout the month';
+          cards = [
+            {
+              rate: '5%',
+              cardLabel: 'On Tabby Card with',
+              hero: './assets/omni/cb-card-tabby-card.svg',
+              categories: sharedCategoryIds.concat(['pharmacies'])
+            }
+          ];
+        } else if (hasCash) {
+          subtitleEl.textContent = 'Earn up to AED 200 cashback on your purchases throughout the month';
+          cards = [
+            {
+              rate: '3%',
+              cardLabel: 'On Tabby Cash with',
+              hero: './assets/omni/cb-card-tabby-cash.svg',
+              categories: sharedCategoryIds.concat(['telecoms', 'global-transfer'])
+            }
+          ];
+        } else {
+          subtitleEl.textContent = 'No eligible cards are available right now.';
+          cards = [];
+        }
+
+        cardsEl.textContent = '';
+        contentEl.scrollTop = 0;
+        cards.forEach(function (card) {
+          var cardNode = document.createElement('article');
+          cardNode.className = 'cashback-selection-card';
+
+          var head = document.createElement('div');
+          head.className = 'cashback-selection-card__head';
+
+          var textWrap = document.createElement('div');
+          var rateEl = document.createElement('div');
+          rateEl.className = 'cashback-selection-card__rate';
+          rateEl.textContent = card.rate;
+          var lineEl = document.createElement('div');
+          lineEl.className = 'cashback-selection-card__line';
+          lineEl.textContent = card.cardLabel;
+          textWrap.appendChild(rateEl);
+          textWrap.appendChild(lineEl);
+
+          var hero = document.createElement('img');
+          hero.className = 'cashback-selection-card__hero';
+          hero.src = card.hero;
+          hero.alt = '';
+          hero.loading = 'lazy';
+          head.appendChild(textWrap);
+          head.appendChild(hero);
+          cardNode.appendChild(head);
+
+          var chips = document.createElement('div');
+          chips.className = 'cashback-selection-card__chips';
+          card.categories.forEach(function (categoryId) {
+            var category = CASHBACK_CATEGORY_REGISTRY[categoryId];
+            if (!category) return;
+            var chip = document.createElement('div');
+            chip.className = 'cashback-selection-chip';
+            var iconWrap = document.createElement('span');
+            iconWrap.className = 'cashback-selection-chip__icon-wrap';
+            var icon = document.createElement('img');
+            icon.src = category.icon;
+            icon.alt = '';
+            icon.loading = 'lazy';
+            iconWrap.appendChild(icon);
+            var label = document.createElement('span');
+            label.textContent = category.label;
+            chip.appendChild(iconWrap);
+            chip.appendChild(label);
+            chips.appendChild(chip);
+          });
+          cardNode.appendChild(chips);
+
+          var counter = document.createElement('p');
+          counter.className = 'cashback-selection-card__counter';
+          counter.textContent = selectionCountText;
+          cardNode.appendChild(counter);
+
+          cardsEl.appendChild(cardNode);
+        });
+        requestAnimationFrame(function () {
+          contentEl.scrollTop = 0;
+        });
+      }
+
       function updateSubscriptionCardAvailabilityUi() {
         var maximiseCard = document.querySelector('.maximise-card');
         var tabbyCardItem = document.getElementById('maximise-tabby-card-item');
@@ -3925,7 +4398,9 @@
         var cashbackTitle = document.getElementById('spotlight-title');
         var cashbackText = document.getElementById('subscription-cashback-text');
         var cashbackCta = document.getElementById('subscription-cashback-cta');
-        if (!maximiseCard || !tabbyCardItem || !tabbyCashItem || !cashbackCard || !cashbackTitle || !cashbackText) return;
+        var cashbackIcon = document.getElementById('subscription-cashback-icon');
+        var cashbackCategories = document.getElementById('subscription-cashback-categories');
+        if (!maximiseCard || !tabbyCardItem || !tabbyCashItem || !cashbackCard || !cashbackTitle || !cashbackText || !cashbackIcon || !cashbackCategories) return;
 
         var hasCard = true;
         try {
@@ -3945,13 +4420,21 @@
 
         cashbackCard.hidden = !hasAnyCard;
         if (!hasAnyCard) return;
+        cashbackCategories.hidden = true;
+        cashbackIcon.hidden = false;
         var month = new Date().toLocaleString('en-US', { month: 'long' });
         if (cashbackCta) cashbackCta.classList.remove('spotlight-card__cta--primary');
+        var configuredCategories = getConfiguredCashbackCategories();
+        var categoryBadges = configuredCategories.badges;
+        var configuredExtra = configuredCategories.extraCount;
         if (hasCard && hasCash) {
           if (cashbackActive) {
             cashbackTitle.textContent = 'Cashback in ' + month;
             cashbackText.textContent = 'You’re earning up to 5%';
             if (cashbackCta) cashbackCta.textContent = 'View categories';
+            renderCashbackCategoryBadges(cashbackCategories, categoryBadges, { extraCount: configuredExtra, extraDashed: true });
+            cashbackCategories.hidden = false;
+            cashbackIcon.hidden = true;
           } else {
             cashbackTitle.textContent = 'Get even more cashback';
             cashbackText.textContent = 'Select ' + month + ' categories';
@@ -3959,12 +4442,18 @@
               cashbackCta.textContent = 'Select categories';
               if (isCashbackFirst) cashbackCta.classList.add('spotlight-card__cta--primary');
             }
+            renderCashbackCategoryBadges(cashbackCategories, categoryBadges, { extraCount: configuredExtra, extraDashed: true });
+            cashbackCategories.hidden = false;
+            cashbackIcon.hidden = true;
           }
         } else if (hasCard) {
           if (cashbackActive) {
             cashbackTitle.textContent = 'Cashback in ' + month;
             cashbackText.textContent = 'You’re earning 5%';
             if (cashbackCta) cashbackCta.textContent = 'View categories';
+            renderCashbackCategoryBadges(cashbackCategories, categoryBadges, { extraCount: 0 });
+            cashbackCategories.hidden = false;
+            cashbackIcon.hidden = true;
           } else {
             cashbackTitle.textContent = 'Earn 5% cashback';
             cashbackText.textContent = 'Select ' + month + ' categories';
@@ -3978,6 +4467,9 @@
             cashbackTitle.textContent = 'Cashback in ' + month;
             cashbackText.textContent = 'You’re earning 3%';
             if (cashbackCta) cashbackCta.textContent = 'View categories';
+            renderCashbackCategoryBadges(cashbackCategories, categoryBadges, { extraCount: 0 });
+            cashbackCategories.hidden = false;
+            cashbackIcon.hidden = true;
           } else {
             cashbackTitle.textContent = 'Earn 3% cashback';
             cashbackText.textContent = 'Select ' + month + ' categories';
@@ -4375,6 +4867,7 @@
         offerPage.classList.remove('is-active');
         loseBenefitsPage.classList.remove('is-active');
         settlePaymentsPage.classList.remove('is-active');
+        cashbackSelectionPage.classList.remove('is-active');
         cancelledPage.classList.remove('is-active');
         trialSuccessPage.setAttribute('aria-hidden', 'true');
         subscriptionPage.setAttribute('aria-hidden', 'true');
@@ -4382,6 +4875,7 @@
         offerPage.setAttribute('aria-hidden', 'true');
         loseBenefitsPage.setAttribute('aria-hidden', 'true');
         settlePaymentsPage.setAttribute('aria-hidden', 'true');
+        cashbackSelectionPage.setAttribute('aria-hidden', 'true');
         cancelledPage.setAttribute('aria-hidden', 'true');
         device.classList.remove('has-subscription-open');
 
@@ -4441,6 +4935,12 @@
           settlePaymentsPage.setAttribute('aria-hidden', 'false');
           device.classList.add('has-subscription-open');
           navbar.classList.remove('navbar--on-light');
+        } else if (screen === 'cashback-selection') {
+          cashbackSelectionPage.classList.add('is-active');
+          cashbackSelectionPage.setAttribute('aria-hidden', 'false');
+          device.classList.add('has-subscription-open');
+          navbar.classList.remove('navbar--on-light');
+          renderCashbackSelectionPage();
         } else {
           updateNavOnScroll();
           try {
@@ -5110,6 +5610,10 @@
         if (params.has('cw_has_tabby_card')) stateOverrides.hasTabbyCard = params.get('cw_has_tabby_card') === '1';
         if (params.has('cw_has_tabby_cash')) stateOverrides.hasTabbyCash = params.get('cw_has_tabby_cash') === '1';
         if (params.has('cw_has_cashback_active')) stateOverrides.hasCashbackActive = params.get('cw_has_cashback_active') === '1';
+        if (params.has('cw_cb_cat_1')) stateOverrides.cashbackCategory1 = params.get('cw_cb_cat_1');
+        if (params.has('cw_cb_cat_2')) stateOverrides.cashbackCategory2 = params.get('cw_cb_cat_2');
+        if (params.has('cw_cb_cat_3')) stateOverrides.cashbackCategory3 = params.get('cw_cb_cat_3');
+        if (params.has('cw_cb_cat_extra')) stateOverrides.cashbackCategoryExtra = params.get('cw_cb_cat_extra');
         if (params.has('cw_has_ol_purchases')) stateOverrides.hasOlPurchases = params.get('cw_has_ol_purchases') === '1';
         if (params.has('cw_has_active_split6')) stateOverrides.hasActiveSplit6 = params.get('cw_has_active_split6') === '1';
         if (params.has('offer_available')) stateOverrides.offerAvailable = params.get('offer_available') === '1';
@@ -5152,6 +5656,19 @@
           }
           if (state.hasCashbackActive !== undefined) {
             localStorage.setItem(HAS_CASHBACK_ACTIVE_KEY, state.hasCashbackActive ? '1' : '0');
+          }
+          if (state.cashbackCategory1 !== undefined) {
+            localStorage.setItem(CASHBACK_CATEGORY_1_KEY, String(state.cashbackCategory1));
+          }
+          if (state.cashbackCategory2 !== undefined) {
+            localStorage.setItem(CASHBACK_CATEGORY_2_KEY, String(state.cashbackCategory2));
+          }
+          if (state.cashbackCategory3 !== undefined) {
+            localStorage.setItem(CASHBACK_CATEGORY_3_KEY, String(state.cashbackCategory3));
+          }
+          if (state.cashbackCategoryExtra !== undefined) {
+            var extraCount = parseInt(state.cashbackCategoryExtra, 10);
+            localStorage.setItem(CASHBACK_CATEGORY_EXTRA_KEY, String(isNaN(extraCount) ? 3 : Math.max(0, Math.min(99, extraCount))));
           }
           if (state.trialTokenizeCard !== undefined) {
             localStorage.setItem(TRIAL_TOKENIZE_CARD_KEY, state.trialTokenizeCard ? '1' : '0');
@@ -5251,6 +5768,14 @@
         setScreen('subscription');
       });
 
+      var subscriptionCashbackCta = document.getElementById('subscription-cashback-cta');
+      if (subscriptionCashbackCta) {
+        subscriptionCashbackCta.addEventListener('click', function (e) {
+          e.preventDefault();
+          setScreen('cashback-selection');
+        });
+      }
+
       document.addEventListener('click', function (e) {
         var flowTarget = e.target.closest('[data-flow-target]');
         if (!flowTarget) return;
@@ -5280,7 +5805,7 @@
             localStorage.setItem(BUYBACK_ACCEPTED_KEY, '1');
           } catch (e) {}
         }
-        if (targetScreen === 'trial-success' || targetScreen === 'subscription' || targetScreen === 'cancel-warning' || targetScreen === 'offer' || targetScreen === 'lose-benefits' || targetScreen === 'settle-payments' || targetScreen === 'cancelled') {
+        if (targetScreen === 'trial-success' || targetScreen === 'subscription' || targetScreen === 'cancel-warning' || targetScreen === 'offer' || targetScreen === 'lose-benefits' || targetScreen === 'settle-payments' || targetScreen === 'cashback-selection' || targetScreen === 'cancelled') {
           setScreen(targetScreen);
         }
       });
@@ -5320,7 +5845,7 @@
         applySavingsCounterStatic(getSavingsCounterConfig().target);
         try {
           var persisted = localStorage.getItem(SCREEN_KEY);
-          if (persisted === 'subscription' || persisted === 'cancel-warning' || persisted === 'offer' || persisted === 'lose-benefits' || persisted === 'settle-payments' || persisted === 'cancelled') {
+          if (persisted === 'subscription' || persisted === 'cancel-warning' || persisted === 'offer' || persisted === 'lose-benefits' || persisted === 'settle-payments' || persisted === 'cashback-selection' || persisted === 'cancelled') {
             setScreen(persisted);
           } else {
             setScreen('landing');
