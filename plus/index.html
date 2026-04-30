@@ -1794,8 +1794,8 @@
       border-radius: 999px;
       background: #f5f4f2;
       min-height: 48px;
-      font-size: 16px;
-      line-height: 20px;
+      font-size: var(--ds-type-body2-size);
+      line-height: 22px;
       color: var(--text-primary);
       font-weight: 500;
       white-space: nowrap;
@@ -2847,6 +2847,49 @@
       flex-shrink: 0;
       box-sizing: border-box;
     }
+    .subscription-success-snackbar {
+      position: absolute;
+      left: 8px;
+      right: 8px;
+      bottom: 25px; /* 12 (bottom inset of indicator area) + 5 (indicator) + 8 gap */
+      z-index: 230;
+      min-height: 64px;
+      border: none;
+      border-radius: 20px;
+      background: linear-gradient(94deg, #4a23d9 0%, #7f2cff 100%);
+      color: #fff;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 0 20px;
+      font-family: var(--font-text);
+      font-size: 32px;
+      line-height: 36px;
+      letter-spacing: -0.02em;
+      font-weight: 500;
+      box-shadow: 0 10px 26px rgba(62, 19, 164, 0.36);
+      opacity: 0;
+      transform: translateY(16px);
+      pointer-events: none;
+      transition: opacity 240ms ease, transform 240ms ease;
+    }
+    .subscription-success-snackbar.is-visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    .subscription-success-snackbar__icon {
+      width: 24px;
+      height: 24px;
+      flex-shrink: 0;
+      display: block;
+      object-fit: contain;
+      filter: brightness(0) invert(1);
+    }
+    .subscription-success-snackbar__label {
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
   </style>
 </head>
 <body>
@@ -3292,6 +3335,10 @@
       </div>
       <div class="subscription-home-area">
         <div class="subscription-home-indicator" aria-hidden="true"></div>
+      </div>
+      <div class="subscription-success-snackbar" id="subscription-success-snackbar" aria-live="polite" aria-atomic="true">
+        <img class="subscription-success-snackbar__icon" src="./assets/omni/snackbar-check.svg" alt="" />
+        <span class="subscription-success-snackbar__label">Cashback categories selected</span>
       </div>
     </div>
 
@@ -4016,7 +4063,8 @@
       var subscriptionScrollEl = document.getElementById('subscription-scroll');
       var subscriptionNavbar = document.getElementById('subscription-navbar');
       var subscriptionMainEl = document.getElementById('subscription-main');
-      if (!scrollView || !sheetCard || !navbar || !device || !overlay || !backdrop || !sheetContent || !trialSuccessPage || !subscriptionPage || !cancelWarningPage || !offerPage || !loseBenefitsPage || !settlePaymentsPage || !cashbackSelectionPage || !cancelledPage || !backButton) return;
+      var subscriptionSuccessSnackbar = document.getElementById('subscription-success-snackbar');
+      if (!scrollView || !sheetCard || !navbar || !device || !overlay || !backdrop || !sheetContent || !trialSuccessPage || !subscriptionPage || !cancelWarningPage || !offerPage || !loseBenefitsPage || !settlePaymentsPage || !cashbackSelectionPage || !cancelledPage || !backButton || !subscriptionSuccessSnackbar) return;
 
       function applyDocumentScrollLock() {
         var gap = window.innerWidth - document.documentElement.clientWidth;
@@ -4268,6 +4316,28 @@
       var CASHBACK_CATEGORY_REGISTRY = buildCashbackCategoryRegistry();
       var CASHBACK_CATEGORY_DEFAULT_IDS = ['vehicle-rental', 'groceries', 'clothing-and-shoes'];
       var cashbackSelectionState = {};
+      var showCashbackSuccessToastOnSubscription = false;
+      var cashbackSuccessToastTimer = null;
+
+      function hideCashbackSuccessToast() {
+        if (cashbackSuccessToastTimer) {
+          clearTimeout(cashbackSuccessToastTimer);
+          cashbackSuccessToastTimer = null;
+        }
+        if (subscriptionSuccessSnackbar) subscriptionSuccessSnackbar.classList.remove('is-visible');
+      }
+
+      function showCashbackSuccessToast() {
+        if (!subscriptionSuccessSnackbar) return;
+        hideCashbackSuccessToast();
+        requestAnimationFrame(function () {
+          subscriptionSuccessSnackbar.classList.add('is-visible');
+          cashbackSuccessToastTimer = setTimeout(function () {
+            subscriptionSuccessSnackbar.classList.remove('is-visible');
+            cashbackSuccessToastTimer = null;
+          }, 2600);
+        });
+      }
 
       function getConfiguredCashbackCategories() {
         var ids = CASHBACK_CATEGORY_DEFAULT_IDS.slice(0, 3);
@@ -4469,6 +4539,8 @@
 
       function markInvalidCashbackSelection() {
         var firstInvalidCardId = null;
+        var shakeTargets = [];
+        var scrollDelayMs = 0;
         document.querySelectorAll('[data-card-counter]').forEach(function (counter) {
           counter.classList.remove('cashback-selection-card__counter--shake');
           var cardId = counter.getAttribute('data-card-counter');
@@ -4477,11 +4549,11 @@
             if (!firstInvalidCardId) firstInvalidCardId = cardId;
             if (!cashbackSelectionState[cardId]) cashbackSelectionState[cardId] = { selected: {}, showError: true };
             cashbackSelectionState[cardId].showError = true;
-            counter.classList.add('cashback-selection-card__counter--none');
-            void counter.offsetWidth;
-            counter.classList.add('cashback-selection-card__counter--shake');
+            shakeTargets.push(counter);
           }
         });
+        /* Apply error color state first, then run shake animation. */
+        updateCashbackSelectionUi();
         if (firstInvalidCardId) {
           var contentEl = document.querySelector('.cashback-selection__content');
           var invalidCard = document.querySelector('.cashback-selection-card[data-cashback-card-id="' + firstInvalidCardId + '"]');
@@ -4493,9 +4565,17 @@
             if (hiddenAbove || hiddenBelow) {
               var targetTop = invalidCard.offsetTop - 12;
               contentEl.scrollTo({ top: Math.max(0, targetTop), behavior: 'smooth' });
+              scrollDelayMs = 420;
             }
           }
         }
+        setTimeout(function () {
+          shakeTargets.forEach(function (counter) {
+            counter.classList.remove('cashback-selection-card__counter--shake');
+            void counter.offsetWidth;
+            counter.classList.add('cashback-selection-card__counter--shake');
+          });
+        }, scrollDelayMs);
       }
 
       function updateCashbackSelectionUi() {
@@ -4995,6 +5075,9 @@
 
       function setScreen(screen) {
         closeSheet();
+        if (screen !== 'subscription') {
+          hideCashbackSuccessToast();
+        }
         if (subscriptionNavbar) subscriptionNavbar.classList.remove('navbar--on-light');
         resetTrialConfettiUi();
         trialSuccessPage.classList.remove('is-active');
@@ -5041,6 +5124,10 @@
           requestAnimationFrame(function () {
             updateSubscriptionNavOnScroll();
           });
+          if (showCashbackSuccessToastOnSubscription) {
+            showCashbackSuccessToastOnSubscription = false;
+            showCashbackSuccessToast();
+          }
         } else if (screen === 'cancel-warning') {
           cancelWarningPage.classList.add('is-active');
           cancelWarningPage.setAttribute('aria-hidden', 'false');
@@ -5940,6 +6027,7 @@
       if (cashbackSelectionConfirm) {
         cashbackSelectionConfirm.addEventListener('click', function (e) {
           if (isCashbackSelectionComplete()) {
+            showCashbackSuccessToastOnSubscription = true;
             return;
           }
           e.preventDefault();
