@@ -397,6 +397,10 @@
           <input type="checkbox" id="cond-has-cashback-active" />
           <span data-i18n="condHasCashbackActive">Has cashback active</span>
         </label>
+          <label class="scenario-check">
+            <input type="checkbox" id="cond-has-cb-second-card-issued" />
+            <span data-i18n="condHasCbSecondCardIssued">CB partly selected (second card issued)</span>
+          </label>
           <div class="scenario-inline-fields">
             <div class="scenario-inline-field">
               <label for="cond-cashback-category-1" data-i18n="labelCashbackCategory1">Category icon 1</label>
@@ -409,10 +413,6 @@
             <div class="scenario-inline-field">
               <label for="cond-cashback-category-3" data-i18n="labelCashbackCategory3">Category icon 3</label>
               <select id="cond-cashback-category-3"></select>
-            </div>
-            <div class="scenario-inline-field">
-              <label for="cond-cashback-category-extra" data-i18n="labelCashbackCategoryExtra">Extra categories (+N)</label>
-              <input id="cond-cashback-category-extra" type="number" min="0" max="99" value="3" />
             </div>
           </div>
           <label class="scenario-check">
@@ -482,10 +482,10 @@
       var condHasTabbyCard = document.getElementById('cond-has-tabby-card');
       var condHasTabbyCash = document.getElementById('cond-has-tabby-cash');
       var condHasCashbackActive = document.getElementById('cond-has-cashback-active');
+      var condHasCbSecondCardIssued = document.getElementById('cond-has-cb-second-card-issued');
       var condCashbackCategory1 = document.getElementById('cond-cashback-category-1');
       var condCashbackCategory2 = document.getElementById('cond-cashback-category-2');
       var condCashbackCategory3 = document.getElementById('cond-cashback-category-3');
-      var condCashbackCategoryExtra = document.getElementById('cond-cashback-category-extra');
       var condHasOlPurchases = document.getElementById('cond-has-ol-purchases');
       var condHasActiveSplit6 = document.getElementById('cond-has-active-split6');
       var condOfferAvailable = document.getElementById('cond-offer-available');
@@ -519,6 +519,7 @@
           condHasTabbyCard: 'Has Tabby Card',
           condHasTabbyCash: 'Has Tabby Cash',
           condHasCashbackActive: 'Has cashback active',
+          condHasCbSecondCardIssued: 'CB partly selected (second card issued)',
           labelCashbackCategory1: 'Category icon 1',
           labelCashbackCategory2: 'Category icon 2',
           labelCashbackCategory3: 'Category icon 3',
@@ -561,6 +562,7 @@
           condHasTabbyCard: 'Есть Tabby Card',
           condHasTabbyCash: 'Есть Tabby Cash',
           condHasCashbackActive: 'Кэшбэк активен',
+          condHasCbSecondCardIssued: 'CB частично выбран (выпущена 2-я карта)',
           labelCashbackCategory1: 'Иконка категории 1',
           labelCashbackCategory2: 'Иконка категории 2',
           labelCashbackCategory3: 'Иконка категории 3',
@@ -581,8 +583,8 @@
       };
 
       var DEBUG_MENU_BUILD = {
-        version: 'v0.8.1',
-        updatedAt: '2026-04-30 17:56 UTC+2'
+        version: 'v0.8.3',
+        updatedAt: '2026-04-30 19:02 UTC+2'
       };
 
       var CASHBACK_CATEGORY_FILE_NAMES = [
@@ -732,10 +734,10 @@
         url.searchParams.set('cw_has_tabby_card', condHasTabbyCard && condHasTabbyCard.checked ? '1' : '0');
         url.searchParams.set('cw_has_tabby_cash', condHasTabbyCash && condHasTabbyCash.checked ? '1' : '0');
         url.searchParams.set('cw_has_cashback_active', condHasCashbackActive && condHasCashbackActive.checked ? '1' : '0');
+        url.searchParams.set('cw_has_cb_second_card_issued', condHasCbSecondCardIssued && condHasCbSecondCardIssued.checked ? '1' : '0');
         if (condCashbackCategory1 && condCashbackCategory1.value) url.searchParams.set('cw_cb_cat_1', condCashbackCategory1.value);
         if (condCashbackCategory2 && condCashbackCategory2.value) url.searchParams.set('cw_cb_cat_2', condCashbackCategory2.value);
         if (condCashbackCategory3 && condCashbackCategory3.value) url.searchParams.set('cw_cb_cat_3', condCashbackCategory3.value);
-        if (condCashbackCategoryExtra && condCashbackCategoryExtra.value !== '') url.searchParams.set('cw_cb_cat_extra', condCashbackCategoryExtra.value);
         url.searchParams.set('cw_has_ol_purchases', condHasOlPurchases && condHasOlPurchases.checked ? '1' : '0');
         url.searchParams.set('cw_has_active_split6', condHasActiveSplit6 && condHasActiveSplit6.checked ? '1' : '0');
         url.searchParams.set('offer_available', condOfferAvailable && condOfferAvailable.checked ? '1' : '0');
@@ -774,10 +776,10 @@
         if (condHasTabbyCard) condHasTabbyCard.checked = scenario.state.hasTabbyCard !== undefined ? !!scenario.state.hasTabbyCard : true;
         if (condHasTabbyCash) condHasTabbyCash.checked = scenario.state.hasTabbyCash !== undefined ? !!scenario.state.hasTabbyCash : false;
         if (condHasCashbackActive) condHasCashbackActive.checked = scenario.state.hasCashbackActive !== undefined ? !!scenario.state.hasCashbackActive : false;
+        if (condHasCbSecondCardIssued) condHasCbSecondCardIssued.checked = scenario.state.hasCashbackSecondCardIssued !== undefined ? !!scenario.state.hasCashbackSecondCardIssued : false;
         populateCashbackCategorySelect(condCashbackCategory1, 'vehicle-rental');
         populateCashbackCategorySelect(condCashbackCategory2, 'groceries');
         populateCashbackCategorySelect(condCashbackCategory3, 'clothing-and-shoes');
-        if (condCashbackCategoryExtra) condCashbackCategoryExtra.value = '3';
         if (condHasOlPurchases) condHasOlPurchases.checked = scenario.state.hasOlPurchases !== undefined ? !!scenario.state.hasOlPurchases : false;
         if (condHasActiveSplit6) condHasActiveSplit6.checked = scenario.state.hasActiveSplit6 !== undefined ? !!scenario.state.hasActiveSplit6 : true;
         if (condOfferAvailable) condOfferAvailable.checked = scenario.state.offerAvailable !== undefined ? !!scenario.state.offerAvailable : false;
@@ -853,10 +855,10 @@
       }
       if (condHasTabbyCash) condHasTabbyCash.addEventListener('change', updateScenarioLink);
       if (condHasCashbackActive) condHasCashbackActive.addEventListener('change', updateScenarioLink);
+      if (condHasCbSecondCardIssued) condHasCbSecondCardIssued.addEventListener('change', updateScenarioLink);
       if (condCashbackCategory1) condCashbackCategory1.addEventListener('change', updateScenarioLink);
       if (condCashbackCategory2) condCashbackCategory2.addEventListener('change', updateScenarioLink);
       if (condCashbackCategory3) condCashbackCategory3.addEventListener('change', updateScenarioLink);
-      if (condCashbackCategoryExtra) condCashbackCategoryExtra.addEventListener('input', updateScenarioLink);
       if (condHasOlPurchases) {
         condHasOlPurchases.addEventListener('change', function () {
           syncCancellationDependencies('ol');
