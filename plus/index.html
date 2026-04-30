@@ -2546,7 +2546,7 @@
       padding: 16px;
       display: grid;
       grid-template-columns: 1fr auto;
-      gap: 8px 24px;
+      gap: 4px 24px;
       align-items: center;
     }
     .spotlight-card__title {
@@ -2592,6 +2592,10 @@
       color: var(--text-primary);
       cursor: pointer;
       margin-top: 24px;
+    }
+    .spotlight-card__cta--primary {
+      background: #1a1919;
+      color: #fff;
     }
     /* Полоса под скроллом: тот же фон, что у subscription-main (не чёрный фон страницы) */
     .subscription-home-area {
@@ -3781,6 +3785,7 @@
       var ANIMATE_SAVINGS_DELTA_KEY = 'plus-animate-savings-delta';
       var CW_HAS_TABBY_CARD_KEY = 'plus-cw-has-tabby-card';
       var HAS_TABBY_CASH_KEY = 'plus-has-tabby-cash';
+      var HAS_CASHBACK_ACTIVE_KEY = 'plus-has-cashback-active';
       var CW_HAS_OL_PURCHASES_KEY = 'plus-cw-has-ol-purchases';
       var CW_HAS_ACTIVE_SPLIT6_KEY = 'plus-cw-has-active-split6';
       var OFFER_AVAILABLE_KEY = 'plus-offer-available';
@@ -3904,6 +3909,14 @@
         }
       }
 
+      function hasCashbackActive() {
+        try {
+          return localStorage.getItem(HAS_CASHBACK_ACTIVE_KEY) === '1';
+        } catch (e) {
+          return false;
+        }
+      }
+
       function updateSubscriptionCardAvailabilityUi() {
         var maximiseCard = document.querySelector('.maximise-card');
         var tabbyCardItem = document.getElementById('maximise-tabby-card-item');
@@ -3911,6 +3924,7 @@
         var cashbackCard = document.getElementById('subscription-cashback-card');
         var cashbackTitle = document.getElementById('spotlight-title');
         var cashbackText = document.getElementById('subscription-cashback-text');
+        var cashbackCta = document.getElementById('subscription-cashback-cta');
         if (!maximiseCard || !tabbyCardItem || !tabbyCashItem || !cashbackCard || !cashbackTitle || !cashbackText) return;
 
         var hasCard = true;
@@ -3918,22 +3932,61 @@
           hasCard = localStorage.getItem(CW_HAS_TABBY_CARD_KEY) !== '0';
         } catch (e) {}
         var hasCash = hasTabbyCash();
+        var cashbackActive = hasCashbackActive();
 
         var hasAnyCard = hasCard || hasCash;
         maximiseCard.hidden = hasCard && hasCash;
-        tabbyCardItem.hidden = hasCash;
-        tabbyCashItem.hidden = hasCard;
+        tabbyCardItem.hidden = hasCard;
+        tabbyCashItem.hidden = hasCash;
         if (!hasAnyCard) {
           maximiseCard.hidden = true;
         }
+        var isCashbackFirst = maximiseCard.hidden;
 
         cashbackCard.hidden = !hasAnyCard;
         if (!hasAnyCard) return;
         var month = new Date().toLocaleString('en-US', { month: 'long' });
-        if (hasCard && hasCash) cashbackTitle.textContent = 'Earn up to 5% cashback';
-        else if (hasCard) cashbackTitle.textContent = 'Earn 5% cashback';
-        else cashbackTitle.textContent = 'Earn 3% cashback';
-        cashbackText.textContent = 'Select ' + month + ' categories';
+        if (cashbackCta) cashbackCta.classList.remove('spotlight-card__cta--primary');
+        if (hasCard && hasCash) {
+          if (cashbackActive) {
+            cashbackTitle.textContent = 'Cashback in ' + month;
+            cashbackText.textContent = 'You’re earning up to 5%';
+            if (cashbackCta) cashbackCta.textContent = 'View categories';
+          } else {
+            cashbackTitle.textContent = 'Get even more cashback';
+            cashbackText.textContent = 'Select ' + month + ' categories';
+            if (cashbackCta) {
+              cashbackCta.textContent = 'Select categories';
+              if (isCashbackFirst) cashbackCta.classList.add('spotlight-card__cta--primary');
+            }
+          }
+        } else if (hasCard) {
+          if (cashbackActive) {
+            cashbackTitle.textContent = 'Cashback in ' + month;
+            cashbackText.textContent = 'You’re earning 5%';
+            if (cashbackCta) cashbackCta.textContent = 'View categories';
+          } else {
+            cashbackTitle.textContent = 'Earn 5% cashback';
+            cashbackText.textContent = 'Select ' + month + ' categories';
+            if (cashbackCta) {
+              cashbackCta.textContent = 'Select categories';
+              if (isCashbackFirst) cashbackCta.classList.add('spotlight-card__cta--primary');
+            }
+          }
+        } else {
+          if (cashbackActive) {
+            cashbackTitle.textContent = 'Cashback in ' + month;
+            cashbackText.textContent = 'You’re earning 3%';
+            if (cashbackCta) cashbackCta.textContent = 'View categories';
+          } else {
+            cashbackTitle.textContent = 'Earn 3% cashback';
+            cashbackText.textContent = 'Select ' + month + ' categories';
+            if (cashbackCta) {
+              cashbackCta.textContent = 'Select categories';
+              if (isCashbackFirst) cashbackCta.classList.add('spotlight-card__cta--primary');
+            }
+          }
+        }
       }
 
       function parseSavingsNumber(raw) {
@@ -5056,6 +5109,7 @@
         var stateOverrides = {};
         if (params.has('cw_has_tabby_card')) stateOverrides.hasTabbyCard = params.get('cw_has_tabby_card') === '1';
         if (params.has('cw_has_tabby_cash')) stateOverrides.hasTabbyCash = params.get('cw_has_tabby_cash') === '1';
+        if (params.has('cw_has_cashback_active')) stateOverrides.hasCashbackActive = params.get('cw_has_cashback_active') === '1';
         if (params.has('cw_has_ol_purchases')) stateOverrides.hasOlPurchases = params.get('cw_has_ol_purchases') === '1';
         if (params.has('cw_has_active_split6')) stateOverrides.hasActiveSplit6 = params.get('cw_has_active_split6') === '1';
         if (params.has('offer_available')) stateOverrides.offerAvailable = params.get('offer_available') === '1';
@@ -5095,6 +5149,9 @@
           }
           if (state.hasTabbyCash !== undefined) {
             localStorage.setItem(HAS_TABBY_CASH_KEY, state.hasTabbyCash ? '1' : '0');
+          }
+          if (state.hasCashbackActive !== undefined) {
+            localStorage.setItem(HAS_CASHBACK_ACTIVE_KEY, state.hasCashbackActive ? '1' : '0');
           }
           if (state.trialTokenizeCard !== undefined) {
             localStorage.setItem(TRIAL_TOKENIZE_CARD_KEY, state.trialTokenizeCard ? '1' : '0');

@@ -383,6 +383,10 @@
             <input type="checkbox" id="cond-has-tabby-cash" />
             <span data-i18n="condHasTabbyCash">Has Tabby Cash</span>
           </label>
+        <label class="scenario-check">
+          <input type="checkbox" id="cond-has-cashback-active" />
+          <span data-i18n="condHasCashbackActive">Has cashback active</span>
+        </label>
           <label class="scenario-check">
             <input type="checkbox" id="cond-has-ol-purchases" />
             <span data-i18n="condHasOlPurchases">Has OL purchases (Split in 4 outstanding)</span>
@@ -449,6 +453,7 @@
       var animateCounterFields = document.getElementById('animate-counter-fields');
       var condHasTabbyCard = document.getElementById('cond-has-tabby-card');
       var condHasTabbyCash = document.getElementById('cond-has-tabby-cash');
+      var condHasCashbackActive = document.getElementById('cond-has-cashback-active');
       var condHasOlPurchases = document.getElementById('cond-has-ol-purchases');
       var condHasActiveSplit6 = document.getElementById('cond-has-active-split6');
       var condOfferAvailable = document.getElementById('cond-offer-available');
@@ -481,6 +486,7 @@
           labelAnimateDeltaValue: 'Increase by',
           condHasTabbyCard: 'Has Tabby Card',
           condHasTabbyCash: 'Has Tabby Cash',
+          condHasCashbackActive: 'Has cashback active',
           condHasOlPurchases: 'Has OL purchases (Split in 4 outstanding)',
           condHasActiveSplit6: 'Has active Split in 6',
           condOfferAvailable: 'Buyback offer',
@@ -518,6 +524,7 @@
           labelAnimateDeltaValue: 'На сколько увеличить',
           condHasTabbyCard: 'Есть Tabby Card',
           condHasTabbyCash: 'Есть Tabby Cash',
+          condHasCashbackActive: 'Кэшбэк активен',
           condHasOlPurchases: 'Есть OL покупки (долг в Split in 4)',
           condHasActiveSplit6: 'Есть активный Split in 6',
           condOfferAvailable: 'Buyback offer',
@@ -534,8 +541,8 @@
       };
 
       var DEBUG_MENU_BUILD = {
-        version: 'v0.6.9',
-        updatedAt: '2026-04-29 19:12 UTC+2'
+        version: 'v0.7.0',
+        updatedAt: '2026-04-30 15:06 UTC+2'
       };
 
       if (buildVersionEl) buildVersionEl.textContent = DEBUG_MENU_BUILD.version;
@@ -608,6 +615,7 @@
         }
         url.searchParams.set('cw_has_tabby_card', condHasTabbyCard && condHasTabbyCard.checked ? '1' : '0');
         url.searchParams.set('cw_has_tabby_cash', condHasTabbyCash && condHasTabbyCash.checked ? '1' : '0');
+        url.searchParams.set('cw_has_cashback_active', condHasCashbackActive && condHasCashbackActive.checked ? '1' : '0');
         url.searchParams.set('cw_has_ol_purchases', condHasOlPurchases && condHasOlPurchases.checked ? '1' : '0');
         url.searchParams.set('cw_has_active_split6', condHasActiveSplit6 && condHasActiveSplit6.checked ? '1' : '0');
         url.searchParams.set('offer_available', condOfferAvailable && condOfferAvailable.checked ? '1' : '0');
@@ -645,6 +653,7 @@
         if (condAnimateDeltaValue) condAnimateDeltaValue.value = scenario.state.animateSavingsDelta !== undefined ? String(scenario.state.animateSavingsDelta) : '';
         if (condHasTabbyCard) condHasTabbyCard.checked = scenario.state.hasTabbyCard !== undefined ? !!scenario.state.hasTabbyCard : true;
         if (condHasTabbyCash) condHasTabbyCash.checked = scenario.state.hasTabbyCash !== undefined ? !!scenario.state.hasTabbyCash : false;
+        if (condHasCashbackActive) condHasCashbackActive.checked = scenario.state.hasCashbackActive !== undefined ? !!scenario.state.hasCashbackActive : false;
         if (condHasOlPurchases) condHasOlPurchases.checked = scenario.state.hasOlPurchases !== undefined ? !!scenario.state.hasOlPurchases : false;
         if (condHasActiveSplit6) condHasActiveSplit6.checked = scenario.state.hasActiveSplit6 !== undefined ? !!scenario.state.hasActiveSplit6 : true;
         if (condOfferAvailable) condOfferAvailable.checked = scenario.state.offerAvailable !== undefined ? !!scenario.state.offerAvailable : false;
@@ -719,6 +728,7 @@
         });
       }
       if (condHasTabbyCash) condHasTabbyCash.addEventListener('change', updateScenarioLink);
+      if (condHasCashbackActive) condHasCashbackActive.addEventListener('change', updateScenarioLink);
       if (condHasOlPurchases) {
         condHasOlPurchases.addEventListener('change', function () {
           syncCancellationDependencies('ol');
