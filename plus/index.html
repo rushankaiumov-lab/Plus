@@ -1860,6 +1860,9 @@
       font-weight: 500;
       font-family: var(--font-text);
     }
+    .cashback-selection-card__counter[hidden] {
+      display: none;
+    }
     .cashback-selection-card__counter--none {
       color: #df4141;
     }
@@ -6077,6 +6080,9 @@
       if (cashbackSelectionConfirm) {
         cashbackSelectionConfirm.addEventListener('click', function (e) {
           if (isCashbackSelectionComplete()) {
+            try {
+              localStorage.setItem(HAS_CASHBACK_ACTIVE_KEY, '1');
+            } catch (err) {}
             savePersistedCashbackSelectionState();
             showCashbackSuccessToastOnSubscription = true;
             return;
