@@ -1844,7 +1844,7 @@
       object-fit: contain;
     }
     .cashback-selection-card__counter {
-      margin: 20px 0 0;
+      margin: 0;
       min-height: 58px;
       padding: 0;
       display: flex;
@@ -4468,17 +4468,34 @@
       }
 
       function markInvalidCashbackSelection() {
+        var firstInvalidCardId = null;
         document.querySelectorAll('[data-card-counter]').forEach(function (counter) {
           counter.classList.remove('cashback-selection-card__counter--shake');
           var cardId = counter.getAttribute('data-card-counter');
           var count = getCardSelectionCount(cardId);
-          if (count === 0) {
+          if (count < 3) {
+            if (!firstInvalidCardId) firstInvalidCardId = cardId;
+            if (!cashbackSelectionState[cardId]) cashbackSelectionState[cardId] = { selected: {}, showError: true };
+            cashbackSelectionState[cardId].showError = true;
             counter.classList.add('cashback-selection-card__counter--none');
-            requestAnimationFrame(function () {
-              counter.classList.add('cashback-selection-card__counter--shake');
-            });
+            void counter.offsetWidth;
+            counter.classList.add('cashback-selection-card__counter--shake');
           }
         });
+        if (firstInvalidCardId) {
+          var contentEl = document.querySelector('.cashback-selection__content');
+          var invalidCard = document.querySelector('.cashback-selection-card[data-cashback-card-id="' + firstInvalidCardId + '"]');
+          if (contentEl && invalidCard) {
+            var contentRect = contentEl.getBoundingClientRect();
+            var cardRect = invalidCard.getBoundingClientRect();
+            var hiddenAbove = cardRect.top < contentRect.top + 8;
+            var hiddenBelow = cardRect.bottom > contentRect.bottom - 8;
+            if (hiddenAbove || hiddenBelow) {
+              var targetTop = invalidCard.offsetTop - 12;
+              contentEl.scrollTo({ top: Math.max(0, targetTop), behavior: 'smooth' });
+            }
+          }
+        }
       }
 
       function updateCashbackSelectionUi() {
@@ -4486,12 +4503,14 @@
           var cardId = cardNode.getAttribute('data-cashback-card-id');
           var count = getCardSelectionCount(cardId);
           var isFull = count >= 3;
+          var cardState = cashbackSelectionState[cardId] || {};
+          var showError = !!cardState.showError && count < 3;
           var counter = cardNode.querySelector('[data-card-counter="' + cardId + '"]');
           if (counter) {
             counter.textContent = count + ' of 3 categories selected';
             counter.classList.remove('cashback-selection-card__counter--none', 'cashback-selection-card__counter--progress', 'cashback-selection-card__counter--done');
-            if (count === 0) counter.classList.add('cashback-selection-card__counter--none');
-            else if (isFull) counter.classList.add('cashback-selection-card__counter--done');
+            if (isFull) counter.classList.add('cashback-selection-card__counter--done');
+            else if (showError) counter.classList.add('cashback-selection-card__counter--none');
             else counter.classList.add('cashback-selection-card__counter--progress');
           }
 
@@ -4501,10 +4520,7 @@
             chip.classList.remove('cashback-selection-chip--selected', 'cashback-selection-chip--chosen', 'cashback-selection-chip--disabled');
             chip.disabled = false;
             if (selected) {
-              chip.classList.add(isFull ? 'cashback-selection-chip--chosen' : 'cashback-selection-chip--selected');
-            } else if (isFull) {
-              chip.classList.add('cashback-selection-chip--disabled');
-              chip.disabled = true;
+              chip.classList.add('cashback-selection-chip--selected');
             }
           });
         });
@@ -5904,7 +5920,7 @@
         var cardId = chip.getAttribute('data-card-id');
         var categoryId = chip.getAttribute('data-category-id');
         if (!cardId || !categoryId) return;
-        if (!cashbackSelectionState[cardId]) cashbackSelectionState[cardId] = { selected: {} };
+        if (!cashbackSelectionState[cardId]) cashbackSelectionState[cardId] = { selected: {}, showError: false };
         if (!cashbackSelectionState[cardId].selected) cashbackSelectionState[cardId].selected = {};
         var selectedMap = cashbackSelectionState[cardId].selected;
         var currentlySelected = !!selectedMap[categoryId];
@@ -5913,6 +5929,9 @@
           delete selectedMap[categoryId];
         } else if (count < 3) {
           selectedMap[categoryId] = true;
+        }
+        if (getCardSelectionCount(cardId) > 0 && cashbackSelectionState[cardId]) {
+          cashbackSelectionState[cardId].showError = false;
         }
         updateCashbackSelectionUi();
       });
