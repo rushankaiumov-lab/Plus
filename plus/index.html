@@ -1704,7 +1704,7 @@
     }
     .cashback-selection-page {
       z-index: 187;
-      background: var(--ds-bg-general-l1);
+      background: #f5f4f2;
       color: var(--text-primary);
     }
     .cashback-selection__content {
@@ -1719,7 +1719,7 @@
       left: 0;
       right: 0;
       z-index: 220;
-      background: var(--ds-bg-general-l1);
+      background: #f5f4f2;
       color: var(--text-primary);
     }
     .cashback-selection__title {
@@ -1736,7 +1736,7 @@
       font-size: 16px;
       line-height: 24px;
       letter-spacing: -0.16px;
-      color: var(--text-secondary);
+      color: var(--text-primary);
       font-family: var(--font-text);
       font-weight: 500;
     }
@@ -1748,7 +1748,7 @@
     }
     .cashback-selection-card {
       border-radius: 24px;
-      background: var(--ds-surface-primary);
+      background: #ffffff;
       padding: 16px;
     }
     .cashback-selection-card__head {
@@ -1756,7 +1756,7 @@
       justify-content: space-between;
       align-items: flex-start;
       gap: 12px;
-      margin-bottom: 12px;
+      margin-bottom: 20px;
     }
     .cashback-selection-card__rate {
       font-size: 35px;
@@ -1799,6 +1799,31 @@
       color: var(--text-primary);
       font-weight: 500;
       white-space: nowrap;
+      border: 2px solid transparent;
+      cursor: pointer;
+      transition: background-color 0.18s ease, border-color 0.18s ease, color 0.18s ease;
+    }
+    .cashback-selection-chip:hover {
+      background: #efedeb;
+    }
+    .cashback-selection-chip--selected {
+      /* DS-like positive states: muted fill + strong stroke */
+      background: #e3f5e8;
+      border-color: var(--color-success);
+    }
+    .cashback-selection-chip--chosen {
+      background: #ffffff;
+      border-color: #d9d9d9;
+    }
+    .cashback-selection-chip--disabled {
+      background: #eceae8;
+      color: #b8b3ae;
+      pointer-events: none;
+      cursor: default;
+      border-color: transparent;
+    }
+    .cashback-selection-chip--disabled .cashback-selection-chip__icon-wrap {
+      opacity: 0.55;
     }
     .cashback-selection-chip span:last-child {
       padding-right: 2px;
@@ -1819,14 +1844,38 @@
       object-fit: contain;
     }
     .cashback-selection-card__counter {
-      margin: 16px 0 0;
+      margin: 20px 0 0;
+      min-height: 58px;
+      padding: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
       text-align: center;
-      color: var(--text-secondary);
+      color: var(--text-primary);
       font-size: 16px;
       line-height: 24px;
       letter-spacing: -0.16px;
       font-weight: 500;
       font-family: var(--font-text);
+    }
+    .cashback-selection-card__counter--none {
+      color: #df4141;
+    }
+    .cashback-selection-card__counter--progress {
+      color: var(--text-primary);
+    }
+    .cashback-selection-card__counter--done {
+      color: #2e9f5d;
+    }
+    .cashback-selection-card__counter--shake {
+      animation: cashback-counter-shake 360ms ease;
+    }
+    @keyframes cashback-counter-shake {
+      0%, 100% { transform: translateX(0); }
+      20% { transform: translateX(-4px); }
+      40% { transform: translateX(4px); }
+      60% { transform: translateX(-3px); }
+      80% { transform: translateX(3px); }
     }
     .cashback-selection-footer {
       flex-shrink: 0;
@@ -3910,7 +3959,7 @@
         <div class="cashback-selection__cards" id="cashback-selection-cards"></div>
       </div>
       <div class="flow-page__footer cashback-selection-footer">
-        <button type="button" class="flow-page__btn flow-page__btn--primary" data-flow-target="subscription">Confirm</button>
+        <button type="button" class="flow-page__btn flow-page__btn--primary" id="cashback-selection-confirm" data-flow-target="subscription">Confirm</button>
         <div class="home-indicator" aria-hidden="true"></div>
       </div>
     </div>
@@ -4218,6 +4267,7 @@
 
       var CASHBACK_CATEGORY_REGISTRY = buildCashbackCategoryRegistry();
       var CASHBACK_CATEGORY_DEFAULT_IDS = ['vehicle-rental', 'groceries', 'clothing-and-shoes'];
+      var cashbackSelectionState = {};
 
       function getConfiguredCashbackCategories() {
         var ids = CASHBACK_CATEGORY_DEFAULT_IDS.slice(0, 3);
@@ -4285,18 +4335,19 @@
 
         var cards = [];
         var sharedCategoryIds = ['restaurants-and-dining', 'petrol-stations', 'beauty-and-self-care', 'taxis'];
-        var selectionCountText = '0 of 3 categories selected';
 
         if (hasCard && hasCash) {
           subtitleEl.textContent = 'Earn up to AED 200 cashback per card each month, up to AED 400 total across both cards';
           cards = [
             {
+              id: 'tabby-cash',
               rate: '3%',
               cardLabel: 'On Tabby Cash with',
               hero: './assets/omni/cb-card-tabby-cash.svg',
               categories: sharedCategoryIds.concat(['telecoms', 'global-transfer'])
             },
             {
+              id: 'tabby-card',
               rate: '5%',
               cardLabel: 'On Tabby Card with',
               hero: './assets/omni/cb-card-tabby-card.svg',
@@ -4307,6 +4358,7 @@
           subtitleEl.textContent = 'Earn up to AED 200 cashback on your purchases throughout the month';
           cards = [
             {
+              id: 'tabby-card',
               rate: '5%',
               cardLabel: 'On Tabby Card with',
               hero: './assets/omni/cb-card-tabby-card.svg',
@@ -4317,6 +4369,7 @@
           subtitleEl.textContent = 'Earn up to AED 200 cashback on your purchases throughout the month';
           cards = [
             {
+              id: 'tabby-cash',
               rate: '3%',
               cardLabel: 'On Tabby Cash with',
               hero: './assets/omni/cb-card-tabby-cash.svg',
@@ -4331,8 +4384,11 @@
         cardsEl.textContent = '';
         contentEl.scrollTop = 0;
         cards.forEach(function (card) {
+          if (!cashbackSelectionState[card.id]) cashbackSelectionState[card.id] = {};
+          if (!cashbackSelectionState[card.id].selected) cashbackSelectionState[card.id].selected = {};
           var cardNode = document.createElement('article');
           cardNode.className = 'cashback-selection-card';
+          cardNode.setAttribute('data-cashback-card-id', card.id);
 
           var head = document.createElement('div');
           head.className = 'cashback-selection-card__head';
@@ -4361,8 +4417,11 @@
           card.categories.forEach(function (categoryId) {
             var category = CASHBACK_CATEGORY_REGISTRY[categoryId];
             if (!category) return;
-            var chip = document.createElement('div');
+            var chip = document.createElement('button');
             chip.className = 'cashback-selection-chip';
+            chip.type = 'button';
+            chip.setAttribute('data-card-id', card.id);
+            chip.setAttribute('data-category-id', categoryId);
             var iconWrap = document.createElement('span');
             iconWrap.className = 'cashback-selection-chip__icon-wrap';
             var icon = document.createElement('img');
@@ -4380,13 +4439,74 @@
 
           var counter = document.createElement('p');
           counter.className = 'cashback-selection-card__counter';
-          counter.textContent = selectionCountText;
+          counter.setAttribute('data-card-counter', card.id);
+          counter.textContent = '0 of 3 categories selected';
           cardNode.appendChild(counter);
 
           cardsEl.appendChild(cardNode);
         });
         requestAnimationFrame(function () {
           contentEl.scrollTop = 0;
+        });
+        updateCashbackSelectionUi();
+      }
+
+      function getCardSelectionCount(cardId) {
+        var state = cashbackSelectionState[cardId];
+        if (!state || !state.selected) return 0;
+        return Object.keys(state.selected).filter(function (key) { return !!state.selected[key]; }).length;
+      }
+
+      function isCashbackSelectionComplete() {
+        var cards = document.querySelectorAll('.cashback-selection-card[data-cashback-card-id]');
+        if (!cards.length) return false;
+        for (var i = 0; i < cards.length; i += 1) {
+          var cardId = cards[i].getAttribute('data-cashback-card-id');
+          if (getCardSelectionCount(cardId) !== 3) return false;
+        }
+        return true;
+      }
+
+      function markInvalidCashbackSelection() {
+        document.querySelectorAll('[data-card-counter]').forEach(function (counter) {
+          counter.classList.remove('cashback-selection-card__counter--shake');
+          var cardId = counter.getAttribute('data-card-counter');
+          var count = getCardSelectionCount(cardId);
+          if (count === 0) {
+            counter.classList.add('cashback-selection-card__counter--none');
+            requestAnimationFrame(function () {
+              counter.classList.add('cashback-selection-card__counter--shake');
+            });
+          }
+        });
+      }
+
+      function updateCashbackSelectionUi() {
+        document.querySelectorAll('.cashback-selection-card[data-cashback-card-id]').forEach(function (cardNode) {
+          var cardId = cardNode.getAttribute('data-cashback-card-id');
+          var count = getCardSelectionCount(cardId);
+          var isFull = count >= 3;
+          var counter = cardNode.querySelector('[data-card-counter="' + cardId + '"]');
+          if (counter) {
+            counter.textContent = count + ' of 3 categories selected';
+            counter.classList.remove('cashback-selection-card__counter--none', 'cashback-selection-card__counter--progress', 'cashback-selection-card__counter--done');
+            if (count === 0) counter.classList.add('cashback-selection-card__counter--none');
+            else if (isFull) counter.classList.add('cashback-selection-card__counter--done');
+            else counter.classList.add('cashback-selection-card__counter--progress');
+          }
+
+          cardNode.querySelectorAll('.cashback-selection-chip[data-card-id="' + cardId + '"]').forEach(function (chip) {
+            var categoryId = chip.getAttribute('data-category-id');
+            var selected = !!(cashbackSelectionState[cardId] && cashbackSelectionState[cardId].selected && cashbackSelectionState[cardId].selected[categoryId]);
+            chip.classList.remove('cashback-selection-chip--selected', 'cashback-selection-chip--chosen', 'cashback-selection-chip--disabled');
+            chip.disabled = false;
+            if (selected) {
+              chip.classList.add(isFull ? 'cashback-selection-chip--chosen' : 'cashback-selection-chip--selected');
+            } else if (isFull) {
+              chip.classList.add('cashback-selection-chip--disabled');
+              chip.disabled = true;
+            }
+          });
         });
       }
 
@@ -5772,7 +5892,40 @@
       if (subscriptionCashbackCta) {
         subscriptionCashbackCta.addEventListener('click', function (e) {
           e.preventDefault();
+          cashbackSelectionState = {};
           setScreen('cashback-selection');
+        });
+      }
+
+      document.addEventListener('click', function (e) {
+        var chip = e.target.closest('.cashback-selection-chip[data-card-id][data-category-id]');
+        if (!chip) return;
+        e.preventDefault();
+        var cardId = chip.getAttribute('data-card-id');
+        var categoryId = chip.getAttribute('data-category-id');
+        if (!cardId || !categoryId) return;
+        if (!cashbackSelectionState[cardId]) cashbackSelectionState[cardId] = { selected: {} };
+        if (!cashbackSelectionState[cardId].selected) cashbackSelectionState[cardId].selected = {};
+        var selectedMap = cashbackSelectionState[cardId].selected;
+        var currentlySelected = !!selectedMap[categoryId];
+        var count = getCardSelectionCount(cardId);
+        if (currentlySelected) {
+          delete selectedMap[categoryId];
+        } else if (count < 3) {
+          selectedMap[categoryId] = true;
+        }
+        updateCashbackSelectionUi();
+      });
+
+      var cashbackSelectionConfirm = document.getElementById('cashback-selection-confirm');
+      if (cashbackSelectionConfirm) {
+        cashbackSelectionConfirm.addEventListener('click', function (e) {
+          if (isCashbackSelectionComplete()) {
+            return;
+          }
+          e.preventDefault();
+          e.stopPropagation();
+          markInvalidCashbackSelection();
         });
       }
 
