@@ -4512,7 +4512,16 @@
 
       function getCategoryBadgesForCard(cardId, selectionState) {
         var ids = getBadgeIdsForCardFromSelection(selectionState, cardId);
-        if (!ids.length) ids = getConfiguredCashbackCategoriesForCard(cardId).slice(0, 3);
+        if (!ids.length) {
+          var allowedIds = getCashbackCategoryIdsForCard(cardId);
+          var configuredIds = getConfiguredCashbackCategoriesForCard(cardId);
+          ids = configuredIds.filter(function (id) { return allowedIds.indexOf(id) !== -1; }).slice(0, 3);
+          if (ids.length < 3) {
+            allowedIds.forEach(function (id) {
+              if (ids.length < 3 && ids.indexOf(id) === -1) ids.push(id);
+            });
+          }
+        }
         return ids.map(function (id) { return CASHBACK_CATEGORY_REGISTRY[id]; }).filter(Boolean);
       }
 
