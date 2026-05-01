@@ -4119,6 +4119,12 @@
       var CASHBACK_CATEGORY_1_KEY = 'plus-cashback-category-1';
       var CASHBACK_CATEGORY_2_KEY = 'plus-cashback-category-2';
       var CASHBACK_CATEGORY_3_KEY = 'plus-cashback-category-3';
+      var CASHBACK_CASH_CATEGORY_1_KEY = 'plus-cashback-cash-category-1';
+      var CASHBACK_CASH_CATEGORY_2_KEY = 'plus-cashback-cash-category-2';
+      var CASHBACK_CASH_CATEGORY_3_KEY = 'plus-cashback-cash-category-3';
+      var CASHBACK_CARD_CATEGORY_1_KEY = 'plus-cashback-card-category-1';
+      var CASHBACK_CARD_CATEGORY_2_KEY = 'plus-cashback-card-category-2';
+      var CASHBACK_CARD_CATEGORY_3_KEY = 'plus-cashback-card-category-3';
       var CASHBACK_CATEGORY_EXTRA_KEY = 'plus-cashback-category-extra';
       var CW_HAS_OL_PURCHASES_KEY = 'plus-cw-has-ol-purchases';
       var CW_HAS_ACTIVE_SPLIT6_KEY = 'plus-cw-has-active-split6';
@@ -4358,6 +4364,9 @@
 
       var CASHBACK_CATEGORY_REGISTRY = buildCashbackCategoryRegistry();
       var CASHBACK_CATEGORY_DEFAULT_IDS = ['vehicle-rental', 'groceries', 'clothing-and-shoes'];
+      /* Explicit mapping for cashback selection card header icons. */
+      var CASHBACK_SELECTION_HEADER_ICON_FOR_TABBY_CASH = './assets/omni/cb-card-tabby-card.svg';
+      var CASHBACK_SELECTION_HEADER_ICON_FOR_TABBY_CARD = './assets/omni/cb-card-tabby-cash.svg';
       var cashbackSelectionState = {};
       var cashbackSelectionReviewMode = false;
       var CASHBACK_SELECTED_STATE_KEY = 'plus-cashback-selected-state';
@@ -4402,8 +4411,7 @@
       }
 
       function createDefaultSelectedCategoryMap() {
-        var configured = getConfiguredCashbackCategories();
-        var ids = (configured.badges || []).map(function (badge) { return badge && badge.id; }).filter(Boolean).slice(0, 3);
+        var ids = getConfiguredCashbackCategoriesForCard('tabby-cash');
         if (ids.length < 3) {
           CASHBACK_CATEGORY_DEFAULT_IDS.forEach(function (id) {
             if (ids.length < 3 && ids.indexOf(id) === -1) ids.push(id);
@@ -4416,6 +4424,24 @@
         return map;
       }
 
+      function getConfiguredCashbackCategoriesForCard(cardId) {
+        var ids = CASHBACK_CATEGORY_DEFAULT_IDS.slice(0, 3);
+        try {
+          var preferredKeys = cardId === 'tabby-card'
+            ? [CASHBACK_CARD_CATEGORY_1_KEY, CASHBACK_CARD_CATEGORY_2_KEY, CASHBACK_CARD_CATEGORY_3_KEY]
+            : [CASHBACK_CASH_CATEGORY_1_KEY, CASHBACK_CASH_CATEGORY_2_KEY, CASHBACK_CASH_CATEGORY_3_KEY];
+          var fallbackKeys = [CASHBACK_CATEGORY_1_KEY, CASHBACK_CATEGORY_2_KEY, CASHBACK_CATEGORY_3_KEY];
+          var values = preferredKeys.map(function (key) { return localStorage.getItem(key); });
+          if (!values[0] && !values[1] && !values[2]) {
+            values = fallbackKeys.map(function (key) { return localStorage.getItem(key); });
+          }
+          for (var i = 0; i < 3; i += 1) {
+            if (values[i] && CASHBACK_CATEGORY_REGISTRY[values[i]]) ids[i] = values[i];
+          }
+        } catch (e) {}
+        return ids;
+      }
+
       function getCashbackCategoryIdsForCard(cardId) {
         var shared = ['restaurants-and-dining', 'petrol-stations', 'beauty-and-self-care', 'taxis'];
         if (cardId === 'tabby-card') return shared.concat(['pharmacies']);
@@ -4424,7 +4450,8 @@
       }
 
       function createSelectedMapForCard(cardId, preferredIds) {
-        var validIds = getCashbackCategoryIdsForCard(cardId);
+        var validIds = getConfiguredCashbackCategoriesForCard(cardId);
+        if (!validIds.length) validIds = getCashbackCategoryIdsForCard(cardId);
         var selectedIds = [];
         (preferredIds || []).forEach(function (id) {
           if (validIds.indexOf(id) !== -1 && selectedIds.indexOf(id) === -1 && selectedIds.length < 3) {
@@ -4548,6 +4575,9 @@
           if (candidate1 && CASHBACK_CATEGORY_REGISTRY[candidate1]) ids[0] = candidate1;
           if (candidate2 && CASHBACK_CATEGORY_REGISTRY[candidate2]) ids[1] = candidate2;
           if (candidate3 && CASHBACK_CATEGORY_REGISTRY[candidate3]) ids[2] = candidate3;
+          if (!candidate1 && !candidate2 && !candidate3) {
+            ids = getConfiguredCashbackCategoriesForCard(getPreferredPartlySelectedCard()).slice(0, 3);
+          }
           var parsedExtra = parseInt(localStorage.getItem(CASHBACK_CATEGORY_EXTRA_KEY) || '', 10);
           if (!isNaN(parsedExtra)) extraCount = Math.max(0, Math.min(99, parsedExtra));
         } catch (e) {}
@@ -4613,14 +4643,14 @@
               id: 'tabby-cash',
               rate: '3%',
               cardLabel: 'On Tabby Cash with',
-              hero: './assets/omni/cb-card-tabby-cash.svg',
+              hero: CASHBACK_SELECTION_HEADER_ICON_FOR_TABBY_CASH,
               categories: sharedCategoryIds.concat(['telecoms', 'global-transfer'])
             },
             {
               id: 'tabby-card',
               rate: '5%',
               cardLabel: 'On Tabby Card with',
-              hero: './assets/omni/cb-card-tabby-card.svg',
+              hero: CASHBACK_SELECTION_HEADER_ICON_FOR_TABBY_CARD,
               categories: sharedCategoryIds.concat(['pharmacies'])
             }
           ];
@@ -4631,7 +4661,7 @@
               id: 'tabby-card',
               rate: '5%',
               cardLabel: 'On Tabby Card with',
-              hero: './assets/omni/cb-card-tabby-card.svg',
+              hero: CASHBACK_SELECTION_HEADER_ICON_FOR_TABBY_CARD,
               categories: sharedCategoryIds.concat(['pharmacies'])
             }
           ];
@@ -4642,7 +4672,7 @@
               id: 'tabby-cash',
               rate: '3%',
               cardLabel: 'On Tabby Cash with',
-              hero: './assets/omni/cb-card-tabby-cash.svg',
+              hero: CASHBACK_SELECTION_HEADER_ICON_FOR_TABBY_CASH,
               categories: sharedCategoryIds.concat(['telecoms', 'global-transfer'])
             }
           ];
@@ -6080,6 +6110,12 @@
         if (params.has('cw_cb_cat_1')) stateOverrides.cashbackCategory1 = params.get('cw_cb_cat_1');
         if (params.has('cw_cb_cat_2')) stateOverrides.cashbackCategory2 = params.get('cw_cb_cat_2');
         if (params.has('cw_cb_cat_3')) stateOverrides.cashbackCategory3 = params.get('cw_cb_cat_3');
+        if (params.has('cw_cb_cash_cat_1')) stateOverrides.cashbackCashCategory1 = params.get('cw_cb_cash_cat_1');
+        if (params.has('cw_cb_cash_cat_2')) stateOverrides.cashbackCashCategory2 = params.get('cw_cb_cash_cat_2');
+        if (params.has('cw_cb_cash_cat_3')) stateOverrides.cashbackCashCategory3 = params.get('cw_cb_cash_cat_3');
+        if (params.has('cw_cb_card_cat_1')) stateOverrides.cashbackCardCategory1 = params.get('cw_cb_card_cat_1');
+        if (params.has('cw_cb_card_cat_2')) stateOverrides.cashbackCardCategory2 = params.get('cw_cb_card_cat_2');
+        if (params.has('cw_cb_card_cat_3')) stateOverrides.cashbackCardCategory3 = params.get('cw_cb_card_cat_3');
         if (params.has('cw_cb_cat_extra')) stateOverrides.cashbackCategoryExtra = params.get('cw_cb_cat_extra');
         if (params.has('cw_has_ol_purchases')) stateOverrides.hasOlPurchases = params.get('cw_has_ol_purchases') === '1';
         if (params.has('cw_has_active_split6')) stateOverrides.hasActiveSplit6 = params.get('cw_has_active_split6') === '1';
@@ -6142,6 +6178,24 @@
           }
           if (state.cashbackCategory3 !== undefined) {
             localStorage.setItem(CASHBACK_CATEGORY_3_KEY, String(state.cashbackCategory3));
+          }
+          if (state.cashbackCashCategory1 !== undefined) {
+            localStorage.setItem(CASHBACK_CASH_CATEGORY_1_KEY, String(state.cashbackCashCategory1));
+          }
+          if (state.cashbackCashCategory2 !== undefined) {
+            localStorage.setItem(CASHBACK_CASH_CATEGORY_2_KEY, String(state.cashbackCashCategory2));
+          }
+          if (state.cashbackCashCategory3 !== undefined) {
+            localStorage.setItem(CASHBACK_CASH_CATEGORY_3_KEY, String(state.cashbackCashCategory3));
+          }
+          if (state.cashbackCardCategory1 !== undefined) {
+            localStorage.setItem(CASHBACK_CARD_CATEGORY_1_KEY, String(state.cashbackCardCategory1));
+          }
+          if (state.cashbackCardCategory2 !== undefined) {
+            localStorage.setItem(CASHBACK_CARD_CATEGORY_2_KEY, String(state.cashbackCardCategory2));
+          }
+          if (state.cashbackCardCategory3 !== undefined) {
+            localStorage.setItem(CASHBACK_CARD_CATEGORY_3_KEY, String(state.cashbackCardCategory3));
           }
           if (state.cashbackCategoryExtra !== undefined) {
             var extraCount = parseInt(state.cashbackCategoryExtra, 10);
