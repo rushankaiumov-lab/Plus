@@ -4483,7 +4483,14 @@
           var cardId = priority[i];
           var selected = state[cardId] && state[cardId].selected ? state[cardId].selected : null;
           if (!selected) continue;
-          var ids = Object.keys(selected).filter(function (id) { return !!selected[id] && CASHBACK_CATEGORY_REGISTRY[id]; });
+          /* Preserve selection order by card chip layout order. */
+          var orderedCategoryIds = getCashbackCategoryIdsForCard(cardId);
+          var ids = orderedCategoryIds.filter(function (id) {
+            return !!selected[id] && !!CASHBACK_CATEGORY_REGISTRY[id];
+          });
+          if (!ids.length) {
+            ids = Object.keys(selected).filter(function (id) { return !!selected[id] && CASHBACK_CATEGORY_REGISTRY[id]; });
+          }
           if (ids.length) return ids.slice(0, 3);
         }
         return [];
