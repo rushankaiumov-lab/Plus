@@ -4115,6 +4115,7 @@
       var HAS_TABBY_CASH_KEY = 'plus-has-tabby-cash';
       var HAS_CASHBACK_ACTIVE_KEY = 'plus-has-cashback-active';
       var HAS_CB_SECOND_CARD_ISSUED_KEY = 'plus-has-cb-second-card-issued';
+      var CB_PARTLY_SELECTED_CARD_KEY = 'plus-cb-partly-selected-card';
       var CASHBACK_CATEGORY_1_KEY = 'plus-cashback-category-1';
       var CASHBACK_CATEGORY_2_KEY = 'plus-cashback-category-2';
       var CASHBACK_CATEGORY_3_KEY = 'plus-cashback-category-3';
@@ -4258,6 +4259,15 @@
         }
       }
 
+      function getPreferredPartlySelectedCard() {
+        try {
+          var raw = localStorage.getItem(CB_PARTLY_SELECTED_CARD_KEY);
+          return raw === 'tabby-card' ? 'tabby-card' : 'tabby-cash';
+        } catch (e) {
+          return 'tabby-cash';
+        }
+      }
+
       var CASHBACK_CATEGORY_FILE_NAMES = [
         'ArtAndAntiquesDark',
         'AutoDark',
@@ -4389,6 +4399,112 @@
         try {
           localStorage.setItem(CASHBACK_SELECTED_STATE_KEY, JSON.stringify(cashbackSelectionState || {}));
         } catch (e) {}
+      }
+
+      function createDefaultSelectedCategoryMap() {
+        var configured = getConfiguredCashbackCategories();
+        var ids = (configured.badges || []).map(function (badge) { return badge && badge.id; }).filter(Boolean).slice(0, 3);
+        if (ids.length < 3) {
+          CASHBACK_CATEGORY_DEFAULT_IDS.forEach(function (id) {
+            if (ids.length < 3 && ids.indexOf(id) === -1) ids.push(id);
+          });
+        }
+        var map = {};
+        ids.slice(0, 3).forEach(function (id) {
+          map[id] = true;
+        });
+        return map;
+      }
+
+      function ensureCashbackReviewSelectionState() {
+        var hasCard = true;
+        try {
+          hasCard = localStorage.getItem(CW_HAS_TABBY_CARD_KEY) !== '0';
+        } catch (e) {}
+        var hasCash = hasTabbyCash();
+        var expectedCardIds = [];
+        if (hasCard) expectedCardIds.push('tabby-card');
+        if (hasCash) expectedCardIds.push('tabby-cash');
+        if (!expectedCardIds.length) return {};
+
+        var nextState = loadPersistedCashbackSelectionState() || {};
+        var fallbackSelected = createDefaultSelectedCategoryMap();
+        expectedCardIds.forEach(function (cardId) {
+          var cardState = nextState[cardId];
+          var currentSelected = cardState && cardState.selected ? cardState.selected : {};
+          var currentCount = Object.keys(currentSelected).filter(function (key) { return !!currentSelected[key]; }).length;
+          if (currentCount !== 3) {
+            nextState[cardId] = {
+              selected: Object.assign({}, fallbackSelected),
+              showError: false
+            };
+          }
+        });
+        return nextState;
+      }
+
+      function ensureCashbackPartlySelectedState() {
+        var hasCard = true;
+        try {
+          hasCard = localStorage.getItem(CW_HAS_TABBY_CARD_KEY) !== '0';
+        } catch (e) {}
+        var hasCash = hasTabbyCash();
+        var cardIds = [];
+        if (hasCash) cardIds.push('tabby-cash');
+        if (hasCard) cardIds.push('tabby-card');
+        if (cardIds.length <= 1) return {};
+
+        var persisted = loadPersistedCashbackSelectionState() || {};
+        var nextState = {};
+        cardIds.forEach(function (cardId) {
+          var persistedCard = persisted[cardId];
+          nextState[cardId] = {
+            selected: Object.assign({}, (persistedCard && persistedCard.selected) || {}),
+            showError: false
+          };
+        });
+
+        function getCount(cardId) {
+          var selected = nextState[cardId] && nextState[cardId].selected ? nextState[cardId].selected : {};
+          return Object.keys(selected).filter(function (key) { return !!selected[key]; }).length;
+        }
+
+        var preferredCardId = getPreferredPartlySelectedCard();
+        var selectedCardId = null;
+        if (cardIds.indexOf(preferredCardId) !== -1) {
+          selectedCardId = preferredCardId;
+        }
+
+        for (var i = 0; i < cardIds.length; i += 1) {
+          if (selectedCardId && cardIds[i] !== selectedCardId) continue;
+          if (getCount(cardIds[i]) === 3) {
+            selectedCardId = cardIds[i];
+            break;
+          }
+        }
+
+        if (!selectedCardId) {
+          var bestCount = -1;
+          cardIds.forEach(function (cardId) {
+            var count = getCount(cardId);
+            if (count > bestCount) {
+              bestCount = count;
+              selectedCardId = cardId;
+            }
+          });
+        }
+
+        if (!selectedCardId) selectedCardId = cardIds[0];
+        if (getCount(selectedCardId) !== 3) {
+          nextState[selectedCardId].selected = createDefaultSelectedCategoryMap();
+        }
+
+        cardIds.forEach(function (cardId) {
+          if (cardId === selectedCardId) return;
+          nextState[cardId].selected = {};
+          nextState[cardId].showError = false;
+        });
+        return nextState;
       }
 
       function getConfiguredCashbackCategories() {
@@ -4721,12 +4837,13 @@
         var configuredCategories = getConfiguredCashbackCategories();
         var categoryBadges = configuredCategories.badges;
         var configuredExtra = configuredCategories.extraCount;
+        var dualCardExtraCount = 3;
         if (hasCard && hasCash) {
           if (cashbackActive) {
             cashbackTitle.textContent = 'Cashback in ' + month;
             cashbackText.textContent = 'You’re earning up to 5%';
             if (cashbackCta) cashbackCta.textContent = 'View categories';
-            renderCashbackCategoryBadges(cashbackCategories, categoryBadges, { extraCount: configuredExtra });
+            renderCashbackCategoryBadges(cashbackCategories, categoryBadges, { extraCount: dualCardExtraCount });
             cashbackCategories.hidden = false;
             cashbackIcon.hidden = true;
           } else if (secondCardIssued) {
@@ -4736,7 +4853,7 @@
               cashbackCta.textContent = 'Select categories';
               cashbackCta.classList.add('spotlight-card__cta--primary');
             }
-            renderCashbackCategoryBadges(cashbackCategories, categoryBadges, { extraCount: configuredExtra, extraDashed: true });
+            renderCashbackCategoryBadges(cashbackCategories, categoryBadges, { extraCount: dualCardExtraCount, extraDashed: true });
             cashbackCategories.hidden = false;
             cashbackIcon.hidden = true;
           } else {
@@ -5922,6 +6039,7 @@
         if (params.has('cw_has_tabby_cash')) stateOverrides.hasTabbyCash = params.get('cw_has_tabby_cash') === '1';
         if (params.has('cw_has_cashback_active')) stateOverrides.hasCashbackActive = params.get('cw_has_cashback_active') === '1';
         if (params.has('cw_has_cb_second_card_issued')) stateOverrides.hasCashbackSecondCardIssued = params.get('cw_has_cb_second_card_issued') === '1';
+        if (params.has('cw_cb_partly_selected_card')) stateOverrides.cashbackPartlySelectedCard = params.get('cw_cb_partly_selected_card');
         if (params.has('cw_cb_cat_1')) stateOverrides.cashbackCategory1 = params.get('cw_cb_cat_1');
         if (params.has('cw_cb_cat_2')) stateOverrides.cashbackCategory2 = params.get('cw_cb_cat_2');
         if (params.has('cw_cb_cat_3')) stateOverrides.cashbackCategory3 = params.get('cw_cb_cat_3');
@@ -5974,6 +6092,10 @@
           }
           if (state.hasCashbackSecondCardIssued !== undefined) {
             localStorage.setItem(HAS_CB_SECOND_CARD_ISSUED_KEY, state.hasCashbackSecondCardIssued ? '1' : '0');
+          }
+          if (state.cashbackPartlySelectedCard !== undefined) {
+            var partlySelectedCard = state.cashbackPartlySelectedCard === 'tabby-card' ? 'tabby-card' : 'tabby-cash';
+            localStorage.setItem(CB_PARTLY_SELECTED_CARD_KEY, partlySelectedCard);
           }
           if (state.cashbackCategory1 !== undefined) {
             localStorage.setItem(CASHBACK_CATEGORY_1_KEY, String(state.cashbackCategory1));
@@ -6090,7 +6212,15 @@
       if (subscriptionCashbackCta) {
         subscriptionCashbackCta.addEventListener('click', function (e) {
           e.preventDefault();
-          cashbackSelectionState = hasCashbackActive() ? (loadPersistedCashbackSelectionState() || {}) : {};
+          if (hasCashbackActive()) {
+            cashbackSelectionState = ensureCashbackReviewSelectionState();
+            savePersistedCashbackSelectionState();
+          } else if (hasCashbackSecondCardIssued()) {
+            cashbackSelectionState = ensureCashbackPartlySelectedState();
+            savePersistedCashbackSelectionState();
+          } else {
+            cashbackSelectionState = {};
+          }
           setScreen('cashback-selection');
         });
       }
@@ -6125,6 +6255,7 @@
           if (isCashbackSelectionComplete()) {
             try {
               localStorage.setItem(HAS_CASHBACK_ACTIVE_KEY, '1');
+              localStorage.setItem(HAS_CB_SECOND_CARD_ISSUED_KEY, '0');
             } catch (err) {}
             savePersistedCashbackSelectionState();
             showCashbackSuccessToastOnSubscription = true;
