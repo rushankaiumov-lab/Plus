@@ -4436,8 +4436,11 @@
           if (currentCount !== 3) {
             nextState[cardId] = {
               selected: Object.assign({}, fallbackSelected),
-              showError: false
+              showError: false,
+              locked: true
             };
+          } else {
+            nextState[cardId].locked = true;
           }
         });
         return nextState;
@@ -4460,7 +4463,8 @@
           var persistedCard = persisted[cardId];
           nextState[cardId] = {
             selected: Object.assign({}, (persistedCard && persistedCard.selected) || {}),
-            showError: false
+            showError: false,
+            locked: false
           };
         });
 
@@ -4498,11 +4502,13 @@
         if (getCount(selectedCardId) !== 3) {
           nextState[selectedCardId].selected = createDefaultSelectedCategoryMap();
         }
+        nextState[selectedCardId].locked = true;
 
         cardIds.forEach(function (cardId) {
           if (cardId === selectedCardId) return;
           nextState[cardId].selected = {};
           nextState[cardId].showError = false;
+          nextState[cardId].locked = false;
         });
         return nextState;
       }
@@ -4628,11 +4634,13 @@
           if (persisted && persisted[card.id] && persisted[card.id].selected) {
             cashbackSelectionState[card.id] = {
               selected: Object.assign({}, persisted[card.id].selected),
-              showError: false
+              showError: false,
+              locked: !!persisted[card.id].locked
             };
           } else {
             if (!cashbackSelectionState[card.id]) cashbackSelectionState[card.id] = {};
             if (!cashbackSelectionState[card.id].selected) cashbackSelectionState[card.id].selected = {};
+            cashbackSelectionState[card.id].locked = false;
           }
           var cardNode = document.createElement('article');
           cardNode.className = 'cashback-selection-card';
@@ -4772,10 +4780,12 @@
           var count = getCardSelectionCount(cardId);
           var isFull = count >= 3;
           var cardState = cashbackSelectionState[cardId] || {};
+          var isCardLocked = !!cardState.locked;
+          var isReadOnlyCard = cashbackSelectionReviewMode || isCardLocked;
           var showError = !!cardState.showError && count < 3;
           var counter = cardNode.querySelector('[data-card-counter="' + cardId + '"]');
           if (counter) {
-            counter.hidden = cashbackSelectionReviewMode;
+            counter.hidden = isReadOnlyCard;
             counter.textContent = count + ' of 3 categories selected';
             counter.classList.remove('cashback-selection-card__counter--none', 'cashback-selection-card__counter--progress', 'cashback-selection-card__counter--done');
             if (isFull) counter.classList.add('cashback-selection-card__counter--done');
@@ -4789,9 +4799,9 @@
             chip.classList.remove('cashback-selection-chip--selected', 'cashback-selection-chip--chosen', 'cashback-selection-chip--disabled');
             chip.disabled = false;
             if (selected) {
-              chip.classList.add(cashbackSelectionReviewMode ? 'cashback-selection-chip--chosen' : 'cashback-selection-chip--selected');
-              if (cashbackSelectionReviewMode) chip.disabled = true;
-            } else if (cashbackSelectionReviewMode) {
+              chip.classList.add(isReadOnlyCard ? 'cashback-selection-chip--chosen' : 'cashback-selection-chip--selected');
+              if (isReadOnlyCard) chip.disabled = true;
+            } else if (isReadOnlyCard) {
               chip.classList.add('cashback-selection-chip--disabled');
               chip.disabled = true;
             }
@@ -6234,6 +6244,7 @@
         var categoryId = chip.getAttribute('data-category-id');
         if (!cardId || !categoryId) return;
         if (!cashbackSelectionState[cardId]) cashbackSelectionState[cardId] = { selected: {}, showError: false };
+        if (cashbackSelectionState[cardId].locked) return;
         if (!cashbackSelectionState[cardId].selected) cashbackSelectionState[cardId].selected = {};
         var selectedMap = cashbackSelectionState[cardId].selected;
         var currentlySelected = !!selectedMap[categoryId];

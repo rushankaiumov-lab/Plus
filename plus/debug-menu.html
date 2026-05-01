@@ -735,6 +735,17 @@
         }
       }
 
+      function syncCashbackPartlySelectedDependencies(source) {
+        if (!condHasTabbyCard || !condHasTabbyCash || !condHasCbSecondCardIssued) return;
+        if (source === 'partly' && condHasCbSecondCardIssued.checked) {
+          condHasTabbyCard.checked = true;
+          condHasTabbyCash.checked = true;
+        }
+        if (!condHasTabbyCard.checked || !condHasTabbyCash.checked) {
+          condHasCbSecondCardIssued.checked = false;
+        }
+      }
+
       function buildScenarioLink(scenarioId, variantId) {
         var url = new URL('./index.html', window.location.href);
         url.searchParams.set('scenario', scenarioId);
@@ -809,6 +820,7 @@
         if (condOfferAvailable) condOfferAvailable.checked = scenario.state.offerAvailable !== undefined ? !!scenario.state.offerAvailable : false;
         if (condBuybackAed) condBuybackAed.value = scenario.state.buybackAed !== undefined ? String(scenario.state.buybackAed) : '25';
         syncCancellationDependencies();
+        syncCashbackPartlySelectedDependencies('partly');
         updateBuybackControlsVisibility();
         updateCounterFieldsVisibility();
         updateCbPartlySelectedControlsVisibility();
@@ -875,13 +887,20 @@
       if (condHasTabbyCard) {
         condHasTabbyCard.addEventListener('change', function () {
           syncCancellationDependencies('tabby');
+          syncCashbackPartlySelectedDependencies('card');
           updateScenarioLink();
         });
       }
-      if (condHasTabbyCash) condHasTabbyCash.addEventListener('change', updateScenarioLink);
+      if (condHasTabbyCash) {
+        condHasTabbyCash.addEventListener('change', function () {
+          syncCashbackPartlySelectedDependencies('cash');
+          updateScenarioLink();
+        });
+      }
       if (condHasCashbackActive) condHasCashbackActive.addEventListener('change', updateScenarioLink);
       if (condHasCbSecondCardIssued) {
         condHasCbSecondCardIssued.addEventListener('change', function () {
+          syncCashbackPartlySelectedDependencies('partly');
           updateCbPartlySelectedControlsVisibility();
           updateScenarioLink();
         });
@@ -932,6 +951,7 @@
       });
       initScenarioControls();
       syncCancellationDependencies();
+      syncCashbackPartlySelectedDependencies();
       updateBuybackControlsVisibility();
       updateCounterFieldsVisibility();
       updateCbPartlySelectedControlsVisibility();
