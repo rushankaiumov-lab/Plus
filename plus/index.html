@@ -4496,6 +4496,26 @@
         return [];
       }
 
+      function getBadgeIdsForCardFromSelection(selectionState, cardId) {
+        if (!selectionState || !cardId) return [];
+        var selected = selectionState[cardId] && selectionState[cardId].selected ? selectionState[cardId].selected : null;
+        if (!selected) return [];
+        var orderedCategoryIds = getCashbackCategoryIdsForCard(cardId);
+        var ids = orderedCategoryIds.filter(function (id) {
+          return !!selected[id] && !!CASHBACK_CATEGORY_REGISTRY[id];
+        });
+        if (!ids.length) {
+          ids = Object.keys(selected).filter(function (id) { return !!selected[id] && CASHBACK_CATEGORY_REGISTRY[id]; });
+        }
+        return ids.slice(0, 3);
+      }
+
+      function getCategoryBadgesForCard(cardId, selectionState) {
+        var ids = getBadgeIdsForCardFromSelection(selectionState, cardId);
+        if (!ids.length) ids = getConfiguredCashbackCategoriesForCard(cardId).slice(0, 3);
+        return ids.map(function (id) { return CASHBACK_CATEGORY_REGISTRY[id]; }).filter(Boolean);
+      }
+
       function ensureCashbackReviewSelectionState() {
         var hasCard = true;
         try {
@@ -4935,13 +4955,10 @@
         var categoryBadges = configuredCategories.badges;
         var configuredExtra = configuredCategories.extraCount;
         var dualCardExtraCount = 3;
+        var persistedSelection = loadPersistedCashbackSelectionState() || {};
         if (hasCard && hasCash) {
           if (cashbackActive) {
-            var activePersisted = loadPersistedCashbackSelectionState() || {};
-            var activeBadgeIds = getBadgeIdsFromSelectionState(activePersisted, 'tabby-card');
-            if (activeBadgeIds.length) {
-              categoryBadges = activeBadgeIds.map(function (id) { return CASHBACK_CATEGORY_REGISTRY[id]; }).filter(Boolean);
-            }
+            categoryBadges = getCategoryBadgesForCard('tabby-cash', persistedSelection);
             cashbackTitle.textContent = 'Cashback in ' + month;
             cashbackText.textContent = 'You’re earning up to 5%';
             if (cashbackCta) cashbackCta.textContent = 'View categories';
@@ -4951,10 +4968,7 @@
           } else if (secondCardIssued) {
             var partlyPersisted = ensureCashbackPartlySelectedState();
             var selectedCardId = getPreferredPartlySelectedCard();
-            var partlyBadgeIds = getBadgeIdsFromSelectionState(partlyPersisted, selectedCardId);
-            if (partlyBadgeIds.length) {
-              categoryBadges = partlyBadgeIds.map(function (id) { return CASHBACK_CATEGORY_REGISTRY[id]; }).filter(Boolean);
-            }
+            categoryBadges = getCategoryBadgesForCard(selectedCardId, partlyPersisted);
             cashbackTitle.textContent = 'Get even more cashback';
             cashbackText.textContent = 'Select your other ' + month + ' categories now';
             if (cashbackCta) {
@@ -4976,6 +4990,7 @@
           }
         } else if (hasCard) {
           if (cashbackActive) {
+            categoryBadges = getCategoryBadgesForCard('tabby-card', persistedSelection);
             cashbackTitle.textContent = 'Cashback in ' + month;
             cashbackText.textContent = 'You’re earning 5%';
             if (cashbackCta) cashbackCta.textContent = 'View categories';
@@ -4992,6 +5007,7 @@
           }
         } else {
           if (cashbackActive) {
+            categoryBadges = getCategoryBadgesForCard('tabby-cash', persistedSelection);
             cashbackTitle.textContent = 'Cashback in ' + month;
             cashbackText.textContent = 'You’re earning 3%';
             if (cashbackCta) cashbackCta.textContent = 'View categories';
