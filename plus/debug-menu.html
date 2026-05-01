@@ -161,6 +161,38 @@
       text-decoration: none;
       cursor: pointer;
     }
+    .state-id {
+      margin-top: 8px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 11px;
+      line-height: 14px;
+      color: #8e8a86;
+      user-select: text;
+      opacity: 0.92;
+    }
+    .state-id__value {
+      border: 1px dashed #d9d3cd;
+      border-radius: 8px;
+      padding: 4px 6px;
+      background: #faf9f8;
+      color: #6f6a65;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      word-break: break-all;
+      flex: 1 1 auto;
+    }
+    .state-id__copy {
+      border: 1px solid #d9d3cd;
+      border-radius: 8px;
+      background: #fff;
+      color: #6f6a65;
+      font-size: 11px;
+      line-height: 14px;
+      padding: 4px 8px;
+      cursor: pointer;
+      flex: 0 0 auto;
+    }
     .scenario-actions a.is-primary {
       border-color: var(--text);
       background: var(--text);
@@ -353,6 +385,11 @@
         <a id="open-scenario" class="is-primary" href="./index.html" target="_blank" rel="noopener noreferrer" data-i18n="openScenario">Open scenario</a>
         <button type="button" id="copy-scenario-link" data-i18n="copyLink">Copy link</button>
       </div>
+      <div class="state-id" aria-live="polite">
+        <span data-i18n="stateIdLabel">State ID</span>
+        <span id="scenario-state-id" class="state-id__value">-</span>
+        <button type="button" id="copy-state-id" class="state-id__copy" data-i18n="copyStateId">Copy</button>
+      </div>
       <div class="scenario-conditions" id="scenario-conditions">
         <div class="scenario-group">
           <p class="scenario-group__title" data-i18n="groupActivation">Activation</p>
@@ -494,7 +531,9 @@
       var linkInput = document.getElementById('scenario-link');
       var openScenario = document.getElementById('open-scenario');
       var copyBtn = document.getElementById('copy-scenario-link');
+      var copyStateIdBtn = document.getElementById('copy-state-id');
       var scenarioDescription = document.getElementById('scenario-description');
+      var scenarioStateId = document.getElementById('scenario-state-id');
       var buildVersionEl = document.getElementById('build-version');
       var buildUpdatedAtEl = document.getElementById('build-updated-at');
       var langButtons = document.querySelectorAll('[data-lang]');
@@ -543,6 +582,8 @@
           openScenario: 'Open scenario',
           openMap: 'Open Scenario Map',
           copyLink: 'Copy link',
+          stateIdLabel: 'State ID',
+          copyStateId: 'Copy',
           condIsTrial: 'Trial is available',
           condShowAddPaymentSheet: 'Show Add new payment method',
           condTrialTokenizeCard: 'Tokenize new card for trial',
@@ -588,6 +629,8 @@
           openScenario: 'Открыть сценарий',
           openMap: 'Открыть карту сценариев',
           copyLink: 'Скопировать ссылку',
+          stateIdLabel: 'State ID',
+          copyStateId: 'Скопировать',
           condIsTrial: 'Доступен Trial',
           condShowAddPaymentSheet: 'Показывать Add new payment method',
           condTrialTokenizeCard: 'Токенизировать новую карту для trial',
@@ -620,8 +663,8 @@
       };
 
       var DEBUG_MENU_BUILD = {
-        version: 'v0.8.5',
-        updatedAt: '2026-05-01 11:39 UTC+2'
+        version: 'v0.8.6',
+        updatedAt: '2026-05-01 12:22 UTC+2'
       };
 
       var CASHBACK_CATEGORY_FILE_NAMES = [
@@ -802,13 +845,38 @@
         return url.toString();
       }
 
+      function buildStateId(scenarioId, variantId) {
+        var parts = [
+          's=' + String(scenarioId || ''),
+          'v=' + String(variantId || 'A'),
+          'tc=' + (condHasTabbyCard && condHasTabbyCard.checked ? '1' : '0'),
+          'tca=' + (condHasTabbyCash && condHasTabbyCash.checked ? '1' : '0'),
+          'cba=' + (condHasCashbackActive && condHasCashbackActive.checked ? '1' : '0'),
+          'ps=' + (condHasCbSecondCardIssued && condHasCbSecondCardIssued.checked ? '1' : '0'),
+          'psc=' + (condCbPartlySelectedCard && condCbPartlySelectedCard.value === 'tabby-card' ? 'card' : 'cash'),
+          'cash=' + [
+            condCashbackCashCategory1 && condCashbackCashCategory1.value || '',
+            condCashbackCashCategory2 && condCashbackCashCategory2.value || '',
+            condCashbackCashCategory3 && condCashbackCashCategory3.value || ''
+          ].join(','),
+          'card=' + [
+            condCashbackCardCategory1 && condCashbackCardCategory1.value || '',
+            condCashbackCardCategory2 && condCashbackCardCategory2.value || '',
+            condCashbackCardCategory3 && condCashbackCardCategory3.value || ''
+          ].join(',')
+        ];
+        return parts.join('|');
+      }
+
       function updateScenarioLink() {
         if (!scenarioSelect || !variantSelect || !linkInput || !openScenario) return;
         var scenarioId = scenarioSelect.value;
         var variant = variantSelect.value || 'A';
         var link = buildScenarioLink(scenarioId, variant);
+        var stateId = buildStateId(scenarioId, variant);
         linkInput.value = link;
         openScenario.href = link;
+        if (scenarioStateId) scenarioStateId.textContent = stateId;
         if (window.PLUS_DEBUG_API && window.PLUS_DEBUG_API.getScenarioById) {
           var scenario = window.PLUS_DEBUG_API.getScenarioById(scenarioId);
           if (scenario) {
@@ -968,6 +1036,18 @@
             setTimeout(function () {
               copyBtn.textContent = t('copyLink');
             }, 1000);
+          }).catch(function () {});
+        });
+      }
+      if (copyStateIdBtn) {
+        copyStateIdBtn.addEventListener('click', function () {
+          if (!scenarioStateId || !scenarioStateId.textContent) return;
+          navigator.clipboard.writeText(scenarioStateId.textContent).then(function () {
+            var old = copyStateIdBtn.textContent;
+            copyStateIdBtn.textContent = t('copyDone');
+            setTimeout(function () {
+              copyStateIdBtn.textContent = t('copyStateId');
+            }, 900);
           }).catch(function () {});
         });
       }

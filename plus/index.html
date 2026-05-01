@@ -4958,15 +4958,14 @@
             cashbackCategories.hidden = false;
             cashbackIcon.hidden = true;
           } else {
-            cashbackTitle.textContent = 'Get even more cashback';
+            cashbackTitle.textContent = 'Earn up to 5% cashback';
             cashbackText.textContent = 'Select ' + month + ' categories';
             if (cashbackCta) {
               cashbackCta.textContent = 'Select categories';
-              if (isCashbackFirst) cashbackCta.classList.add('spotlight-card__cta--primary');
+              cashbackCta.classList.add('spotlight-card__cta--primary');
             }
-            renderCashbackCategoryBadges(cashbackCategories, categoryBadges, { extraCount: configuredExtra, extraDashed: true });
-            cashbackCategories.hidden = false;
-            cashbackIcon.hidden = true;
+            cashbackCategories.hidden = true;
+            cashbackIcon.hidden = false;
           }
         } else if (hasCard) {
           if (cashbackActive) {
