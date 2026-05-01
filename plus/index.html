@@ -4416,6 +4416,29 @@
         return map;
       }
 
+      function getCashbackCategoryIdsForCard(cardId) {
+        var shared = ['restaurants-and-dining', 'petrol-stations', 'beauty-and-self-care', 'taxis'];
+        if (cardId === 'tabby-card') return shared.concat(['pharmacies']);
+        if (cardId === 'tabby-cash') return shared.concat(['telecoms', 'global-transfer']);
+        return shared.slice();
+      }
+
+      function createSelectedMapForCard(cardId, preferredIds) {
+        var validIds = getCashbackCategoryIdsForCard(cardId);
+        var selectedIds = [];
+        (preferredIds || []).forEach(function (id) {
+          if (validIds.indexOf(id) !== -1 && selectedIds.indexOf(id) === -1 && selectedIds.length < 3) {
+            selectedIds.push(id);
+          }
+        });
+        validIds.forEach(function (id) {
+          if (selectedIds.length < 3 && selectedIds.indexOf(id) === -1) selectedIds.push(id);
+        });
+        var map = {};
+        selectedIds.slice(0, 3).forEach(function (id) { map[id] = true; });
+        return map;
+      }
+
       function ensureCashbackReviewSelectionState() {
         var hasCard = true;
         try {
@@ -4435,11 +4458,12 @@
           var currentCount = Object.keys(currentSelected).filter(function (key) { return !!currentSelected[key]; }).length;
           if (currentCount !== 3) {
             nextState[cardId] = {
-              selected: Object.assign({}, fallbackSelected),
+              selected: createSelectedMapForCard(cardId),
               showError: false,
               locked: true
             };
           } else {
+            nextState[cardId].selected = createSelectedMapForCard(cardId, Object.keys(currentSelected));
             nextState[cardId].locked = true;
           }
         });
@@ -4499,9 +4523,10 @@
         }
 
         if (!selectedCardId) selectedCardId = cardIds[0];
-        if (getCount(selectedCardId) !== 3) {
-          nextState[selectedCardId].selected = createDefaultSelectedCategoryMap();
-        }
+        nextState[selectedCardId].selected = createSelectedMapForCard(
+          selectedCardId,
+          Object.keys((nextState[selectedCardId] && nextState[selectedCardId].selected) || {})
+        );
         nextState[selectedCardId].locked = true;
 
         cardIds.forEach(function (cardId) {
@@ -4640,7 +4665,7 @@
           } else {
             if (!cashbackSelectionState[card.id]) cashbackSelectionState[card.id] = {};
             if (!cashbackSelectionState[card.id].selected) cashbackSelectionState[card.id].selected = {};
-            cashbackSelectionState[card.id].locked = false;
+            if (cashbackSelectionState[card.id].locked === undefined) cashbackSelectionState[card.id].locked = false;
           }
           var cardNode = document.createElement('article');
           cardNode.className = 'cashback-selection-card';
@@ -4799,8 +4824,10 @@
             chip.classList.remove('cashback-selection-chip--selected', 'cashback-selection-chip--chosen', 'cashback-selection-chip--disabled');
             chip.disabled = false;
             if (selected) {
-              chip.classList.add(isReadOnlyCard ? 'cashback-selection-chip--chosen' : 'cashback-selection-chip--selected');
-              if (isReadOnlyCard) chip.disabled = true;
+              /* For partly-selected locked card keep "selected" visual, full review keeps "chosen". */
+              var selectedClass = cashbackSelectionReviewMode ? 'cashback-selection-chip--chosen' : 'cashback-selection-chip--selected';
+              chip.classList.add(selectedClass);
+              if (cashbackSelectionReviewMode) chip.disabled = true;
             } else if (isReadOnlyCard) {
               chip.classList.add('cashback-selection-chip--disabled');
               chip.disabled = true;
