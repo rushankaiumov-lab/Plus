@@ -4453,7 +4453,11 @@
         var cardAllowedIds = getCashbackCategoryIdsForCard(cardId);
         var configuredIds = getConfiguredCashbackCategoriesForCard(cardId);
         var validIds = configuredIds.filter(function (id) { return cardAllowedIds.indexOf(id) !== -1; });
-        if (!validIds.length) validIds = cardAllowedIds.slice();
+        if (validIds.length < 3) {
+          cardAllowedIds.forEach(function (id) {
+            if (validIds.indexOf(id) === -1) validIds.push(id);
+          });
+        }
         var selectedIds = [];
         (preferredIds || []).forEach(function (id) {
           if (validIds.indexOf(id) !== -1 && selectedIds.indexOf(id) === -1 && selectedIds.length < 3) {
@@ -4509,7 +4513,7 @@
               locked: true
             };
           } else {
-            nextState[cardId].selected = createSelectedMapForCard(cardId, Object.keys(currentSelected));
+            nextState[cardId].selected = Object.assign({}, currentSelected);
             nextState[cardId].locked = true;
           }
         });
