@@ -448,6 +448,10 @@
             <span data-i18n="condHasOlPurchases">Has OL purchases (Split in 4 outstanding)</span>
           </label>
           <label class="scenario-check">
+            <input type="checkbox" id="cond-split6-available" checked />
+            <span data-i18n="condSplit6Available">Split in 6 available</span>
+          </label>
+          <label class="scenario-check">
             <input type="checkbox" id="cond-has-active-split6" checked />
             <span data-i18n="condHasActiveSplit6">Has active Split in 6</span>
           </label>
@@ -520,6 +524,7 @@
       var condCashbackCardCategory2 = document.getElementById('cond-cashback-card-category-2');
       var condCashbackCardCategory3 = document.getElementById('cond-cashback-card-category-3');
       var condHasOlPurchases = document.getElementById('cond-has-ol-purchases');
+      var condSplit6Available = document.getElementById('cond-split6-available');
       var condHasActiveSplit6 = document.getElementById('cond-has-active-split6');
       var condOfferAvailable = document.getElementById('cond-offer-available');
       var condBuybackAed = document.getElementById('cond-buyback-aed');
@@ -560,6 +565,7 @@
           labelCashbackCardCategoriesTabbyCard: 'Tabby Card categories',
           labelCashbackCategoryExtra: 'Extra categories (+N)',
           condHasOlPurchases: 'Has OL purchases (Split in 4 outstanding)',
+          condSplit6Available: 'Split in 6 available',
           condHasActiveSplit6: 'Has active Split in 6',
           condOfferAvailable: 'Buyback offer',
           optionAed1: 'AED 1',
@@ -605,6 +611,7 @@
           labelCashbackCardCategoriesTabbyCard: 'Категории Tabby Card',
           labelCashbackCategoryExtra: 'Доп. категории (+N)',
           condHasOlPurchases: 'Есть OL покупки (долг в Split in 4)',
+          condSplit6Available: 'Доступен Split in 6',
           condHasActiveSplit6: 'Есть активный Split in 6',
           condOfferAvailable: 'Buyback offer',
           optionAed1: 'AED 1',
@@ -620,8 +627,8 @@
       };
 
       var DEBUG_MENU_BUILD = {
-        version: 'v0.8.7',
-        updatedAt: '2026-05-01 12:44 UTC+2'
+        version: 'v0.8.8',
+        updatedAt: '2026-05-01 16:27 UTC+2'
       };
 
       var CASHBACK_CATEGORY_FILE_NAMES = [
@@ -796,6 +803,7 @@
         if (condCashbackCardCategory2 && condCashbackCardCategory2.value) url.searchParams.set('cw_cb_card_cat_2', condCashbackCardCategory2.value);
         if (condCashbackCardCategory3 && condCashbackCardCategory3.value) url.searchParams.set('cw_cb_card_cat_3', condCashbackCardCategory3.value);
         url.searchParams.set('cw_has_ol_purchases', condHasOlPurchases && condHasOlPurchases.checked ? '1' : '0');
+        url.searchParams.set('cw_split6_available', condSplit6Available && condSplit6Available.checked ? '1' : '0');
         url.searchParams.set('cw_has_active_split6', condHasActiveSplit6 && condHasActiveSplit6.checked ? '1' : '0');
         url.searchParams.set('offer_available', condOfferAvailable && condOfferAvailable.checked ? '1' : '0');
         url.searchParams.set('buyback_aed', condBuybackAed ? (condBuybackAed.value || '25') : '25');
@@ -842,6 +850,7 @@
         populateCashbackCategorySelect(condCashbackCardCategory2, scenario.state.cashbackCardCategory2 || 'groceries');
         populateCashbackCategorySelect(condCashbackCardCategory3, scenario.state.cashbackCardCategory3 || 'clothing-and-shoes');
         if (condHasOlPurchases) condHasOlPurchases.checked = scenario.state.hasOlPurchases !== undefined ? !!scenario.state.hasOlPurchases : false;
+        if (condSplit6Available) condSplit6Available.checked = scenario.state.split6Available !== undefined ? !!scenario.state.split6Available : true;
         if (condHasActiveSplit6) condHasActiveSplit6.checked = scenario.state.hasActiveSplit6 !== undefined ? !!scenario.state.hasActiveSplit6 : true;
         if (condOfferAvailable) condOfferAvailable.checked = scenario.state.offerAvailable !== undefined ? !!scenario.state.offerAvailable : false;
         if (condBuybackAed) condBuybackAed.value = scenario.state.buybackAed !== undefined ? String(scenario.state.buybackAed) : '25';
@@ -944,6 +953,7 @@
           updateScenarioLink();
         });
       }
+      if (condSplit6Available) condSplit6Available.addEventListener('change', updateScenarioLink);
       if (condHasActiveSplit6) condHasActiveSplit6.addEventListener('change', updateScenarioLink);
       if (condOfferAvailable) {
         condOfferAvailable.addEventListener('change', function () {

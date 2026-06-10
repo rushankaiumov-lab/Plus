@@ -634,6 +634,63 @@
       font-weight: 700;
       color: var(--color-ui-major);
     }
+    .subscription-si6-main {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 24px;
+      padding-bottom: 32px;
+    }
+    .subscription-si6-copy {
+      flex: 1 1 auto;
+      min-width: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+    .subscription-si6-copy .spotlight-card__title {
+      margin: 0;
+    }
+    .subscription-si6-copy .spotlight-card__text {
+      margin: 0;
+    }
+    .subscription-si6-visual {
+      flex: 0 0 auto;
+      min-height: 26px;
+      display: inline-flex;
+      align-items: flex-start;
+      justify-content: flex-end;
+    }
+    .subscription-si6-visual .spotlight-card__icon {
+      width: 40px;
+      height: 40px;
+      display: block;
+    }
+    #subscription-si6-card {
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+      align-items: stretch;
+    }
+    #subscription-si6-card .spotlight-card__cta {
+      margin-top: 0;
+    }
+    .subscription-si6-badge {
+      height: 26px;
+      padding: 4px 10px;
+      border-radius: 128px;
+      background: #57c26e;
+      color: #f5f4f2;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-family: var(--font-text);
+      font-size: 15px;
+      font-weight: 500;
+      line-height: 18px;
+      letter-spacing: 0;
+      white-space: nowrap;
+    }
     @media (prefers-reduced-motion: reduce) {
       .faq-accordion__panel,
       .faq-accordion__chevron {
@@ -3225,6 +3282,20 @@
             <button type="button" class="spotlight-card__cta" id="subscription-cashback-cta">Select categories</button>
           </section>
 
+          <section class="spotlight-card" id="subscription-si6-card" aria-labelledby="subscription-si6-title" hidden>
+            <div class="subscription-si6-main">
+              <div class="subscription-si6-copy">
+                <h2 id="subscription-si6-title" class="spotlight-card__title">Free split in 6</h2>
+                <p class="spotlight-card__text" id="subscription-si6-text">Pay less monthly by spreading any eligible purchase over 6 months</p>
+              </div>
+              <div class="subscription-si6-visual">
+                <img class="spotlight-card__icon" id="subscription-si6-icon" src="./assets/omni/split-in-6-widget-available.svg" alt="" loading="lazy" />
+                <span class="subscription-si6-badge" id="subscription-si6-badge" hidden aria-hidden="true">Active</span>
+              </div>
+            </div>
+            <button type="button" class="spotlight-card__cta" id="subscription-si6-cta" data-sheet-target="free-split-6">Split in 6</button>
+          </section>
+
           <div class="island island--benefits">
             <section class="benefits" aria-labelledby="benefits-active-heading">
               <h2 id="benefits-active-heading" class="benefits__title">Benefits</h2>
@@ -4115,6 +4186,7 @@
       var HAS_TABBY_CASH_KEY = 'plus-has-tabby-cash';
       var HAS_CASHBACK_ACTIVE_KEY = 'plus-has-cashback-active';
       var HAS_CB_SECOND_CARD_ISSUED_KEY = 'plus-has-cb-second-card-issued';
+      var SPLIT6_AVAILABLE_KEY = 'plus-split6-available';
       var CB_PARTLY_SELECTED_CARD_KEY = 'plus-cb-partly-selected-card';
       var CASHBACK_CATEGORY_1_KEY = 'plus-cashback-category-1';
       var CASHBACK_CATEGORY_2_KEY = 'plus-cashback-category-2';
@@ -4262,6 +4334,15 @@
           return localStorage.getItem(HAS_CB_SECOND_CARD_ISSUED_KEY) === '1';
         } catch (e) {
           return false;
+        }
+      }
+
+      function isSplit6Available() {
+        try {
+          var raw = localStorage.getItem(SPLIT6_AVAILABLE_KEY);
+          return raw !== '0';
+        } catch (e) {
+          return true;
         }
       }
 
@@ -4935,6 +5016,12 @@
         var cashbackCta = document.getElementById('subscription-cashback-cta');
         var cashbackIcon = document.getElementById('subscription-cashback-icon');
         var cashbackCategories = document.getElementById('subscription-cashback-categories');
+        var split6Card = document.getElementById('subscription-si6-card');
+        var split6Title = document.getElementById('subscription-si6-title');
+        var split6Text = document.getElementById('subscription-si6-text');
+        var split6Icon = document.getElementById('subscription-si6-icon');
+        var split6Badge = document.getElementById('subscription-si6-badge');
+        var split6Cta = document.getElementById('subscription-si6-cta');
         if (!maximiseCard || !tabbyCardItem || !tabbyCashItem || !cashbackCard || !cashbackTitle || !cashbackText || !cashbackIcon || !cashbackCategories) return;
 
         var hasCard = true;
@@ -4944,6 +5031,11 @@
         var hasCash = hasTabbyCash();
         var cashbackActive = hasCashbackActive();
         var secondCardIssued = hasCashbackSecondCardIssued();
+        var split6Available = isSplit6Available();
+        var split6Active = false;
+        try {
+          split6Active = localStorage.getItem(CW_HAS_ACTIVE_SPLIT6_KEY) !== '0';
+        } catch (e) {}
 
         var hasAnyCard = hasCard || hasCash;
         maximiseCard.hidden = hasCard && hasCash;
@@ -4953,6 +5045,28 @@
           maximiseCard.hidden = true;
         }
         var isCashbackFirst = maximiseCard.hidden;
+
+        if (split6Card && split6Title && split6Text && split6Cta) {
+          split6Card.hidden = !split6Available;
+          if (split6Available) {
+            if (split6Active) {
+              split6Title.textContent = 'Free split in 6';
+              split6Text.textContent = 'Noon';
+              split6Cta.textContent = 'View details';
+              split6Cta.classList.remove('spotlight-card__cta--primary');
+              if (split6Icon) split6Icon.hidden = true;
+              if (split6Badge) split6Badge.hidden = false;
+            } else {
+              split6Title.textContent = 'Free split in 6';
+              split6Text.textContent = 'Pay less monthly by spreading any eligible purchase over 6 months';
+              split6Cta.textContent = 'Select purchase';
+              split6Cta.classList.remove('spotlight-card__cta--primary');
+              if (split6Icon) split6Icon.hidden = false;
+              if (split6Badge) split6Badge.hidden = true;
+            }
+            split6Cta.setAttribute('data-sheet-target', 'free-split-6');
+          }
+        }
 
         cashbackCard.hidden = !hasAnyCard;
         if (!hasAnyCard) return;
@@ -6171,6 +6285,7 @@
         if (params.has('cw_has_tabby_cash')) stateOverrides.hasTabbyCash = params.get('cw_has_tabby_cash') === '1';
         if (params.has('cw_has_cashback_active')) stateOverrides.hasCashbackActive = params.get('cw_has_cashback_active') === '1';
         if (params.has('cw_has_cb_second_card_issued')) stateOverrides.hasCashbackSecondCardIssued = params.get('cw_has_cb_second_card_issued') === '1';
+        if (params.has('cw_split6_available')) stateOverrides.split6Available = params.get('cw_split6_available') === '1';
         if (params.has('cw_cb_partly_selected_card')) stateOverrides.cashbackPartlySelectedCard = params.get('cw_cb_partly_selected_card');
         if (params.has('cw_cb_cat_1')) stateOverrides.cashbackCategory1 = params.get('cw_cb_cat_1');
         if (params.has('cw_cb_cat_2')) stateOverrides.cashbackCategory2 = params.get('cw_cb_cat_2');
@@ -6230,6 +6345,9 @@
           }
           if (state.hasCashbackSecondCardIssued !== undefined) {
             localStorage.setItem(HAS_CB_SECOND_CARD_ISSUED_KEY, state.hasCashbackSecondCardIssued ? '1' : '0');
+          }
+          if (state.split6Available !== undefined) {
+            localStorage.setItem(SPLIT6_AVAILABLE_KEY, state.split6Available ? '1' : '0');
           }
           if (state.cashbackPartlySelectedCard !== undefined) {
             var partlySelectedCard = state.cashbackPartlySelectedCard === 'tabby-card' ? 'tabby-card' : 'tabby-cash';
