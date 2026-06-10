@@ -5204,8 +5204,19 @@
         var digits = getSavingsDigitNodes();
         if (!digits.length) return;
         var config = getSavingsCounterConfig();
-        if (!shouldAnimateSavingsCounter() || config.delta === null || Math.abs(config.delta) < 0.01) {
+        if (!shouldAnimateSavingsCounter()) {
           applySavingsCounterStatic(config.target);
+          return;
+        }
+
+        var hasDelta = config.delta !== null && Math.abs(config.delta) >= 0.01;
+        var fromValue = hasDelta ? config.start : 0;
+        var toValue = hasDelta ? config.target : config.start;
+        var startDigits = valueToDigitString(fromValue);
+        var targetDigits = valueToDigitString(toValue);
+
+        if (startDigits === targetDigits) {
+          applySavingsCounterStatic(toValue);
           return;
         }
 
@@ -5213,12 +5224,11 @@
            - whole animation starts after 1000ms
            - 1 drum step takes 400ms
            - reels start with overlap using staggered delays
-           - order is right-to-left (fraction first, then carry to integer part) */
+           - default roll-up: left-to-right
+           - increase-by delta: right-to-left (fraction first, then carry) */
         var startDelayMs = 1000;
         var stepMs = 400;
         var staggerMs = 220;
-        var startDigits = valueToDigitString(config.start);
-        var targetDigits = valueToDigitString(config.target);
         var currentToken = savingsAnimationToken + 1;
         savingsAnimationToken = currentToken;
 
@@ -5229,8 +5239,8 @@
           var track = document.createElement('span');
           track.className = 'subscription-counter__track';
           var startDigit = Number(startDigits[idx] || '0');
-          var target = Number(targetDigits[idx] || '0');
-          var deltaSteps = (target - startDigit + 10) % 10;
+          var targetDigit = Number(targetDigits[idx] || '0');
+          var deltaSteps = (targetDigit - startDigit + 10) % 10;
           var steps = deltaSteps === 0 ? 0 : (10 + deltaSteps);
           for (var i = 0; i <= steps; i += 1) {
             var slot = document.createElement('span');
@@ -5246,16 +5256,18 @@
           var track = el.querySelector('.subscription-counter__track');
           if (!track) return;
           var startDigit = Number(startDigits[idx] || '0');
-          var target = Number(targetDigits[idx] || '0');
-          var deltaSteps = (target - startDigit + 10) % 10;
+          var targetDigit = Number(targetDigits[idx] || '0');
+          var deltaSteps = (targetDigit - startDigit + 10) % 10;
           var steps = deltaSteps === 0 ? 0 : (10 + deltaSteps);
           var duration = Math.max(1, steps) * stepMs;
-          var delay = startDelayMs + (digits.length - 1 - idx) * staggerMs;
+          var delay = hasDelta
+            ? startDelayMs + (digits.length - 1 - idx) * staggerMs
+            : startDelayMs + idx * staggerMs;
           track.style.transitionProperty = 'none';
           track.style.transform = 'translateY(0)';
           track.getBoundingClientRect();
           if (steps === 0) {
-            el.textContent = String(target);
+            el.textContent = String(targetDigit);
             return;
           }
           track.style.transitionDuration = duration + 'ms';
@@ -5269,7 +5281,7 @@
           });
           setTimeout(function () {
             if (savingsAnimationToken !== currentToken) return;
-            el.textContent = String(target);
+            el.textContent = String(targetDigit);
           }, delay + duration + 40);
         });
       }
